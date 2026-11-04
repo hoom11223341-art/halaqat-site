@@ -2,7 +2,7 @@
 export const STATUSES = ['نشط', 'منسحب', 'منقول', 'متخرج'];
 const MAX_FAILS = 40;
 
-export function makeApi({ store, env, fetchFn, gasUrl }) {
+export function makeApi({ store, env, fetchFn, gasUrl, seed }) {
   const ADMIN = String(env('ADMIN_PASSWORD') || '');
   const VIEW = String(env('VIEW_PASSWORD') || '');
   const adminReady = () => !!ADMIN;
@@ -15,7 +15,16 @@ export function makeApi({ store, env, fetchFn, gasUrl }) {
   };
   const empty = () => ({ students: {}, config: null, version: '0' });
   async function read() {
-    const r = await store.getWithMetadata('db', { type: 'json' });
+    let r = await store.getWithMetadata('db', { type: 'json' });
+    if (!r && seed) {
+      // أول تشغيل فقط (لم تُكتب القاعدة قط): تُملأ بالبيانات الأولية من ملف المتابعة
+      const students = {};
+      Object.keys(seed.students || {}).forEach((id) => { try { students[id] = cleanStudent(seed.students[id]); } catch (e) {} });
+      let config = null;
+      try { config = seed.config ? cleanConfig(seed.config) : null; } catch (e) {}
+      await store.setJSON('db', { students, config, version: bump() }, { onlyIfNew: true });
+      r = await store.getWithMetadata('db', { type: 'json' });
+    }
     return r && r.data ? { db: r.data, etag: r.etag } : { db: empty(), etag: null };
   }
   async function write(db, etag) {
