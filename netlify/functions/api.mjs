@@ -3,7 +3,8 @@ import { makeApi } from '../lib/core.mjs';
 import seed from '../lib/seed.json';
 
 const GAS_URL = 'https://script.google.com/macros/s/AKfycbz1G7-KxBwcFTU6xXw3P-AktN3Td8nRk2aLLdl9JWFR35gJHAaSY-uKV4aubE1TzEJL/exec';
-const env = (k) => (globalThis.Netlify && Netlify.env && Netlify.env.get(k)) || process.env[k] || '';
+const DEFAULTS = { ADMIN_PASSWORD: '112334' }; // يمكن تغييرها من متغيرات البيئة في Netlify
+const env = (k) => (globalThis.Netlify && Netlify.env && Netlify.env.get(k)) || process.env[k] || DEFAULTS[k] || '';
 
 export default async (req) => {
   const headers = { 'cache-control': 'no-store', 'content-type': 'application/json; charset=utf-8' };

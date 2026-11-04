@@ -6,13 +6,24 @@ export function makeApi({ store, env, fetchFn, gasUrl, seed }) {
   const ADMIN = String(env('ADMIN_PASSWORD') || '');
   const VIEW = String(env('VIEW_PASSWORD') || '');
   const adminReady = () => !!ADMIN;
+  // الصفحة الرئيسية لا تفتح إلا بكلمة المرور (صفحة الطالب بالهوية تبقى مفتوحة)
   const role = (pw) => {
     pw = String(pw == null ? '' : pw);
     if (!adminReady()) return 'admin';
     if (pw && pw === ADMIN) return 'admin';
     if (VIEW && pw === VIEW) return 'view';
-    return 'view';
+    return null;
   };
+  // حد للمحاولات الخاطئة: 30 محاولة كل 10 دقائق
+  async function guard(pw) {
+    const now = Date.now();
+    let pf = (await store.get('pf', { type: 'json' })) || { n: 0, t: now };
+    if (now - pf.t > 600000) pf = { n: 0, t: now };
+    if (pf.n >= 30) return { r: null, busy: true };
+    const r = role(pw);
+    if (r === null && pw) { pf.n++; await store.setJSON('pf', pf); }
+    return { r, busy: false };
+  }
   const empty = () => ({ students: {}, config: null, version: '0' });
   async function read() {
     let r = await store.getWithMetadata('db', { type: 'json' });
@@ -118,8 +129,11 @@ export function makeApi({ store, env, fetchFn, gasUrl, seed }) {
 
   return async function api(pw, op, arg) {
     if (op === 'lookup') return lookup(arg);
-    const r = role(pw);
-    if (op === 'init') return { role: r, needPassword: false, adminReady: adminReady() };
+    const g = await guard(pw);
+    if (g.busy) return { error: 'busy', needPassword: true };
+    const r = g.r;
+    if (op === 'init') return { role: r, needPassword: r === null, adminReady: adminReady() };
+    if (r === null) return { needPassword: true };
     if (op === 'version') { const { db } = await read(); return { version: db.version }; }
     if (op === 'all') { const { db } = await read(); return { role: r, version: db.version, students: list(db, r !== 'admin'), config: db.config }; }
     if (op === 'batch') { if (r !== 'admin') return { error: 'forbidden' }; return batch(arg); }
