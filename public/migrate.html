@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex">
+<title>نقل البيانات من Google</title>
+<style>
+:root{--ink:#26313a;--muted:#6b7782;--line:#e0d5c2;--bg:#f5f2ed;--card:#fff;--accent:#36424d;--ok:#25643c;--bad:#9d3f31}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.7 system-ui,-apple-system,"Segoe UI",Tahoma,sans-serif;padding:16px}
+.box{max-width:560px;margin:40px auto;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:22px}
+h1{margin:0 0 8px;font-size:21px;color:var(--accent)}p{color:var(--muted);margin:6px 0}
+button{font:inherit;font-weight:600;padding:9px 18px;border-radius:8px;border:1px solid var(--accent);background:var(--accent);color:#fff;cursor:pointer;margin-top:12px}
+button.ghost{background:transparent;color:var(--accent)}button:disabled{opacity:.5;cursor:default}
+#out{margin-top:14px;padding:10px 12px;border-radius:8px;background:#fbf8f3;border:1px solid var(--line);min-height:1.5em;white-space:pre-wrap}
+.ok{color:var(--ok)}.bad{color:var(--bad)}a{color:var(--accent)}
+</style>
+</head>
+<body>
+<div class="box">
+<h1>نقل البيانات من Google إلى Netlify</h1>
+<p>يُنسخ كل الطلاب والإعدادات من قاعدة Google الحالية إلى قاعدة Netlify. تُستعمل مرة واحدة، وتبقى بيانات Google كما هي دون حذف.</p>
+<p>قبلها يجب أن يكون ملف Code.gs الجديد منشورًا في Apps Script بإصدار جديد.</p>
+<button id="go">نقل البيانات الآن</button>
+<button id="force" class="ghost" hidden>استبدال بيانات Netlify الحالية بنسخة Google</button>
+<div id="out" aria-live="polite"></div>
+<p><a href="/">العودة إلى الصفحة الرئيسية</a></p>
+</div>
+<script>
+const out=document.getElementById('out'),go=document.getElementById('go'),force=document.getElementById('force');
+const msg={gas_not_ready:'خادم Google لم يُحدَّث بعد. الصق Code.gs الجديد في Apps Script وانشر «إصدارًا جديدًا» ثم أعد المحاولة.',gas_password:'خادم Google يطلب كلمة مرور.',gas_bad:'وصل رد غير متوقع من Google.',busy:'الخادم مشغول، أعد المحاولة بعد لحظات.',forbidden:'هذه العملية تتطلب كلمة مرور الإدارة.'};
+async function run(f){go.disabled=force.disabled=true;out.className='';out.textContent='جارٍ النقل…';
+ try{const r=await fetch('/api',{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({pw:sessionStorage.getItem('zpw')||'',op:'migrate',arg:{force:f}})});const j=await r.json();
+  if(j.ok){out.className='ok';out.textContent='تم النقل: '+j.students+' طالبًا'+(j.config?' مع الإعدادات':'')+(j.skipped?' (تُجوهل '+j.skipped+' سجلًا غير صالح)':'')+'. يمكنك الآن استعمال الموقع على Netlify.';force.hidden=true}
+  else if(j.error==='not_empty'){out.className='bad';out.textContent='في قاعدة Netlify '+j.count+' طالبًا مسبقًا. إن أردت استبدالها بنسخة Google الحالية فاضغط الزر الثاني.';force.hidden=false}
+  else{out.className='bad';out.textContent=msg[j.error]||('تعذّر النقل: '+(j.error||j.__err||'خطأ غير معروف'))}}
+ catch(e){out.className='bad';out.textContent='تعذّر الاتصال بالخادم.'}
+ go.disabled=force.disabled=false}
+go.onclick=()=>run(false);force.onclick=()=>{if(confirm('ستُستبدل بيانات Netlify الحالية كلها. متابعة؟'))run(true)};
+</script>
+</body>
+</html>
