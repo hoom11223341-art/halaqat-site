@@ -45,7 +45,7 @@ export function makeApi({ store, env, fetchFn, gasUrl, seed }) {
   const bump = () => String(Date.now()) + '-' + Math.floor(Math.random() * 1000);
   const list = (db, strip) => Object.keys(db.students).map((id) => {
     const data = { ...db.students[id] };
-    if (strip) delete data.nid;
+    if (strip) { delete data.nid; delete data.phone; }
     return { id, data };
   });
 
@@ -158,7 +158,8 @@ function cleanStudent(d) {
     name, halaqa, curriculum: c, level: l,
     status: STATUSES.indexOf(d.status) >= 0 ? d.status : 'نشط',
     notes: String(d.notes || '').slice(0, 2000),
-    nid: String(d.nid || '').replace(/\D/g, '').slice(0, 20), tests,
+    nid: String(d.nid || '').replace(/\D/g, '').slice(0, 20),
+    phone: String(d.phone || '').replace(/\D/g, '').slice(0, 15), tests,
   };
 }
 function numMap(o, lo, hi) {

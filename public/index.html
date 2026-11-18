@@ -143,6 +143,7 @@ td select.di{width:150px;padding:6px 8px;border:1px solid var(--line);border-rad
 .empty{padding:26px;text-align:center;color:var(--muted)}
 .clk{cursor:pointer;transition:border-color .15s,box-shadow .15s}.clk:hover,.clk:focus-visible{border-color:var(--accent);box-shadow:0 2px 10px rgba(0,0,0,.08);outline:none}.more{margin:6px 0 0;font-size:13px;font-weight:600;color:var(--accent-text)}
 .ltabs{display:flex;flex-wrap:wrap;gap:8px;margin:6px 0 12px}.ltabs button{border:1px solid var(--line);background:var(--card);color:var(--ink,inherit);border-radius:99px;padding:5px 14px;font:inherit;font-size:13.5px;font-weight:600;cursor:pointer}.ltabs button[aria-pressed=true]{background:var(--accent-text);border-color:var(--accent-text);color:var(--on-accent)}
+.btn.wa{background:#1f8f4e;border-color:#1f8f4e;color:#fff;text-decoration:none}.btn.wa:hover{background:#187a42}.btn.wa2{color:#1f7a45;border-color:#1f8f4e;text-decoration:none}
 .lnk{background:none;border:0;padding:0;cursor:pointer;font-weight:600;color:var(--accent-text);text-align:right}
 .lnk:hover{text-decoration:underline}
 .btn{font-weight:600;font-size:14.5px;padding:9px 18px;border-radius:8px;border:1px solid var(--accent-text);background:var(--accent-text);color:var(--on-accent);cursor:pointer}
@@ -616,7 +617,8 @@ const acts={
   const nid=lat($('ns-nid').value).replace(/\D/g,'');
   if(nid&&(nid.length<5||nid.length>20)){toast('\u0631\u0642\u0645 \u0627\u0644\u0647\u0648\u064a\u0629 \u064a\u062c\u0628 \u0623\u0646 \u064a\u0643\u0648\u0646 \u0645\u0646 5 \u0625\u0644\u0649 20 \u0631\u0642\u0645\u064b\u0627',true);return}
   if(nid&&allStudents().some(s=>s.nid===nid)){toast('\u0631\u0642\u0645 \u0627\u0644\u0647\u0648\u064a\u0629 \u0645\u0633\u062c\u0651\u0644 \u0644\u0637\u0627\u0644\u0628 \u0622\u062e\u0631',true);return}
-  const doc={name,halaqa:h,curriculum:c,level:L,status:'\u0646\u0634\u0637',notes:'',nid,tests},id='s'+Date.now().toString(36);
+  const phone=normPhone($('ns-ph').value);if($('ns-ph').value.trim()&&!phone){toast('\u0631\u0642\u0645 \u062c\u0648\u0627\u0644 \u0648\u0644\u064a \u0627\u0644\u0623\u0645\u0631 \u063a\u064a\u0631 \u0635\u062d\u064a\u062d\u060c \u0627\u0643\u062a\u0628\u0647 \u0645\u062b\u0644 0551234567',true);return}
+  const doc={name,halaqa:h,curriculum:c,level:L,status:'\u0646\u0634\u0637',notes:'',nid,phone,tests},id='s'+Date.now().toString(36);
   if(await wr(()=>db.doc('students/'+id).set(doc))){st.students[id]=doc;closeModal();toast('\u062a\u0645\u062a \u0625\u0636\u0627\u0641\u0629 \u0627\u0644\u0637\u0627\u0644\u0628');if(pre){render()}else{ui.tab='students';ui.q=name;location.hash='students';render()}}},
  async saveMeta(b){const id=b.dataset.id,s=clone(st.students[id]);s.id=id;const patch=applyMeta(id,s);if(!patch)return;
   if(await saveStudentDoc(id,patch)){toast('\u062a\u0645 \u062d\u0641\u0638 \u0628\u064a\u0627\u0646\u0627\u062a \u0627\u0644\u0637\u0627\u0644\u0628');openStudent(id,true);render()}},
@@ -628,7 +630,7 @@ const acts={
   s.tests[i]={...s.tests[i],...patch};
   if(await saveStudentDoc(id,{tests:s.tests})){toast('\u062a\u0645 \u0627\u0644\u062d\u0641\u0638');openStudent(id,true);render()}},
  async promote(b){const id=b.dataset.id,s=clone(st.students[id]),L=s.level+1;
-  s.tests.push({l:L,t:'n',d:'',c:false,g:null});
+  s.tests=canonTests(s,s.curriculum,L);
   if(await saveStudentDoc(id,{tests:s.tests,level:L})){toast(`\u0623\u064f\u0636\u064a\u0641 \u0627\u0644\u0645\u0633\u062a\u0648\u0649 ${L}`);openStudent(id,true);render()}},
  editTargets(){openTargets()},
  async saveTargets(){const g=(id,pct)=>{const v=N($(id).value);return pct?v/100:v};
@@ -997,8 +999,9 @@ function parseWb(wb){
  for(let r=2;r<=Math.max(lastRow(ls),60);r++){const a=s(v(ls,'A'+r));if(a&&!(a in tmap)){tmap[a]=s(v(ls,'B'+r));halaqat.push({name:a,teacher:tmap[a]})}}
  const weights={};for(let r=2;r<=9;r++){const c=Number(v(ls,'J'+r)),w=Number(v(ls,'K'+r));if(c>=1&&c<=4&&w>0)weights[c]=w}
  const examDates=[];for(let r=2;r<=Math.max(lastRow(ls),60);r++){const d=xDate(v(ls,'G'+r));if(d&&!examDates.includes(d))examDates.push(d)}
- let idCol=null;
+ let idCol=null,phCol=null;
  {const rg=db0['!ref']?XLSX.utils.decode_range(db0['!ref']):null;if(rg)for(let r=0;r<Math.min(rg.e.r+1,8)&&!idCol;r++)for(let c=0;c<=rg.e.c;c++){const a=db0[XLSX.utils.encode_cell({r,c})];if(a&&/\u0647\u0648\u064a\u0629|\u0627\u0644\u0633\u062c\u0644 \u0627\u0644\u0645\u062f\u0646\u064a|\u0627\u0644\u0633\u062c\u0644 \u0627\u0644\u0645\u062f\u0646\u0649/.test(String(a.v==null?'':a.v))){idCol=XLSX.utils.encode_col(c);break}}}
+ {const rg=db0['!ref']?XLSX.utils.decode_range(db0['!ref']):null;if(rg)for(let r=0;r<Math.min(rg.e.r+1,8)&&!phCol;r++)for(let c=0;c<=rg.e.c;c++){const a=db0[XLSX.utils.encode_cell({r,c})];if(a&&/\u062c\u0648\u0627\u0644|\u0648\u0644\u064a \u0627\u0644\u0623\u0645\u0631|\u0648\u0644\u064a \u0627\u0644\u0627\u0645\u0631|\u0647\u0627\u062a\u0641|\u0648\u0627\u062a\u0633/.test(String(a.v==null?'':a.v))){phCol=XLSX.utils.encode_col(c);break}}}
  const students=[],byName={},seenId={};let skipped=0,dup=0,badId=0,dupId=0;
  for(let r=6;r<=lastRow(db0);r++){
   const name=s(v(db0,'D'+r));if(!name)continue;
@@ -1008,7 +1011,8 @@ function parseWb(wb){
   if(!(h in tmap)){tmap[h]=s(v(db0,'C'+r));halaqat.push({name:h,teacher:tmap[h]});warns.push(`\u0627\u0644\u062d\u0644\u0642\u0629 \u00ab${h}\u00bb \u0644\u064a\u0633\u062a \u0641\u064a \u0648\u0631\u0642\u0629 \u0627\u0644\u0642\u0648\u0627\u0626\u0645\u060c \u0623\u064f\u0636\u064a\u0641\u062a \u062a\u0644\u0642\u0627\u0626\u064a\u064b\u0627.`)}
   let st0=s(v(db0,'Z'+r))||'\u0646\u0634\u0637';if(!STATUS.includes(st0)){warns.push(`\u062d\u0627\u0644\u0629 \u063a\u064a\u0631 \u0645\u0639\u0631\u0648\u0641\u0629 \u00ab${st0}\u00bb \u0644\u0644\u0637\u0627\u0644\u0628 ${name}\u060c \u0639\u064f\u062f\u0651\u062a \u0646\u0634\u0637\u064b\u0627.`);st0='\u0646\u0634\u0637'}
   let nid='';if(idCol){nid=lat(v(db0,idCol+r)).replace(/\D/g,'');if(nid&&(nid.length<5||nid.length>20)){badId++;nid=''}else if(nid&&seenId[nid]){dupId++;nid=''}else if(nid)seenId[nid]=1}
-  const o={name,halaqa:h,curriculum:c,level:l,status:st0,notes:s(v(db0,'P'+r)),nid,tests:[]};byName[name]=o;students.push(o)}
+  const phone=phCol?normPhone(v(db0,phCol+r)):'';
+  const o={name,halaqa:h,curriculum:c,level:l,status:st0,notes:s(v(db0,'P'+r)),nid,phone,tests:[]};byName[name]=o;students.push(o)}
  let orphan=0,nograde=0;
  for(let r=5;r<=lastRow(rc);r++){
   const name=s(v(rc,'C'+r));if(!name)continue;const o=byName[name];if(!o){orphan++;continue}
@@ -1027,12 +1031,12 @@ function parseWb(wb){
  const noT=students.filter(x=>!x.tests.length).length;if(noT)warns.push(`${noT} \u0637\u0627\u0644\u0628\u064b\u0627 \u0628\u0644\u0627 \u0623\u064a \u0645\u0633\u062a\u0648\u0649 \u0641\u064a \u0633\u062c\u0644\u0627\u062a \u0627\u0644\u0627\u062e\u062a\u0628\u0627\u0631\u0627\u062a.`);
  if(!students.length)throw new Error('\u0644\u0645 \u0623\u062c\u062f \u0637\u0644\u0627\u0628\u064b\u0627 \u0641\u064a \u0648\u0631\u0642\u0629 \u00ab\u0642\u0627\u0639\u062f\u0629 \u0627\u0644\u0628\u064a\u0627\u0646\u0627\u062a\u00bb. \u0627\u0644\u0623\u0633\u0645\u0627\u0621 \u064a\u062c\u0628 \u0623\u0646 \u062a\u0643\u0648\u0646 \u0641\u064a \u0627\u0644\u0639\u0645\u0648\u062f D \u0645\u0646 \u0627\u0644\u0635\u0641 6.');
  return {students,halaqat,weights,examDates,warns}}
-const normS=d=>JSON.stringify([d.halaqa,d.curriculum,d.level,d.status,d.notes||'',d.nid||'',d.tests.map(t=>[t.l,t.t,t.d||'',!!t.c,t.g==null?null:Math.round(t.g*1e4)/1e4])]);
+const normS=d=>JSON.stringify([d.halaqa,d.curriculum,d.level,d.status,d.notes||'',d.nid||'',d.phone||'',d.tests.map(t=>[t.l,t.t,t.d||'',!!t.c,t.g==null?null:Math.round(t.g*1e4)/1e4])]);
 const nk=n=>String(n||'').replace(/\s+/g,' ').trim();
 function diffImp(data){
  const cur={};allStudents().forEach(x=>cur[nk(x.name)]=x);
  const add=[],chg=[],same=[];
- data.students.forEach(x=>{const e=cur[nk(x.name)];if(!e)add.push(x);else if((!x.nid&&e.nid&&(x.nid=e.nid),normS(e)!==normS(x)))chg.push({s:x,id:e.id});else same.push(x)});
+ data.students.forEach(x=>{const e=cur[nk(x.name)];if(!e)add.push(x);else if((!x.nid&&e.nid&&(x.nid=e.nid),!x.phone&&e.phone&&(x.phone=e.phone),normS(e)!==normS(x)))chg.push({s:x,id:e.id});else same.push(x)});
  const names=new Set(data.students.map(x=>nk(x.name)));
  return {add,chg,same,miss:allStudents().filter(x=>!names.has(nk(x.name)))}}
 function openImport(){
@@ -1075,7 +1079,7 @@ acts.runImport=async function(){
  const replace=$('imp-m2').checked;
  if(replace&&!$('imp-ok').checked){toast('\u0623\u0643\u0651\u062f \u0627\u0644\u062d\u0630\u0641 \u0623\u0648\u0644\u064b\u0627',true);return}
  const D=diffImp(imp.data),C=cfg(),jobs=[],stamp=Date.now().toString(36);
- const mk=x=>({name:x.name,halaqa:x.halaqa,curriculum:x.curriculum,level:x.level,status:x.status,notes:x.notes||'',nid:x.nid||'',tests:x.tests});
+ const mk=x=>({name:x.name,halaqa:x.halaqa,curriculum:x.curriculum,level:x.level,status:x.status,notes:x.notes||'',nid:x.nid||'',phone:x.phone||'',tests:x.tests});
  D.add.forEach((x,i)=>jobs.push(['set','s'+stamp+String(i).padStart(3,'0'),mk(x)]));
  D.chg.forEach(x=>jobs.push(['set',x.id,mk(x.s)]));
  if(replace)D.miss.forEach(x=>jobs.push(['del',x.id]));
@@ -1108,15 +1112,48 @@ function collectRows(s){const T=s.tests;for(let i=0;i<T.length;i++){const gi=$('
   if(d===null){toast('\u0627\u0643\u062a\u0628 \u0627\u0644\u062a\u0627\u0631\u064a\u062e \u0628\u0635\u064a\u063a\u0629 2026-10-27',true);return false}
   let patch={d};if(raw===''){patch.c=false;patch.g=null}else{const v=N(raw);if(!(v>=0&&v<=100)){toast(`\u062f\u0631\u062c\u0629 \u0627\u0644\u0645\u0633\u062a\u0648\u0649 ${T[i].l} \u064a\u062c\u0628 \u0623\u0646 \u062a\u0643\u0648\u0646 \u0628\u064a\u0646 0 \u0648100`,true);return false}patch.c=true;patch.g=Math.round(v*100)/10000}
   T[i]={...T[i],...patch}}return true}
-function applyMeta(id,s){const nid=lat($('m-nid').value).replace(/\D/g,''),c=+$('m-c').value,L=N($('m-l').value);
+/* \u062c\u062f\u0648\u0644 \u0627\u0644\u0645\u0633\u062a\u0648\u064a\u0627\u062a \u0627\u0644\u0635\u062d\u064a\u062d: \u0645\u0646 1 \u0625\u0644\u0649 \u0627\u0644\u0645\u0633\u062a\u0648\u0649 \u0627\u0644\u062d\u0627\u0644\u064a\u060c \u0643\u0644\u0647\u0627 \u0645\u0631\u0627\u062c\u0639\u0629 \u0625\u0644\u0627 \u0627\u0644\u062d\u0627\u0644\u064a \u00ab\u062c\u062f\u064a\u062f\u00bb. \u062a\u0628\u0642\u0649 \u0646\u062a\u0627\u0626\u062c \u0646\u0641\u0633 \u0627\u0644\u0645\u0646\u0647\u062c\u060c \u0648\u0644\u0627 \u062a\u0646\u062a\u0642\u0644 \u0646\u062a\u0627\u0626\u062c \u0645\u0646\u0647\u062c \u0622\u062e\u0631. */
+/* ---------- \u0648\u0627\u062a\u0633\u0627\u0628 \u0648\u0644\u064a \u0627\u0644\u0623\u0645\u0631 ---------- */
+function normPhone(v){let p=lat(String(v||'')).replace(/\D/g,'');if(!p)return '';if(p.startsWith('00'))p=p.slice(2);
+ if(/^05\d{8}$/.test(p))p='966'+p.slice(1);else if(/^5\d{8}$/.test(p))p='966'+p;
+ return /^\d{10,15}$/.test(p)?p:''}
+const waLink=(s,msg)=>'https://wa.me/'+(s.phone||'')+'?text='+encodeURIComponent(msg);
+const wDay=iso=>{try{return new Date(iso+'T12:00:00').toLocaleDateString('ar-SA-u-ca-gregory-nu-latn',{weekday:'long'})}catch(e){return ''}};
+const wDate=iso=>`${wDay(iso)} ${dl(iso)} ${iso.slice(0,4)}`;
+function waUpcoming(s){const today=todayISO();return s.tests.filter(t=>!t.c&&t.d&&t.d>=today).sort((a,b)=>a.d.localeCompare(b.d)||a.l-b.l)}
+function waSchedule(C,s){const up=waUpcoming(s),noDate=s.tests.filter(t=>!t.c&&!t.d);
+ let m=`\u0627\u0644\u0633\u0644\u0627\u0645 \u0639\u0644\u064a\u0643\u0645 \u0648\u0631\u062d\u0645\u0629 \u0627\u0644\u0644\u0647 \u0648\u0628\u0631\u0643\u0627\u062a\u0647\n\u0648\u0644\u064a \u0623\u0645\u0631 \u0627\u0644\u0637\u0627\u0644\u0628: ${s.name}\n\n\ud83d\udcc5 \u062c\u062f\u0648\u0644 \u0627\u062e\u062a\u0628\u0627\u0631\u0627\u062a \u0627\u0644\u0637\u0627\u0644\u0628 \u0641\u064a \u062d\u0644\u0642\u0629 ${s.halaqa}:\n`;
+ m+=up.length?up.map(t=>`\u2022 ${wDate(t.d)}: \u0627\u0644\u0645\u0633\u062a\u0648\u0649 ${t.l} (${t.t==='n'?'\u062d\u0641\u0638 \u062c\u062f\u064a\u062f':'\u0645\u0631\u0627\u062c\u0639\u0629'})\n   \u0627\u0644\u0646\u0637\u0627\u0642: ${rangeTxt(s.curriculum,t.l)}`).join('\n'):'\u0644\u0627 \u062a\u0648\u062c\u062f \u0645\u0648\u0627\u0639\u064a\u062f \u0627\u062e\u062a\u0628\u0627\u0631 \u0645\u062d\u062f\u062f\u0629 \u062d\u0627\u0644\u064a\u064b\u0627.';
+ if(noDate.length)m+=`\n\n\u0645\u0633\u062a\u0648\u064a\u0627\u062a \u0644\u0645 \u064a\u064f\u062d\u062f\u064e\u0651\u062f \u0645\u0648\u0639\u062f\u0647\u0627 \u0628\u0639\u062f: ${noDate.map(t=>t.l).join('\u060c ')}`;
+ m+=`\n\n\u0646\u0631\u062c\u0648 \u0645\u062a\u0627\u0628\u0639\u0629 \u0627\u0644\u0637\u0627\u0644\u0628 \u0641\u064a \u0627\u0644\u0645\u0631\u0627\u062c\u0639\u0629 \u0648\u0627\u0644\u0627\u0633\u062a\u0639\u062f\u0627\u062f \u0644\u0644\u0627\u062e\u062a\u0628\u0627\u0631.\n\u0645\u062c\u0645\u0639 \u062d\u0644\u0642 \u0627\u0644\u0632\u0628\u064a\u0631 \u0628\u0646 \u0627\u0644\u0639\u0648\u0627\u0645 \u0644\u062a\u062d\u0641\u064a\u0638 \u0627\u0644\u0642\u0631\u0622\u0646 \u0627\u0644\u0643\u0631\u064a\u0645 \u0628\u0639\u0646\u064a\u0632\u0629`;return m}
+function waReport(C,s){const x=studStats(C,s),fails=x.d.filter(t=>(t.g||0)<.7),up=waUpcoming(s);
+ let m=`\u0627\u0644\u0633\u0644\u0627\u0645 \u0639\u0644\u064a\u0643\u0645 \u0648\u0631\u062d\u0645\u0629 \u0627\u0644\u0644\u0647 \u0648\u0628\u0631\u0643\u0627\u062a\u0647\n\u0648\u0644\u064a \u0623\u0645\u0631 \u0627\u0644\u0637\u0627\u0644\u0628: ${s.name}\n\u0646\u0641\u064a\u062f\u0643\u0645 \u0628\u062a\u0642\u0631\u064a\u0631 \u0645\u062a\u0627\u0628\u0639\u0629 \u0627\u0628\u0646\u0643\u0645 \u0641\u064a \u0627\u0644\u062d\u0644\u0642\u0629:\n\n`;
+ m+=`\ud83d\udd4c \u0627\u0644\u062d\u0644\u0642\u0629: ${s.halaqa}${teacherOf(C,s.halaqa)?' (\u0627\u0644\u0645\u0639\u0644\u0645: '+teacherOf(C,s.halaqa)+')':''}\n\ud83d\udcd6 \u0627\u0644\u0645\u0646\u0647\u062c ${ORD[s.curriculum-1]}\u060c \u0627\u0644\u0645\u0633\u062a\u0648\u0649 \u0627\u0644\u062d\u0627\u0644\u064a ${s.level}\n`;
+ m+=`\u2705 \u0627\u0644\u0625\u0646\u062c\u0627\u0632: ${x.d.length} \u0645\u0646 ${x.n} \u0645\u0633\u062a\u0648\u0649 (${pc(x.pct)})\n`;
+ if(x.av!=null)m+=`\u2b50 \u0645\u062a\u0648\u0633\u0637 \u0627\u0644\u062f\u0631\u062c\u0627\u062a: ${pc(x.av)} (${label(x.av)})\n`;
+ if(x.pass.length)m+=`\n\u0627\u0644\u0645\u0633\u062a\u0648\u064a\u0627\u062a \u0627\u0644\u0645\u062c\u062a\u0627\u0632\u0629:\n`+x.pass.map(t=>`\u2022 \u0627\u0644\u0645\u0633\u062a\u0648\u0649 ${t.l}: ${pc(t.g||0)} (${label(t.g||0)})`).join('\n')+'\n';
+ if(fails.length)m+=`\n\u0645\u0633\u062a\u0648\u064a\u0627\u062a \u062a\u062d\u062a\u0627\u062c \u0625\u0639\u0627\u062f\u0629:\n`+fails.map(t=>`\u2022 \u0627\u0644\u0645\u0633\u062a\u0648\u0649 ${t.l}: ${pc(t.g||0)}`).join('\n')+'\n';
+ m+=`\n\ud83d\udcc5 \u0627\u0644\u0627\u062e\u062a\u0628\u0627\u0631\u0627\u062a \u0627\u0644\u0642\u0627\u062f\u0645\u0629:\n`+(up.length?up.map(t=>`\u2022 ${wDate(t.d)}: \u0627\u0644\u0645\u0633\u062a\u0648\u0649 ${t.l} (${t.t==='n'?'\u062d\u0641\u0638 \u062c\u062f\u064a\u062f':'\u0645\u0631\u0627\u062c\u0639\u0629'})`).join('\n'):'\u0644\u0627 \u062a\u0648\u062c\u062f \u0645\u0648\u0627\u0639\u064a\u062f \u0645\u062d\u062f\u062f\u0629 \u062d\u0627\u0644\u064a\u064b\u0627.');
+ m+=`\n\n\u0646\u0633\u0623\u0644 \u0627\u0644\u0644\u0647 \u0644\u0647 \u0627\u0644\u062a\u0648\u0641\u064a\u0642 \u0648\u0627\u0644\u0633\u062f\u0627\u062f.\n\u0645\u062c\u0645\u0639 \u062d\u0644\u0642 \u0627\u0644\u0632\u0628\u064a\u0631 \u0628\u0646 \u0627\u0644\u0639\u0648\u0627\u0645 \u0644\u062a\u062d\u0641\u064a\u0638 \u0627\u0644\u0642\u0631\u0622\u0646 \u0627\u0644\u0643\u0631\u064a\u0645 \u0628\u0639\u0646\u064a\u0632\u0629`;return m}
+function canonTests(s,c,L){const same=c===s.curriculum,o=[];
+ for(let l=1;l<=L;l++){const prev=same?(s.tests.find(t=>t.l===l&&t.c)||s.tests.find(t=>t.l===l&&t.d)||s.tests.find(t=>t.l===l)):null;
+  o.push({l,t:l===L?'n':'r',d:prev&&prev.d?prev.d:'',c:!!(prev&&prev.c),g:prev&&prev.c?prev.g:null})}return o}
+let metaConfirm='';
+function applyMeta(id,s){const nid=lat($('m-nid').value).replace(/\D/g,''),c=+$('m-c').value,L=N($('m-l').value),phone=normPhone($('m-ph').value);
  if(nid&&(nid.length<5||nid.length>20)){toast('\u0631\u0642\u0645 \u0627\u0644\u0647\u0648\u064a\u0629 \u064a\u062c\u0628 \u0623\u0646 \u064a\u0643\u0648\u0646 \u0645\u0646 5 \u0625\u0644\u0649 20 \u0631\u0642\u0645\u064b\u0627',true);return null}
  if(nid&&allStudents().some(x=>x.id!==id&&x.nid===nid)){toast('\u0631\u0642\u0645 \u0627\u0644\u0647\u0648\u064a\u0629 \u0645\u0633\u062c\u0651\u0644 \u0644\u0637\u0627\u0644\u0628 \u0622\u062e\u0631',true);return null}
+ if($('m-ph').value.trim()&&!phone){toast('\u0631\u0642\u0645 \u062c\u0648\u0627\u0644 \u0648\u0644\u064a \u0627\u0644\u0623\u0645\u0631 \u063a\u064a\u0631 \u0635\u062d\u064a\u062d\u060c \u0627\u0643\u062a\u0628\u0647 \u0645\u062b\u0644 0551234567',true);return null}
  if(!(L>=1&&L<=CMAX[c])||L!==Math.floor(L)){toast(`\u0645\u0633\u062a\u0648\u064a\u0627\u062a \u0627\u0644\u0645\u0646\u0647\u062c ${ORD[c-1]} \u0645\u0646 1 \u0625\u0644\u0649 ${CMAX[c]}`,true);return null}
- if(L<s.level){const lost=s.tests.filter(t=>t.l>L&&t.c);if(lost.length){toast(`\u0644\u0627 \u064a\u0645\u0643\u0646 \u062e\u0641\u0636 \u0627\u0644\u0645\u0633\u062a\u0648\u0649 \u0644\u0623\u0646 \u0641\u064a\u0647 ${lost.length} \u0646\u062a\u064a\u062c\u0629 \u0645\u0633\u062c\u0651\u0644\u0629. \u0627\u062d\u0630\u0641 \u0627\u0644\u062f\u0631\u062c\u0629 \u0623\u0648\u0644\u064b\u0627`,true);return null}s.tests=s.tests.filter(t=>t.l<=L)}
- if(L>s.level){for(let l=s.level+1;l<=L;l++)if(!s.tests.some(t=>t.l===l))s.tests.push({l,t:l===L?'n':'r',d:'',c:false,g:null})}
- if(!s.tests.some(t=>t.l===L&&t.t==='n'))s.tests.push({l:L,t:'n',d:'',c:false,g:null});
- s.tests.sort((a,b)=>a.l-b.l||(a.t==='n')-(b.t==='n'));
- return {halaqa:$('m-h').value,status:$('m-s').value,notes:$('m-n').value.trim(),nid,curriculum:c,level:L,tests:s.tests}}
+ let notes=$('m-n').value.trim();const d=s.tests.filter(t=>t.c);
+ if(c!==s.curriculum){
+  const key=id+':'+c+':'+L;
+  if(d.length&&metaConfirm!==key){metaConfirm=key;toast(`\u062a\u063a\u064a\u064a\u0631 \u0627\u0644\u0645\u0646\u0647\u062c \u064a\u0639\u064a\u062f \u0628\u0646\u0627\u0621 \u062c\u062f\u0648\u0644 \u0627\u0644\u0645\u0633\u062a\u0648\u064a\u0627\u062a \u0644\u0644\u0645\u0646\u0647\u062c ${ORD[c-1]} \u0645\u0646 \u0627\u0644\u0645\u0633\u062a\u0648\u0649 1 \u0625\u0644\u0649 ${L}\u060c \u0648\u062a\u064f\u062d\u0641\u0638 \u0646\u062a\u0627\u0626\u062c \u0627\u0644\u0645\u0646\u0647\u062c ${ORD[s.curriculum-1]} (${d.length} \u0645\u0633\u062a\u0648\u0649) \u0641\u064a \u0627\u0644\u0645\u0644\u0627\u062d\u0638\u0627\u062a. \u0627\u0636\u063a\u0637 \u0627\u0644\u062d\u0641\u0638 \u0645\u0631\u0629 \u0623\u062e\u0631\u0649 \u0644\u0644\u062a\u0623\u0643\u064a\u062f.`,true);return null}
+  metaConfirm='';
+  if(d.length){const av=d.reduce((a,t)=>a+(t.g||0),0)/d.length;
+   notes=(notes?notes+'\n':'')+`[${todayISO()}] \u0646\u064f\u0642\u0644 \u0645\u0646 \u0627\u0644\u0645\u0646\u0647\u062c ${ORD[s.curriculum-1]} (\u0627\u0644\u0645\u0633\u062a\u0648\u0649 ${s.level}) \u0625\u0644\u0649 \u0627\u0644\u0645\u0646\u0647\u062c ${ORD[c-1]} (\u0627\u0644\u0645\u0633\u062a\u0648\u0649 ${L}). \u0646\u062a\u0627\u0626\u062c\u0647 \u0627\u0644\u0633\u0627\u0628\u0642\u0629: \u0623\u0646\u062c\u0632 ${d.length} \u0645\u0646 ${s.tests.length} \u0645\u0633\u062a\u0648\u0649 \u0628\u0645\u062a\u0648\u0633\u0637 ${pc(av)}: `+d.map(t=>`${t.l}${t.t==='n'?' \u062c\u062f\u064a\u062f':''} ${pc(t.g||0)}`).join('\u060c ')+'.'}
+ }else if(L<s.level){const lost=s.tests.filter(t=>t.l>L&&t.c);if(lost.length){toast(`\u0644\u0627 \u064a\u0645\u0643\u0646 \u062e\u0641\u0636 \u0627\u0644\u0645\u0633\u062a\u0648\u0649 \u0644\u0623\u0646 \u0641\u064a\u0647 ${lost.length} \u0646\u062a\u064a\u062c\u0629 \u0645\u0633\u062c\u0651\u0644\u0629. \u0627\u062d\u0630\u0641 \u0627\u0644\u062f\u0631\u062c\u0629 \u0623\u0648\u0644\u064b\u0627`,true);return null}}
+ s.tests=canonTests(s,c,L);
+ return {halaqa:$('m-h').value,status:$('m-s').value,notes,nid,phone,curriculum:c,level:L,tests:s.tests}}
 function openStudent(id,keep){
  const s=st.students[id];if(!s)return;const C=cfg();modal={t:'student',id};
  const d=s.tests.filter(t=>t.c),can=s.tests.find(t=>t.l===s.level&&t.t==='n'),canPromote=canWrite&&can&&can.c&&s.level<CMAX[s.curriculum];
@@ -1129,6 +1166,7 @@ function openStudent(id,keep){
   <div class="fld"><label for="m-c">\u0627\u0644\u0645\u0646\u0647\u062c</label><select id="m-c">${[1,2,3,4].map(c=>`<option value="${c}" ${c===s.curriculum?'selected':''}>${ORD[c-1]}</option>`).join('')}</select></div>
   <div class="fld"><label for="m-l">\u0627\u0644\u0645\u0633\u062a\u0648\u0649 \u0627\u0644\u062d\u0627\u0644\u064a (1 \u0625\u0644\u0649 ${CMAX[s.curriculum]})</label><input id="m-l" type="text" dir="ltr" inputmode="numeric" value="${s.level}"></div>
   <div class="fld"><label for="m-nid">\u0631\u0642\u0645 \u0627\u0644\u0647\u0648\u064a\u0629 (\u0644\u0635\u0641\u062d\u0629 \u0627\u0644\u0637\u0627\u0644\u0628)</label><input id="m-nid" type="text" dir="ltr" inputmode="numeric" autocomplete="off" value="${esc(s.nid||'')}"></div>
+  <div class="fld"><label for="m-ph">\u062c\u0648\u0627\u0644 \u0648\u0644\u064a \u0627\u0644\u0623\u0645\u0631 (\u0648\u0627\u062a\u0633\u0627\u0628)</label><input id="m-ph" type="tel" dir="ltr" inputmode="tel" autocomplete="off" placeholder="05xxxxxxxx" value="${esc(s.phone?'0'+String(s.phone).replace(/^966/,''):'')}"></div>
   <div class="fld full"><label for="m-n">\u0645\u0644\u0627\u062d\u0638\u0627\u062a</label><textarea id="m-n">${esc(s.notes||'')}</textarea></div>
   <div class="fld full"><div><button class="btn" data-act="saveMeta" data-id="${esc(id)}">\u062d\u0641\u0638 \u0628\u064a\u0627\u0646\u0627\u062a \u0627\u0644\u0637\u0627\u0644\u0628</button></div><p class="hint">\u0644\u0625\u064a\u0642\u0627\u0641 \u0637\u0627\u0644\u0628 \u063a\u064a\u0651\u0631 \u062d\u0627\u0644\u062a\u0647 \u0625\u0644\u0649 \u0645\u0646\u0633\u062d\u0628 \u0623\u0648 \u0645\u0646\u0642\u0648\u0644 \u0623\u0648 \u0645\u062a\u062e\u0631\u062c\u060c \u0648\u0644\u0627 \u064a\u064f\u062d\u0633\u0628 \u0628\u0639\u062f\u0647\u0627 \u0641\u064a \u0627\u0644\u0625\u062d\u0635\u0627\u0621\u0627\u062a. \u062a\u063a\u064a\u064a\u0631 \u0627\u0644\u0645\u0646\u0647\u062c \u064a\u063a\u064a\u0651\u0631 \u0646\u0637\u0627\u0642\u0627\u062a \u0627\u0644\u0645\u0633\u062a\u0648\u064a\u0627\u062a \u0641\u0642\u0637 \u0648\u062a\u0628\u0642\u0649 \u0627\u0644\u0646\u062a\u0627\u0626\u062c\u060c \u0648\u062a\u063a\u064a\u064a\u0631 \u0627\u0644\u0645\u0633\u062a\u0648\u0649 \u064a\u0636\u064a\u0641 \u0627\u0644\u0645\u0633\u062a\u0648\u064a\u0627\u062a \u0627\u0644\u0646\u0627\u0642\u0635\u0629 \u0623\u0648 \u064a\u062d\u0630\u0641 \u063a\u064a\u0631 \u0627\u0644\u0645\u0646\u062c\u0632\u0629 \u0645\u0646\u0647\u0627.</p></div></div>`:`<p class="hint">\u0627\u0644\u062d\u0627\u0644\u0629: ${esc(s.status)}${s.notes?' \u00b7 '+esc(s.notes):''}</p>`}
  <h4 style="margin:18px 0 8px">\u0645\u0633\u062a\u0648\u064a\u0627\u062a \u0627\u0644\u0637\u0627\u0644\u0628</h4>
@@ -1139,7 +1177,7 @@ function openStudent(id,keep){
   <td>${t.c?`<span class="pill ${lcls(t.g)}">${label(t.g)}</span>`:'<span class="pill">'+(t.d?'\u0645\u062c\u062f\u0648\u0644':'\u063a\u064a\u0631 \u0645\u062c\u062f\u0648\u0644')+'</span>'}</td>
   ${canWrite?`<td><button class="btn sm" data-act="saveRow" data-id="${esc(id)}" data-i="${i}">\u062d\u0641\u0638</button></td>`:''}</tr>`).join('')}
  </tbody></table></div>
- <div class="bar2">${canWrite?`<button class="btn" data-act="saveAll" data-id="${esc(id)}">\u062d\u0641\u0638 \u0627\u0644\u0643\u0644</button>`:''}<button class="btn ghost" data-act="reportStudent" data-id="${esc(id)}">\u062a\u0642\u0631\u064a\u0631 \u0627\u0644\u0637\u0627\u0644\u0628 (PDF)</button>${canWrite?'<span class="hint">\u00ab\u062d\u0641\u0638 \u0627\u0644\u0643\u0644\u00bb \u064a\u062d\u0641\u0638 \u0628\u064a\u0627\u0646\u0627\u062a \u0627\u0644\u0637\u0627\u0644\u0628 \u0648\u0643\u0644 \u0627\u0644\u0645\u0648\u0627\u0639\u064a\u062f \u0648\u0627\u0644\u062f\u0631\u062c\u0627\u062a \u062f\u0641\u0639\u0629 \u0648\u0627\u062d\u062f\u0629.</span>':''}</div>
+ <div class="bar2">${canWrite?`<button class="btn" data-act="saveAll" data-id="${esc(id)}">\u062d\u0641\u0638 \u0627\u0644\u0643\u0644</button>`:''}<button class="btn ghost" data-act="reportStudent" data-id="${esc(id)}">\u062a\u0642\u0631\u064a\u0631 \u0627\u0644\u0637\u0627\u0644\u0628 (PDF)</button><a class="btn wa" href="${esc(waLink(s,waReport(C,{...s,id})))}" target="_blank" rel="noopener">\u0625\u0631\u0633\u0627\u0644 \u0627\u0644\u062a\u0642\u0631\u064a\u0631 \u0644\u0648\u0644\u064a \u0627\u0644\u0623\u0645\u0631 (\u0648\u0627\u062a\u0633\u0627\u0628)</a><a class="btn ghost wa2" href="${esc(waLink(s,waSchedule(C,{...s,id})))}" target="_blank" rel="noopener">\u0625\u0631\u0633\u0627\u0644 \u062c\u062f\u0648\u0644 \u0627\u0644\u0627\u062e\u062a\u0628\u0627\u0631\u0627\u062a (\u0648\u0627\u062a\u0633\u0627\u0628)</a>${s.phone?'':'<span class="hint">\u0644\u0645 \u064a\u064f\u0633\u062c\u064e\u0651\u0644 \u062c\u0648\u0627\u0644 \u0648\u0644\u064a \u0627\u0644\u0623\u0645\u0631\u060c \u0641\u0633\u064a\u0637\u0644\u0628 \u0645\u0646\u0643 \u0648\u0627\u062a\u0633\u0627\u0628 \u0627\u062e\u062a\u064a\u0627\u0631 \u062c\u0647\u0629 \u0627\u0644\u0627\u062a\u0635\u0627\u0644.</span>'}${canWrite?'<span class="hint">\u00ab\u062d\u0641\u0638 \u0627\u0644\u0643\u0644\u00bb \u064a\u062d\u0641\u0638 \u0628\u064a\u0627\u0646\u0627\u062a \u0627\u0644\u0637\u0627\u0644\u0628 \u0648\u0643\u0644 \u0627\u0644\u0645\u0648\u0627\u0639\u064a\u062f \u0648\u0627\u0644\u062f\u0631\u062c\u0627\u062a \u062f\u0641\u0639\u0629 \u0648\u0627\u062d\u062f\u0629.</span>':''}</div>
  ${canWrite?`<div class="bar2"><button class="btn ghost" data-act="promote" data-id="${esc(id)}" ${canPromote?'':'disabled'}>\u0625\u0636\u0627\u0641\u0629 \u0627\u0644\u0645\u0633\u062a\u0648\u0649 \u0627\u0644\u062a\u0627\u0644\u064a (${s.level+1})</button><span class="hint">${canPromote?'\u064a\u064f\u0636\u0627\u0641 \u0645\u0633\u062a\u0648\u0649 \u062c\u062f\u064a\u062f \u0644\u0644\u062d\u0641\u0638 \u0628\u0639\u062f \u0625\u0646\u062c\u0627\u0632 \u0645\u0633\u062a\u0648\u0649 \u0627\u0644\u062d\u0641\u0638 \u0627\u0644\u062d\u0627\u0644\u064a.':s.level>=CMAX[s.curriculum]?'\u0647\u0630\u0627 \u0622\u062e\u0631 \u0645\u0633\u062a\u0648\u0649 \u0641\u064a \u0627\u0644\u0645\u0646\u0647\u062c.':'\u064a\u062a\u0627\u062d \u0628\u0639\u062f \u062a\u0633\u062c\u064a\u0644 \u0646\u062a\u064a\u062c\u0629 \u0645\u0633\u062a\u0648\u0649 \u0627\u0644\u062d\u0641\u0638 \u0627\u0644\u062d\u0627\u0644\u064a.'}</span></div>`:''}`);
  if(keep)modal={t:'student',id}}
 function openAdd(pre){const C=cfg();modal={t:'add',pre};
@@ -1148,7 +1186,8 @@ function openAdd(pre){const C=cfg();modal={t:'add',pre};
  <div class="fld"><label for="ns-h">\u0627\u0644\u062d\u0644\u0642\u0629</label><select id="ns-h"><option value="">\u0627\u062e\u062a\u0631 \u0627\u0644\u062d\u0644\u0642\u0629</option>${C.halaqat.map(h=>`<option ${h.name===pre?'selected':''}>${esc(h.name)}</option>`).join('')}</select></div>
  <div class="fld"><label for="ns-c">\u0627\u0644\u0645\u0646\u0647\u062c</label><select id="ns-c">${[1,2,3,4].map(c=>`<option value="${c}">${ORD[c-1]} (${CMAX[c]} \u0645\u0633\u062a\u0648\u0649)</option>`).join('')}</select></div>
  <div class="fld"><label for="ns-l">\u0627\u0644\u0645\u0633\u062a\u0648\u0649 \u0627\u0644\u062d\u0627\u0644\u064a</label><input id="ns-l" type="text" dir="ltr" value="1" inputmode="numeric"></div>
- <div class="fld"><label for="ns-nid">\u0631\u0642\u0645 \u0627\u0644\u0647\u0648\u064a\u0629 (\u0627\u062e\u062a\u064a\u0627\u0631\u064a)</label><input id="ns-nid" type="text" dir="ltr" inputmode="numeric" autocomplete="off"></div></div>
+ <div class="fld"><label for="ns-nid">\u0631\u0642\u0645 \u0627\u0644\u0647\u0648\u064a\u0629 (\u0627\u062e\u062a\u064a\u0627\u0631\u064a)</label><input id="ns-nid" type="text" dir="ltr" inputmode="numeric" autocomplete="off"></div>
+  <div class="fld"><label for="ns-ph">\u062c\u0648\u0627\u0644 \u0648\u0644\u064a \u0627\u0644\u0623\u0645\u0631 (\u0627\u062e\u062a\u064a\u0627\u0631\u064a)</label><input id="ns-ph" type="tel" dir="ltr" inputmode="tel" autocomplete="off" placeholder="05xxxxxxxx"></div></div>
  <div class="bar2"><button class="btn" data-act="saveNew">\u0625\u0636\u0627\u0641\u0629</button><button class="btn ghost" data-act="closeModal">\u0625\u0644\u063a\u0627\u0621</button></div>`)}
 function openTargets(){const C=cfg(),T=C.T,P=C.P;modal={t:'targets'};
  const f=(id,l,v,pct)=>`<div class="fld"><label for="${id}">${l}</label><input id="${id}" type="text" dir="ltr" inputmode="decimal" value="${pct?Math.round(v*1000)/10:v}"></div>`;
