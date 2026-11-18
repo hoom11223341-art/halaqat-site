@@ -173,7 +173,7 @@ function numMap(o, lo, hi) {
 function cleanConfig(d) {
   if (!d || typeof d !== 'object') throw new Error('bad');
   const halaqat = (Array.isArray(d.halaqat) ? d.halaqat : []).slice(0, 100)
-    .map((h) => ({ name: String((h && h.name) || '').trim().slice(0, 200), teacher: String((h && h.teacher) || '').trim().slice(0, 200) }))
+    .map((h) => ({ name: String((h && h.name) || '').trim().slice(0, 200), teacher: String((h && h.teacher) || '').trim().slice(0, 200), phone: String((h && h.phone) || '').replace(/\D/g, '').slice(0, 15) }))
     .filter((h) => h.name);
   const examDates = (Array.isArray(d.examDates) ? d.examDates : []).slice(0, 400).map(String).filter((x) => /^\d{4}-\d{2}-\d{2}$/.test(x));
   return {
