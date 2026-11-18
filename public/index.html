@@ -371,7 +371,7 @@ function curOpts(v){return '<option value="">\u0643\u0644 \u0627\u0644\u0645\u06
 /* ---------- \u0627\u0644\u062d\u0627\u0644\u0629 ---------- */
 let db=null,usr=null,dlc=null,canWrite=true,dbOk=false;
 const st={students:{},cfg:null,cfgExists:false,sLoaded:false,cLoaded:false};
-const ui={tab:'overview',q:'',halaqa:'-1',status:'\u0646\u0634\u0637',tdate:'',sh:'-1',sq:'',hi:0,hst:'\u0646\u0634\u0637',hsel:new Set(),cur:'',tc:'',th:'-1',ts:'',pc:'',hcur:'',fh:'-1',fc:'',fq:'',hcomp:''};
+const ui={tab:'overview',q:'',halaqa:'-1',status:'\u0646\u0634\u0637',tdate:'',sh:'-1',sq:'',hi:0,hst:'\u0646\u0634\u0637',hsel:new Set(),cur:'',tc:'',th:'-1',ts:'',pc:'',hcur:'',fh:'-1',fc:'',fq:'',hcomp:'',srem:''};
 let modal=null,dirty=false,queued=false;
 window.__setRole=function(w){canWrite=w;render()};
 
@@ -504,12 +504,14 @@ function vStudents(C){
   <select id="sel" aria-label="\u062a\u0635\u0641\u064a\u0629 \u062d\u0633\u0628 \u0627\u0644\u062d\u0644\u0642\u0629"><option value="-1">\u0643\u0644 \u0627\u0644\u062d\u0644\u0642\u0627\u062a</option>${C.halaqat.map((h,i)=>`<option value="${i}" ${ui.halaqa==i?'selected':''}>${esc(h.name)}</option>`).join('')}</select>
   <select id="scur" aria-label="\u062a\u0635\u0641\u064a\u0629 \u062d\u0633\u0628 \u0627\u0644\u0645\u0646\u0647\u062c">${curOpts(ui.cur)}</select>
   <select id="sst" aria-label="\u062a\u0635\u0641\u064a\u0629 \u062d\u0633\u0628 \u0627\u0644\u062d\u0627\u0644\u0629"><option value="">\u0643\u0644 \u0627\u0644\u062d\u0627\u0644\u0627\u062a</option>${STATUS.map(x=>`<option ${ui.status===x?'selected':''}>${x}</option>`).join('')}</select>
+  <select id="srem" aria-label="\u062a\u0635\u0641\u064a\u0629 \u062d\u0633\u0628 \u0627\u0644\u0627\u062e\u062a\u0628\u0627\u0631\u0627\u062a">${[['','\u0643\u0644 \u0627\u0644\u0637\u0644\u0627\u0628 (\u0627\u0644\u0627\u062e\u062a\u0628\u0627\u0631\u0627\u062a)'],['left','\u0627\u0644\u0645\u062a\u0628\u0642\u064a \u0644\u0647\u0645 \u0627\u062e\u062a\u0628\u0627\u0631\u0627\u062a'],['sched','\u0644\u0647\u0645 \u0645\u0648\u0639\u062f \u0627\u062e\u062a\u0628\u0627\u0631 \u0642\u0627\u062f\u0645'],['nodate','\u0645\u062a\u0628\u0642\u064d\u0651 \u0628\u0644\u0627 \u0645\u0648\u0639\u062f'],['late','\u0641\u0627\u062a \u0645\u0648\u0639\u062f \u0627\u062e\u062a\u0628\u0627\u0631\u0647\u0645'],['done','\u0623\u062a\u0645\u0648\u0627 \u0643\u0644 \u0627\u0644\u0627\u062e\u062a\u0628\u0627\u0631\u0627\u062a']].map(o=>`<option value="${o[0]}" ${ui.srem===o[0]?'selected':''}>${o[1]}</option>`).join('')}</select>
   ${canWrite?'<button class="btn" data-act="addStudent">+ \u0625\u0636\u0627\u0641\u0629 \u0637\u0627\u0644\u0628</button>':''}</div>
  <div class="tscroll"><table id="tbl"></table></div><p class="cnt" id="cnt" aria-live="polite"></p>
  <div style="margin-top:16px">${tplPanel('tpl-hst',C)}</div></section>`}
 function fillStudentsTable(C){
  const q=ui.q.trim(),h=+ui.halaqa>=0?C.halaqat[+ui.halaqa]:null;
- const r=allStudents().filter(s=>(!h||s.halaqa===h.name)&&(!ui.status||s.status===ui.status)&&(!ui.cur||s.curriculum===+ui.cur)&&s.name.includes(q))
+ const today=todayISO(),remOk=s=>{const P=s.tests.filter(t=>!t.c);switch(ui.srem){case 'left':return P.length>0;case 'sched':return P.some(t=>t.d&&t.d>=today);case 'nodate':return P.some(t=>!t.d);case 'late':return P.some(t=>t.d&&t.d<today);case 'done':return s.tests.length>0&&!P.length;default:return true}};
+ const r=allStudents().filter(s=>(!h||s.halaqa===h.name)&&(!ui.status||s.status===ui.status)&&(!ui.cur||s.curriculum===+ui.cur)&&s.name.includes(q)&&remOk(s))
    .sort((a,b)=>a.halaqa.localeCompare(b.halaqa,'ar')||a.name.localeCompare(b.name,'ar'));
  const head='<thead><tr><th>#</th><th>\u0627\u0644\u0637\u0627\u0644\u0628</th><th>\u0627\u0644\u062d\u0644\u0642\u0629</th><th>\u0627\u0644\u0645\u0639\u0644\u0645</th><th>\u0627\u0644\u0645\u0646\u0647\u062c</th><th>\u0627\u0644\u0645\u0633\u062a\u0648\u0649 \u0627\u0644\u062d\u0627\u0644\u064a</th><th>\u0646\u0637\u0627\u0642 \u0627\u0644\u0645\u0633\u062a\u0648\u0649</th><th>\u0627\u0644\u0645\u0646\u062c\u0632</th><th>\u0627\u0644\u0645\u062a\u0628\u0642\u064a</th><th>\u0645\u062a\u0648\u0633\u0637 \u0627\u0644\u062f\u0631\u062c\u0627\u062a</th><th>\u0627\u0644\u062d\u0627\u0644\u0629</th></tr></thead>';
  $('tbl').innerHTML=head+'<tbody>'+(r.length?r.map((s,k)=>{const d=s.tests.filter(t=>t.c),n=s.tests.length,p=n?d.length/n:0,av=d.length?d.reduce((a,t)=>a+(t.g||0),0)/d.length:null;
@@ -1398,6 +1400,7 @@ document.addEventListener('change',e=>{const t=e.target;
  else if(t.id==='fsel'){ui.fh=t.value;fillFinishers(cfg())}
  else if(t.id==='fcur'){ui.fc=t.value;fillFinishers(cfg())}
  else if(t.id==='sst'){ui.status=t.value;fillStudentsTable(cfg())}
+ else if(t.id==='srem'){ui.srem=t.value;fillStudentsTable(cfg())}
  else if(t.id==='scur'){ui.cur=t.value;fillStudentsTable(cfg())}
  else if(t.id==='hcomp'){ui.hcomp=t.value;ui.hsel.clear();dirty=false;render()}
  else if(t.id==='hcur'){ui.hcur=t.value;ui.hsel.clear();dirty=false;render()}
