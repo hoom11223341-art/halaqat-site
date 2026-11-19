@@ -537,7 +537,8 @@ const randPw=()=>{const r=crypto.getRandomValues(new Uint32Array(1))[0];return S
 function hostLoginUI(){
   let el=document.getElementById('hostLogin');
   if(IS_OWNER!==false||!ROOMC){if(el)el.remove();return}
-  if(!el){el=document.createElement('div');el.id='hostLogin';el.dir='rtl';
+  if(el)el.hidden=(typeof MYT!=='undefined'&&MYT!==null)&&!BADKEY;
+  if(!el){el=document.createElement('div');el.id='hostLogin';el.dir='rtl';el.hidden=(typeof MYT!=='undefined'&&MYT!==null)&&!BADKEY;
     el.innerHTML=`<button class="hl-btn" data-hl="open">🔑 دخول المقدم</button><div class="hl-box" hidden><b>دخول المقدم</b><span>غرفة ${esc(ROOMC)}</span><input id="hlpw" type="password" placeholder="كلمة مرور المقدم" autocomplete="current-password" aria-label="كلمة مرور المقدم"><div class="hl-row"><button class="hl-go" data-hl="go">دخول</button><button data-hl="x">إلغاء</button></div><p id="hlmsg"></p></div>`;
     document.body.appendChild(el)}
   if(BADKEY){BADKEY=false;const box=el.querySelector('.hl-box');box.hidden=false;el.querySelector('#hlmsg').textContent='كلمة المرور غير صحيحة، حاول مرة ثانية.'}

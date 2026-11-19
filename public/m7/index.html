@@ -362,6 +362,19 @@ button:focus-visible,input:focus-visible{outline:3px solid var(--sig);outline-of
 #hlmsg{margin:0;font-size:13px;color:#ff3b5c}
 #hlmsg:empty{display:none}
 @media (max-width:640px){.jrow{grid-template-columns:1fr 1fr}.jrow .tbtn{grid-column:1 / -1}}
+.lockc{display:grid;gap:12px;justify-items:center;text-align:center;border-top:1px dashed var(--line);padding-top:14px}
+.lockc .lk-ico{font-size:46px;line-height:1;animation:rise .5s}
+.lockc b{font-family:var(--display);font-weight:400;font-size:30px;color:var(--sig)}
+.lk-msg{margin:0;font-size:19px;line-height:1.7;background:#ffb21e14;border:1px dashed #ffb21e88;border-radius:14px;padding:12px 14px;width:100%}
+.lkd{width:100%;letter-spacing:.25em;font-size:44px}
+.lockc .keypad{width:100%}
+.lkrow{display:grid;gap:6px;padding-block:10px;border-bottom:1px solid var(--line)}
+.lkrow b{font-size:15px}
+.lkcode{display:grid;grid-template-columns:1fr auto;gap:8px}
+.lkcode input,.lkrow textarea{width:100%;background:var(--ink);border:1px solid var(--line);color:var(--fg);border-radius:10px;padding:10px 12px;font:inherit;font-size:16px}
+.lkcode input{direction:ltr;text-align:center;font-family:var(--num);letter-spacing:.2em;font-size:20px}
+.lkrow textarea{resize:vertical;min-height:58px}
+.lkcode .b{min-height:44px;padding:8px 12px;font-size:14px}
 </style>
 <script src="https://unpkg.com/mqtt@5.10.1/dist/mqtt.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
@@ -519,7 +532,15 @@ lastFlash=S.flash&&S.flash.id;
 
 
 /* ---- team docs (one per team, written by that team's phone) ---- */
-const freshT=()=>({v:1,mission:0,startedAt:0,run:'',curWrong:0,score:0,results:[null,null,null,null,null,null,null],last:null,sentAt:0,writer:''});
+/* ---- mission locks: 7-digit code + host's hint, between missions ---- */
+const xorc=(t,k)=>{k=k||'k';let o='';for(let i=0;i<t.length;i++)o+=String.fromCharCode(t.charCodeAt(i)^k.charCodeAt(i%k.length));return o};
+const lockEnc=code=>{try{return btoa(xorc(code,HK))}catch(e){return ''}};
+const lockDec=x=>{try{return xorc(atob(x||''),HK)}catch(e){return ''}};
+const lockOf=m=>{const L=S.locks&&S.locks[m];return L&&L.h?L:null};
+const lockPending=i=>{const d=TD[i];return d.mission>=1&&d.mission<7&&!d.startedAt&&!!lockOf(d.mission)&&!(d.unlocked&&d.unlocked[d.mission])};
+const toLat=x=>String(x||'').replace(/[٠-٩]/g,d=>'٠١٢٣٤٥٦٧٨٩'.indexOf(d)).replace(/[۰-۹]/g,d=>'۰۱۲۳۴۵۶۷۸۹'.indexOf(d)).replace(/\D/g,'');
+let lkIn='',LKD=null,lkOpen=false;
+const freshT=()=>({v:1,unlocked:[0,0,0,0,0,0,0],mission:0,startedAt:0,run:'',curWrong:0,score:0,results:[null,null,null,null,null,null,null],last:null,sentAt:0,writer:''});
 let TD=[0,1,2,3].map(freshT),tskew=[0,0,0,0],firstT=true;
 const tW=[false,false,false,false],tPend=[null,null,null,null];
 try{const l=JSON.parse(localStorage.getItem(SK('teams'))||'null');if(Array.isArray(l)&&l.length===4&&l.every(t=>t&&t.v===1))TD=l}catch(e){}
@@ -628,7 +649,8 @@ const randPw=()=>{const r=crypto.getRandomValues(new Uint32Array(1))[0];return S
 function hostLoginUI(){
   let el=document.getElementById('hostLogin');
   if(IS_OWNER!==false||!ROOMC){if(el)el.remove();return}
-  if(!el){el=document.createElement('div');el.id='hostLogin';el.dir='rtl';
+  if(el)el.hidden=(typeof MYT!=='undefined'&&MYT!==null)&&!BADKEY;
+  if(!el){el=document.createElement('div');el.id='hostLogin';el.dir='rtl';el.hidden=(typeof MYT!=='undefined'&&MYT!==null)&&!BADKEY;
     el.innerHTML=`<button class="hl-btn" data-hl="open">🔑 دخول المقدم</button><div class="hl-box" hidden><b>دخول المقدم</b><span>غرفة ${esc(ROOMC)}</span><input id="hlpw" type="password" placeholder="كلمة مرور المقدم" autocomplete="current-password" aria-label="كلمة مرور المقدم"><div class="hl-row"><button class="hl-go" data-hl="go">دخول</button><button data-hl="x">إلغاء</button></div><p id="hlmsg"></p></div>`;
     document.body.appendChild(el)}
   if(BADKEY){BADKEY=false;const box=el.querySelector('.hl-box');box.hidden=false;el.querySelector('#hlmsg').textContent='كلمة المرور غير صحيحة، حاول مرة ثانية.'}
@@ -803,7 +825,7 @@ function raceHTML(){
 function raceViewHTML(){
   const tot=S.teams.map((_,i)=>total(i)),lead=Math.max(...tot);
   return `<div class="rv">${S.teams.map((t,i)=>{const d=TD[i],m=d.mission,fin=m>=7,n=d.results.filter(Boolean).length,p=n===0?0:((n-.5)/7*100);
-    const status=fin?'أنهى المهمات السبع':d.startedAt?`يلعب الآن · المهمة ${m+1} من 7`:S.raceOn?`جاهز لفتح المهمة ${m+1}`:'بانتظار إشارة البدء';
+    const status=fin?'أنهى المهمات السبع':d.startedAt?`يلعب الآن · المهمة ${m+1} من 7`:lockPending(i)?`🔎 يبحث عن شيفرة المهمة ${m+1}`:S.raceOn?`جاهز لفتح المهمة ${m+1}`:'بانتظار إشارة البدء';
     return `<div class="rvl ${lead>0&&tot[i]===lead?'lead':''} ${fin?'fin':''}" style="--c:${TC[i]}">
       <div style="min-width:0"><div class="nm">${esc(t.name)}</div><div class="st">${status}</div>${fin?'<div class="badge-fin">فتح الخزنة</div>':`<div class="cur">${esc(P[m].title)}</div>`}</div>
       <div class="track">${P.map((_,k)=>{const r=d.results[k];const c=r?(r.s==='timeout'?'to':r.first?'gold':'done'):(k===m&&d.startedAt?'play':'');return `<span class="node ${c}">${r?(r.s==='timeout'?'✕':'✓'):k+1}</span>`}).join('')}<span class="runner" style="--p:${p}%"></span></div>
@@ -826,6 +848,7 @@ function checkFlash(){
 function checkTeamFlash(){
   TD.forEach((t,i)=>{const L=t.last;if(!L||L.id===seenLast[i])return;seenLast[i]=L.id;if(ROUTE!=='screen')return;
     const nm=S.teams[i].name,mt=P[L.mission].title;
+    if(L.s==='unlock'){showFx(i,false,`🔓 ${nm} فتح قفل «${mt}»`,'');return}
     if(L.s==='timeout'){showFx(i,false,`انتهى وقت ${nm} في «${mt}»`,'');return}
     if(L.mission===6)showFx(i,true,`${nm} فتح الخزنة!`,`+${L.pts}`);
     else showFx(i,!!L.first,L.first?`${nm} أول من يحسم «${mt}»!`:`${nm} أنجز «${mt}»  +${L.pts}`,`+${L.pts}`);
@@ -871,7 +894,7 @@ function tickTeams(){
     if(left===0){sub.phase='pick';sub.picks=[];pSave();sBuzz();pRender()}
   }
   const lk=$('#plock');if(lk){const left=Math.ceil((lockUntil-Date.now())/1000);
-    if(left>0){if(!lk.firstChild)lk.innerHTML=`<div class="plock"><b>خطأ!</b><p>−10 نقاط · انتظروا</p><span id="plockN">${left}</span></div>`;const n=$('#plockN');if(n&&n.textContent!==String(left))n.textContent=left}
+    if(left>0){if(!lk.firstChild)lk.innerHTML=`<div class="plock"><b>${lockTitle}</b><p>${lockMsg}</p><span id="plockN">${left}</span></div>`;const n=$('#plockN');if(n&&n.textContent!==String(left))n.textContent=left}
     else if(lk.firstChild)lk.innerHTML=''}
 }
 setInterval(tickTeams,200);
@@ -881,7 +904,7 @@ function showTimesUp(){if(timesUp)return;timesUp=true;const st=$('#stage');if(!s
 function renderControl(root){
   if(!root)return;
   const m=M[S.mission],t=S.timer;
-  const nameInputsFocused=root.contains(document.activeElement)&&document.activeElement.tagName==='INPUT';
+  const nameInputsFocused=root.contains(document.activeElement)&&(document.activeElement.tagName==='INPUT'||document.activeElement.tagName==='TEXTAREA');
   if(nameInputsFocused){paintConn();return}
   const connTxt=connLabel();
   root.innerHTML=`<div class="ctl ${root.id==='app'?'wrap':''}" style="${root.id==='app'?'':'padding-inline:16px'}">
@@ -911,6 +934,7 @@ function renderControl(root){
      <div>${S.teams.map((x,i)=>{const d=x.done[S.mission];return `<div class="trow"><i style="background:${TC[i]}"></i><span class="nm">${esc(x.name)}<small>${total(i)}</small></span>
        <span class="acts">${S.view==='mission'?`<button class="b fin ${d?'on':''}" data-act="fin:${i}" aria-label="أنجز المهمة">${d?'✓'+d:'✓'}</button>`:''}<button class="b" data-act="sub:${i}" aria-label="خصم">−</button><button class="b pri" data-act="add:${i}" aria-label="إضافة">+${amt}</button></span></div>`}).join('')}</div>
    </div>
+   ${locksCtl()}
    <details class="sec" id="setDet" ${detOpen?'open':''}><summary style="cursor:pointer;font-weight:700">أسماء الفرق والإعدادات</summary>
      <div class="names" style="margin-top:12px">${S.teams.map((x,i)=>`<label><i style="background:${TC[i]}"></i><input id="tname${i}" data-team="${i}" value="${esc(x.name)}" maxlength="18" aria-label="اسم الفريق ${i+1}"></label>`).join('')}</div>
      <button class="b ${resetArm?'hot':''}" data-act="reset">${resetArm?'اضغط مرة أخرى لتأكيد مسح كل النقاط':'بدء مسابقة جديدة (مسح النقاط)'}</button>
@@ -935,6 +959,18 @@ function missionCtl(m){
     <div class="key"><small>الإجابة · تظهر لك فقط</small>${esc(m.keyText(s))}</div>
   </div>`;
 }
+function lkDraft(){if(!LKD){LKD=[];for(let m=1;m<7;m++){const L=S.locks&&S.locks[m];LKD[m]={c:L&&L.x?lockDec(L.x):'',h:L&&L.hint||''}}}return LKD}
+function locksCtl(){const D=lkDraft();
+  return `<details class="sec" id="lkDet" ${lkOpen?'open':''}><summary style="cursor:pointer;font-weight:700">🔒 أقفال المهام · شيفرة 7 أرقام بين كل مهمة والتالية</summary>
+   <p class="note" style="margin-top:8px">بعد ما يخلص الفريق المهمة، تُقفل التالية حتى يكتب الشيفرة. اكتب الرسالة اللي تدلّهم على مكانها. اترك الشيفرة فاضية إذا ما تبي قفلًا قبل المهمة.</p>
+   ${[1,2,3,4,5,6].map(m=>{const opened=TD.map((t,i)=>t.unlocked&&t.unlocked[m]?S.teams[i].name:null).filter(Boolean);return `<div class="lkrow">
+     <b>قبل المهمة ${m+1}: ${esc(P[m].title)}</b>
+     <div class="lkcode"><input id="lkc${m}" value="${esc(D[m].c)}" inputmode="numeric" maxlength="7" placeholder="7 أرقام" aria-label="شيفرة المهمة ${m+1}"><button class="b" data-act="lkrand:${m}">رقم عشوائي</button></div>
+     <textarea id="lkh${m}" maxlength="220" rows="2" placeholder="مثال: الشيفرة مكتوبة تحت الكرسي الأحمر في المجلس" aria-label="رسالة المهمة ${m+1}">${esc(D[m].h)}</textarea>
+     ${opened.length?`<span class="note">🔓 فتحها: ${opened.map(esc).join('، ')}</span>`:''}</div>`}).join('')}
+   <p class="note" id="lkmsg"></p>
+   <div class="row"><button class="b pri" data-act="lksave">احفظ الأقفال</button><button class="b" data-act="lkclear">إلغاء كل الأقفال</button></div>
+  </details>`}
 function connLabel(){
   if(!LIVE)return conn==='bad'?'غير متصل… تحقق من الإنترنت':'جارٍ الاتصال…';
   return {wait:'جارٍ الاتصال…',ok:'متصل · تزامن مباشر',slow:'الاتصال بطيء، قد تتأخر الشاشة',bad:'تعذّر الحفظ، تحقق من الإنترنت',ro:'عرض فقط'}[conn]||'';
@@ -945,6 +981,11 @@ function paintConn(){const e=$('#connL');if(e){e.textContent=connLabel();e.class
 /* ================= PLAYER ================= */
 let MYT=null;try{const v=localStorage.getItem(SK('t'));if(v!==null&&v!==''&&+v>=0&&+v<4)MYT=+v}catch(e){}
 let PS={key:'',sub:null},lockUntil=0,toFired='',pLastSec=null;
+function lockCard(m){const L=lockOf(m);
+  return `<div class="lockc"><span class="lk-ico">🔒</span><b>المهمة مقفلة</b><p class="lk-msg">${esc(L.hint||'ابحثوا عن الشيفرة لفتح المهمة.')}</p>
+   <div class="vdisp lkd" id="lkd">${lkIn?esc(lkIn):'·······'}</div>
+   <div class="keypad">${[1,2,3,4,5,6,7,8,9].map(n=>`<button class="b" data-act="pk:${n}">${n}</button>`).join('')}<button class="b" data-act="pk-del">⌫</button><button class="b" data-act="pk:0">0</button><button class="b pri" data-act="punlock">افتح</button></div>
+   <p class="note">الشيفرة 7 أرقام. عدّاد المهمة يبدأ أول ما يُفتح القفل.</p></div>`}
 function pState(){const d=TD[MYT];return d.mission>=7?'fin':d.startedAt?'play':S.raceOn?'ready':'wait'}
 function pSave(){try{localStorage.setItem(SK('ps'),JSON.stringify({key:PS.key,sub:PS.sub}))}catch(e){}}
 function pLoad(k){try{const o=JSON.parse(localStorage.getItem(SK('ps'))||'null');if(o&&o.key===k)return o.sub}catch(e){}return null}
@@ -977,7 +1018,7 @@ function pHTML(){
   if(st==='ready'){const last=d.mission>0?d.results[d.mission-1]:null,m=P[d.mission];
     el.innerHTML=`${last?`<div class="pcard win"><span class="counter">${last.s==='timeout'?'TIME OUT':'MISSION COMPLETE'}</span><h2 class="ptitle">${last.s==='timeout'?'انتهى الوقت!':last.first?'الأسرع بين الفرق!':'أحسنتم!'}</h2><span class="big">+${last.pts}</span>${last.first?'<p class="note">شامل مكافأة السبق +30</p>':''}</div>`:''}
     <div class="pcard"><span class="counter">المهمة ${d.mission+1} من 7 · ${esc(m.kind)}</span><h1 class="ptitle">${esc(m.title)}</h1><p>${esc(m.intro)}</p>
-    <button class="b pri" style="font-size:22px;min-height:66px" data-act="pstart">${d.mission===0?'ابدأوا المهمة الأولى':'افتحوا المهمة التالية'}</button><p class="note">عدّاد الخمس دقائق يبدأ فور الضغط.</p></div>`;return out}
+    ${lockPending(MYT)?lockCard(d.mission):`<button class="b pri" style="font-size:22px;min-height:66px" data-act="pstart">${d.mission===0?'ابدأوا المهمة الأولى':'افتحوا المهمة التالية'}</button><p class="note">عدّاد الخمس دقائق يبدأ فور الضغط.</p>`}</div>`;return out}
   el.innerHTML=pMission();return out;
 }
 const pHead=t=>`<div class="pcard"><span class="counter">المهمة ${TD[MYT].mission+1} · ${esc(P[TD[MYT].mission].kind)}</span><h1 class="ptitle">${esc(P[TD[MYT].mission].title)}</h1>${t?`<p>${t}</p>`:''}</div>`;
@@ -1009,7 +1050,9 @@ function pMission(){
   return '';
 }
 function pShake(id){const e=document.getElementById(id)||$('#pmain');if(!e)return;e.classList.remove('shake');void e.offsetWidth;e.classList.add('shake')}
+let lockTitle='خطأ!',lockMsg='−10 نقاط · انتظروا';
 function pFail(sec){
+  lockTitle='خطأ!';lockMsg='−10 نقاط · انتظروا';
   lockUntil=Date.now()+sec*1000;sBuzz();try{navigator.vibrate&&navigator.vibrate(250)}catch(e){}
   const m=TD[MYT].mission;tcommit(MYT,n=>{if(n.mission!==m)return false;n.curWrong=(n.curWrong||0)+1});
 }
@@ -1023,9 +1066,15 @@ function pComplete(bonus){
   tcommit(i,n=>{if(n.mission!==m||!n.startedAt)return false;n.results[m]={s:'done',pts,sec:300-remS,first,wrong:n.curWrong||0};n.score=(n.score||0)+pts;n.mission=m+1;n.startedAt=0;n.curWrong=0;n.last={id:rid(),mission:m,pts,first,s:'done'}});
 }
 const PACT={
+  pk:v=>{if(lkIn.length<7)lkIn+=v;const e=$('#lkd');if(e)e.textContent=lkIn||'·······';beep(700,.05,'square',.06)},
+  'pk-del':()=>{lkIn=lkIn.slice(0,-1);const e=$('#lkd');if(e)e.textContent=lkIn||'·······'},
+  punlock:()=>{const m=TD[MYT].mission,L=lockOf(m);if(!L)return;
+    if(lkIn.length!==7||hsh(lkIn)!==L.h){lkIn='';const e=$('#lkd');if(e){e.textContent='·······';e.classList.remove('shake');void e.offsetWidth;e.classList.add('shake')}sBuzz();try{navigator.vibrate&&navigator.vibrate(200)}catch(x){}lockTitle='شيفرة خاطئة';lockMsg='تأكدوا من الرقم · انتظروا';lockUntil=Date.now()+5000;return}
+    lkIn='';sFan();try{navigator.vibrate&&navigator.vibrate([60,40,60])}catch(x){}
+    tcommit(MYT,n=>{if(n.startedAt||n.mission!==m||!S.raceOn)return false;n.unlocked=n.unlocked||[0,0,0,0,0,0,0];n.unlocked[m]=1;n.startedAt=Date.now();n.run=rid();n.curWrong=0;n.last={id:rid(),mission:m,pts:0,first:false,s:'unlock'}})},
   pleave:()=>{MYT=null;try{localStorage.removeItem(SK('t'))}catch(e){};PS.key='';$('#app').innerHTML='';after()},
   pteam:v=>{MYT=+v;try{localStorage.setItem(SK('t'),v)}catch(e){};PS.key='';$('#app').innerHTML='';after()},
-  pstart:()=>{const m=TD[MYT].mission;tcommit(MYT,n=>{if(n.startedAt||n.mission!==m||!S.raceOn)return false;n.startedAt=Date.now();n.run=rid();n.curWrong=0})},
+  pstart:()=>{const m=TD[MYT].mission;if(lockPending(MYT))return;tcommit(MYT,n=>{if(n.startedAt||n.mission!==m||!S.raceOn)return false;n.startedAt=Date.now();n.run=rid();n.curWrong=0})},
   'pc-sus':v=>{if(+v===M[0].culprit){PS.sub.stage=1;pGood();pSave();pRender()}else{pShake();pFail(15)}},
   'pc-clue':v=>{const p=PS.sub.pick,k=+v;const j=p.indexOf(k);if(j>=0)p.splice(j,1);else if(p.length<2)p.push(k);pSave();pRender()},
   'pc-ok':()=>{const p=PS.sub.pick.slice().sort().join();if(p==='0,2')pComplete(0);else{PS.sub.pick=[];pSave();pRender();pShake();pFail(15)}},
@@ -1053,6 +1102,13 @@ const PACT={
 
 /* ================= ACTIONS ================= */
 const ACT={
+  lkrand:v=>{const D=lkDraft();const r=crypto.getRandomValues(new Uint32Array(1))[0];D[+v].c=String(1000000+r%9000000);const e=$('#lkc'+v);if(e)e.value=D[+v].c},
+  lksave:()=>{const D=lkDraft();const bad=[];const out=[null];
+    for(let m=1;m<7;m++){const c=toLat(D[m].c);if(c&&c.length!==7)bad.push(m+1);out[m]=c.length===7?{h:hsh(c),x:lockEnc(c),hint:String(D[m].h||'').slice(0,220)}:null}
+    const msg=$('#lkmsg');if(bad.length){if(msg){msg.style.color='var(--hot)';msg.textContent=`الشيفرة لازم تكون 7 أرقام بالضبط (المهمة ${bad.join('، ')}).`}return}
+    commit(n=>{n.locks=out});LKD=null;setTimeout(()=>{const m2=$('#lkmsg');if(m2){m2.style.color='var(--t3)';m2.textContent='تم حفظ الأقفال ✓'}},50)},
+  lkclear:()=>{if(resetArm!=='lk'){resetArm='lk';const e=document.querySelector('[data-act="lkclear"]');if(e){e.textContent='اضغط للتأكيد';e.classList.add('hot')}setTimeout(()=>{if(resetArm==='lk'){resetArm=0;after()}},3000);return}
+    resetArm=0;commit(n=>{n.locks=null});LKD=null},
   newroom:()=>newRoom(),
   joinhost:()=>joinHost(),
   newroomgate:()=>{location.href=location.pathname},
@@ -1092,7 +1148,9 @@ document.addEventListener('click',e=>{
   if(PACT[k]){
     if(k==='pleave'){PACT.pleave();return}
     if(k!=='pteam'&&(MYT===null||Date.now()<lockUntil))return;
-    if(k!=='pteam'&&k!=='pstart'&&!(PS.sub&&pState()==='play'))return;
+    const LKA=k==='pk'||k==='pk-del'||k==='punlock';
+    if(LKA&&!(pState()==='ready'&&lockPending(MYT)))return;
+    if(!LKA&&k!=='pteam'&&k!=='pstart'&&!(PS.sub&&pState()==='play'))return;
     PACT[k](v);return;
   }
   if(k==='newroom'||k==='lastroom'||k==='copy'||k==='joinhost'||k==='newroomgate'){ACT[k](v);return}
@@ -1107,7 +1165,8 @@ document.addEventListener('keydown',e=>{
   const map={pci0:'pc-chk:0',pci1:'pc-chk:1',pci2:'pc-chk:2',pri:'pr-chk',pvw:'pv-word'};
   if(map[id]){e.preventDefault();const b=document.querySelector(`[data-act="${map[id]}"]`);b&&b.click()}
 });
-document.addEventListener('toggle',e=>{if(e.target.id==='setDet')detOpen=e.target.open},true);
+document.addEventListener('toggle',e=>{if(e.target.id==='setDet')detOpen=e.target.open;if(e.target.id==='lkDet')lkOpen=e.target.open},true);
+document.addEventListener('input',e=>{const id=e.target&&e.target.id||'';const m=/^lk([ch])(\d)$/.exec(id);if(!m)return;const D=lkDraft();if(m[1]==='c'){e.target.value=toLat(e.target.value).slice(0,7);D[+m[2]].c=e.target.value}else D[+m[2]].h=e.target.value});
 document.addEventListener('change',e=>{
   const i=e.target.dataset&&e.target.dataset.team;if(i===undefined||!canWrite)return;
   const val=e.target.value.trim().slice(0,18)||DEF_NAMES[+i];e.target.blur();
