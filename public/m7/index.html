@@ -375,6 +375,11 @@ button:focus-visible,input:focus-visible{outline:3px solid var(--sig);outline-of
 .lkcode input{direction:ltr;text-align:center;font-family:var(--num);letter-spacing:.2em;font-size:20px}
 .lkrow textarea{resize:vertical;min-height:58px}
 .lkcode .b{min-height:44px;padding:8px 12px;font-size:14px}
+.q30h{display:flex;justify-content:space-between}
+.q30bar{height:8px;background:var(--ink3);border-radius:99px;overflow:hidden}
+.q30bar i{display:block;height:100%;background:linear-gradient(90deg,var(--sig),var(--t3));border-radius:99px;transition:width .3s}
+.q30o{font-size:20px}
+.q30o small{color:var(--sig);font-weight:700}
 </style>
 <script src="https://unpkg.com/mqtt@5.10.1/dist/mqtt.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
@@ -393,8 +398,7 @@ const TC=['var(--t1)','var(--t2)','var(--t3)','var(--t4)'];
 const DEF_NAMES=['الصقور','الذئاب','النمور','الفهود'];
 const RANK_TXT='أول فريق يُنجز 100 · الثاني 70 · الثالث 50 · الرابع 30';
 
-const M=[
-{type:'case',title:'الملف الأحمر',kind:'تحقيق جنائي',
+const CASE_M={type:'case',title:'الملف الأحمر',kind:'تحقيق جنائي',
  goal:'سُرقت «مخطوطة الرمز» من خزنة المكتبة المركزية ليلة الخميس بين 9:00 و9:30 مساءً. أحد المشتبهين الأربعة كذب، والكاذب هو اللص.',
  task:'سلّموا للحكم ورقة فيها: اسم اللص + دليلان على كذبه.',
  score:RANK_TXT,
@@ -411,8 +415,16 @@ const M=[
  culprit:0,
  why:'سالم كذب مرتين: لم يكن هناك مطر، والبوابة الرئيسية كانت مغلقة. كان واقفًا بجوار الخزنة ومعه المفتاح الوحيد.',
  steps:5, stepName:i=>i===0?'القضية والمشتبهون':`كشف الدليل ${i} من 4`,
- keyText:()=>'اللص: سالم (الحارس). الدليل: لا مطر + البوابة مغلقة + المفتاح معه. اكشف دليلًا كل دقيقة تقريبًا.'},
-
+ keyText:()=>'اللص: سالم (الحارس). الدليل: لا مطر + البوابة مغلقة + المفتاح معه. اكشف دليلًا كل دقيقة تقريبًا.'};
+const Q30=[{"q": "ما لون الموز؟", "o": ["أحمر", "أصفر", "أزرق", "أسود"], "a": 1}, {"q": "كم عدد أيام الأسبوع؟", "o": ["5", "6", "7", "8"], "a": 2}, {"q": "ما ناتج 2 + 2؟", "o": ["3", "4", "5", "6"], "a": 1}, {"q": "أي هذه حيوان؟", "o": ["كرسي", "سيارة", "قط", "قلم"], "a": 2}, {"q": "ما عاصمة المملكة العربية السعودية؟", "o": ["جدة", "الرياض", "مكة", "الطائف"], "a": 1}, {"q": "كم عدد أصابع اليد الواحدة؟", "o": ["4", "5", "6", "7"], "a": 1}, {"q": "أي مما يلي من الفواكه؟", "o": ["الجزر", "التفاح", "البطاطس", "الخيار"], "a": 1}, {"q": "ما ناتج 5 + 3؟", "o": ["7", "8", "9", "10"], "a": 1}, {"q": "أي هذه وسيلة نقل؟", "o": ["شجرة", "سيارة", "كتاب", "باب"], "a": 1}, {"q": "ما لون السماء في يوم صافٍ؟", "o": ["أخضر", "أزرق", "أحمر", "بنفسجي"], "a": 1}, {"q": "كم عدد أركان الإسلام؟", "o": ["4", "5", "6", "7"], "a": 1}, {"q": "ما ناتج 9 - 4؟", "o": ["3", "4", "5", "6"], "a": 2}, {"q": "أي هذه من الحيوانات الأليفة؟", "o": ["الأسد", "الكلب", "النمر", "الذئب"], "a": 1}, {"q": "ما اسم الشهر الذي يأتي بعد رمضان؟", "o": ["شعبان", "شوال", "محرم", "صفر"], "a": 1}, {"q": "ما عاصمة مصر؟", "o": ["دمشق", "القاهرة", "بغداد", "عمان"], "a": 1}, {"q": "كم عدد الأيام في الشهر إذا كان 30 يومًا؟", "o": ["28", "29", "30", "31"], "a": 2}, {"q": "أي مما يلي يعد من أدوات الكتابة؟", "o": ["الملعقة", "القلم", "الكرسي", "الحذاء"], "a": 1}, {"q": "ما ناتج 10 + 7؟", "o": ["16", "17", "18", "19"], "a": 1}, {"q": "ما عدد فصول السنة؟", "o": ["2", "3", "4", "5"], "a": 2}, {"q": "أي هذه من الخضروات؟", "o": ["البرتقال", "التفاح", "الجزر", "الموز"], "a": 2}, {"q": "ما ناتج 12 - 5؟", "o": ["6", "7", "8", "9"], "a": 1}, {"q": "أي الكواكب نعيش عليه؟", "o": ["المريخ", "الزهرة", "الأرض", "عطارد"], "a": 2}, {"q": "ما ناتج 6 × 2؟", "o": ["10", "11", "12", "13"], "a": 2}, {"q": "أي هذه من الأشكال الهندسية؟", "o": ["كرة", "مثلث", "سمكة", "شجرة"], "a": 1}, {"q": "كم عدد أضلاع المربع؟", "o": ["3", "4", "5", "6"], "a": 1}, {"q": "ما ناتج 15 + 5؟", "o": ["18", "19", "20", "21"], "a": 2}, {"q": "إذا كان معك 8 تفاحات وأكلت 3، فكم تبقى؟", "o": ["4", "5", "6", "7"], "a": 1}, {"q": "ما ناتج 24 ÷ 3؟", "o": ["6", "7", "8", "9"], "a": 2}, {"q": "إذا كان لديك 3 علب، وفي كل علبة 4 أقلام، فكم قلمًا لديك؟", "o": ["10", "11", "12", "13"], "a": 2}, {"q": "ما ناتج 9 + 6 - 4؟", "o": ["10", "11", "12", "13"], "a": 1}];
+const M=[
+{type:'quiz',title:'سباق الثلاثين',kind:'أسئلة سريعة',
+ goal:'30 سؤالًا متتاليًا بأربعة خيارات. كل فريق يجاوب في جواله، والإجابة الخاطئة توقفه 5 ثوانٍ.',
+ task:'أول فريق يخلص الأسئلة الثلاثين يحسم المهمة.',
+ score:RANK_TXT,
+ qs:Q30.map(x=>({q:x.q,a:x.o[x.a]})),
+ steps:30, stepName:i=>`السؤال ${i+1} من 30`,
+ keyText:s=>`الإجابة: ${'أبجد'[Q30[s].a]}) ${Q30[s].o[Q30[s].a]}`},
 {type:'cipher',title:'شيفرة الظل',kind:'فك تشفير',
  goal:'اعترضنا رسائل سرية مشفّرة. القاعدة: كل حرف استُبدل بالحرف الذي يليه في الترتيب الأبجدي (والياء تصبح ألفًا).',
  task:'اكتبوا الرسالة الأصلية. رسالة الذهب عليها 30 نقطة إضافية لأول من يحلها.',
@@ -484,7 +496,7 @@ const M=[
 
 /* ================= PLAYER MISSIONS (in-app, auto-checked) ================= */
 const P=[
- {type:'case',title:'الملف الأحمر',kind:'تحقيق جنائي',intro:'سرقة في المكتبة المركزية. اقرأوا الأدلة وأقوال المشتبهين، ثم اكشفوا اللص والدليلين على كذبه.'},
+ {type:'mcq30',title:'سباق الثلاثين',kind:'أسئلة سريعة',intro:'30 سؤالًا بأربعة خيارات، واحد بعد الثاني. الإجابة الخاطئة توقفكم 5 ثوانٍ قبل ما تقدرون تجاوبون مرة ثانية.'},
  {type:'cipher',title:'شيفرة الظل',kind:'فك تشفير',intro:'رسائل مشفّرة: كل حرف استُبدل بالحرف الذي يليه أبجديًا. فكّوا رسالتين، ورسالة الذهب مكافأة إضافية.'},
  {type:'memory',title:'ذاكرة العميل',kind:'لعبة ذاكرة',intro:'ستُفتح الحقيبة 20 ثانية فقط. احفظوا الأغراض، ثم اختاروها من بين أغراض مخادعة.'},
  {type:'quiz',title:'الرد السريع',kind:'مسابقة',intro:'عشرة أسئلة متتالية. لا تنتقلون للسؤال التالي إلا بإجابة صحيحة.'},
@@ -991,6 +1003,7 @@ function pSave(){try{localStorage.setItem(SK('ps'),JSON.stringify({key:PS.key,su
 function pLoad(k){try{const o=JSON.parse(localStorage.getItem(SK('ps'))||'null');if(o&&o.key===k)return o.sub}catch(e){}return null}
 function initSub(type){switch(type){
   case 'case':return{stage:0,pick:[]};
+  case 'mcq30':return{q:0};
   case 'cipher':return{ok:[0,0,0],val:['','','']};
   case 'memory':return{phase:'ready',showUntil:0,picks:[],order:shuf([...Array(24).keys()]),msg:''};
   case 'quiz':return{q:0,ord:QOPT.map(()=>shuf([0,1,2,3]))};
@@ -1024,7 +1037,10 @@ function pHTML(){
 const pHead=t=>`<div class="pcard"><span class="counter">المهمة ${TD[MYT].mission+1} · ${esc(P[TD[MYT].mission].kind)}</span><h1 class="ptitle">${esc(P[TD[MYT].mission].title)}</h1>${t?`<p>${t}</p>`:''}</div>`;
 function pMission(){
   const d=TD[MYT],m=P[d.mission],s=PS.sub;
-  if(m.type==='case'){const c=M[0];
+  if(m.type==='mcq30'){const q=Q30[s.q];
+    return `<div class="pcard"><div class="q30h"><span class="counter">QUESTION ${s.q+1} / 30</span><span class="counter">${30-s.q} متبقي</span></div><div class="q30bar"><i style="width:${s.q/30*100}%"></i></div>
+      <h2 class="ptitle" style="font-size:30px;line-height:1.4">${esc(q.q)}</h2><div class="opts">${q.o.map((o,i)=>`<button class="opt q30o" data-act="p30:${i}"><small>${'أبجد'[i]})</small> ${esc(o)}</button>`).join('')}</div></div>`}
+  if(m.type==='case'){const c=CASE_M;
     return pHead(esc(c.goal))+`<div class="pcard"><h3>الأدلة</h3>${c.clues.map((x,i)=>s.stage===1?`<button class="opt ${s.pick.includes(i)?'sel':''}" data-act="pc-clue:${i}">${i+1}. ${esc(x)}</button>`:`<div class="clue"><span class="n">${i+1}</span><span>${esc(x)}</span></div>`).join('')}</div>`+
     (s.stage===0?`<div class="pcard"><h3>أقوال المشتبهين · من اللص؟</h3><div class="opts">${c.suspects.map((p,i)=>`<button class="opt" data-act="pc-sus:${i}">${esc(p.n)} <small>${esc(p.r)}</small><span class="st">${esc(p.s)}</span></button>`).join('')}</div></div>`
     :`<div class="pcard"><span class="okline">صحيح، سالم هو اللص!</span><h3>الآن اختاروا الدليلين اللذين يثبتان كذبه (من القائمة أعلاه)</h3><button class="b pri" data-act="pc-ok" ${s.pick.length!==2?'disabled':''}>تأكيد الدليلين (${s.pick.length}/2)</button></div>`);}
@@ -1066,6 +1082,9 @@ function pComplete(bonus){
   tcommit(i,n=>{if(n.mission!==m||!n.startedAt)return false;n.results[m]={s:'done',pts,sec:300-remS,first,wrong:n.curWrong||0};n.score=(n.score||0)+pts;n.mission=m+1;n.startedAt=0;n.curWrong=0;n.last={id:rid(),mission:m,pts,first,s:'done'}});
 }
 const PACT={
+  p30:v=>{const s=PS.sub,q=Q30[s.q];if(!q)return;
+    if(+v===q.a){pGood();s.q++;if(s.q>=30){pComplete(0);return}pSave();pRender()}
+    else{pShake();sBuzz();try{navigator.vibrate&&navigator.vibrate(250)}catch(e){}lockTitle='إجابة خاطئة';lockMsg='انتظروا 5 ثوانٍ';lockUntil=Date.now()+5000}},
   pk:v=>{if(lkIn.length<7)lkIn+=v;const e=$('#lkd');if(e)e.textContent=lkIn||'·······';beep(700,.05,'square',.06)},
   'pk-del':()=>{lkIn=lkIn.slice(0,-1);const e=$('#lkd');if(e)e.textContent=lkIn||'·······'},
   punlock:()=>{const m=TD[MYT].mission,L=lockOf(m);if(!L)return;
@@ -1075,7 +1094,7 @@ const PACT={
   pleave:()=>{MYT=null;try{localStorage.removeItem(SK('t'))}catch(e){};PS.key='';$('#app').innerHTML='';after()},
   pteam:v=>{MYT=+v;try{localStorage.setItem(SK('t'),v)}catch(e){};PS.key='';$('#app').innerHTML='';after()},
   pstart:()=>{const m=TD[MYT].mission;if(lockPending(MYT))return;tcommit(MYT,n=>{if(n.startedAt||n.mission!==m||!S.raceOn)return false;n.startedAt=Date.now();n.run=rid();n.curWrong=0})},
-  'pc-sus':v=>{if(+v===M[0].culprit){PS.sub.stage=1;pGood();pSave();pRender()}else{pShake();pFail(15)}},
+  'pc-sus':v=>{if(+v===CASE_M.culprit){PS.sub.stage=1;pGood();pSave();pRender()}else{pShake();pFail(15)}},
   'pc-clue':v=>{const p=PS.sub.pick,k=+v;const j=p.indexOf(k);if(j>=0)p.splice(j,1);else if(p.length<2)p.push(k);pSave();pRender()},
   'pc-ok':()=>{const p=PS.sub.pick.slice().sort().join();if(p==='0,2')pComplete(0);else{PS.sub.pick=[];pSave();pRender();pShake();pFail(15)}},
   'pc-chk':v=>{const i=+v,inp=$('#pci'+i);if(!inp)return;const val=inp.value;PS.sub.val[i]=val;
