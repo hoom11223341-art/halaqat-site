@@ -342,6 +342,26 @@ button:focus-visible,input:focus-visible{outline:3px solid var(--sig);outline-of
 @media (prefers-reduced-motion:reduce){
   *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition:none!important}
 }
+.hostcard{display:grid;gap:8px;text-align:right;background:#10172e;border:1px solid #8e98c655;border-radius:16px;padding:14px 16px}
+.hostcard b{font-size:17px}
+.hostcard label{display:grid;gap:6px;font-size:14px;color:#8e98c6}
+.hostcard input{width:100%;background:#090d1c;border:1px solid #8e98c666;color:#eef1ff;border-radius:10px;padding:10px 12px;font:inherit;font-size:18px;direction:ltr;text-align:center;letter-spacing:.1em}
+.jrow{display:grid;grid-template-columns:1fr 1fr auto;gap:8px}
+.jrow input{font-size:16px;letter-spacing:.05em}
+.hm{margin:0;font-size:13px;color:#8e98c6}
+#npwm,#jm{color:#ff3b5c}
+#npwm:empty,#jm:empty{display:none}
+#hostLogin{position:fixed;bottom:calc(10px + env(safe-area-inset-bottom,0px));inset-inline-end:calc(10px + env(safe-area-inset-right,0px));z-index:80;display:grid;justify-items:end;gap:8px}
+.hl-btn{font:inherit;font-size:12px;color:#8e98c6;background:#10172e;border:1px solid #8e98c655;border-radius:99px;padding:6px 12px;cursor:pointer;opacity:.75}
+.hl-box{width:min(300px,calc(100vw - 20px));display:grid;gap:8px;background:#10172e;border:1px solid #ffb21e;border-radius:16px;padding:14px;box-shadow:0 20px 50px #000a;color:#eef1ff}
+.hl-box span{font-size:12px;color:#8e98c6;direction:ltr;text-align:right}
+.hl-box input{background:#090d1c;border:1px solid #8e98c666;color:#eef1ff;border-radius:10px;padding:10px;font:inherit;font-size:18px;direction:ltr;text-align:center}
+.hl-row{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.hl-row button{font:inherit;font-weight:700;border-radius:10px;padding:9px;border:1px solid #8e98c655;background:#090d1c;color:#eef1ff;cursor:pointer}
+.hl-row .hl-go{background:#ffb21e;color:#090d1c;border-color:#ffb21e}
+#hlmsg{margin:0;font-size:13px;color:#ff3b5c}
+#hlmsg:empty{display:none}
+@media (max-width:640px){.jrow{grid-template-columns:1fr 1fr}.jrow .tbtn{grid-column:1 / -1}}
 </style>
 <script src="https://unpkg.com/mqtt@5.10.1/dist/mqtt.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
@@ -477,7 +497,8 @@ const CID=Math.random().toString(36).slice(2,10);
 /* ---- room & host key (standalone) ---- */
 const QSP=new URLSearchParams(location.search);
 let ROOMC=(QSP.get('r')||'').toUpperCase().replace(/[^A-Z0-9]/g,'').slice(0,8);
-let HK=(QSP.get('k')||'').replace(/[^A-Za-z0-9]/g,'').slice(0,24);
+const cleanPw=x=>String(x||'').replace(/[٠-٩]/g,d=>'٠١٢٣٤٥٦٧٨٩'.indexOf(d)).replace(/[۰-۹]/g,d=>'۰۱۲۳۴۵۶۷۸۹'.indexOf(d)).replace(/[^A-Za-z0-9]/g,'').slice(0,24);
+let HK=cleanPw(QSP.get('k'));let BADKEY=false;
 const hsh=x=>{let h=5381;for(const c of String(x))h=((h<<5)+h+c.charCodeAt(0))|0;return (h>>>0).toString(36)};
 try{if(ROOMC){if(HK)localStorage.setItem('m7k-'+ROOMC,HK);else HK=localStorage.getItem('m7k-'+ROOMC)||''}}catch(e){}
 let IS_OWNER=ROOMC?(HK?true:false):null;
@@ -554,7 +575,7 @@ function initNet(bi){
     const k=topic.slice(topic.lastIndexOf('/')+1);
     if(k==='state'){
       const init=!gotState;gotState=true;
-      if(IS_OWNER&&d.hh&&HK&&d.hh!==hsh(HK)){IS_OWNER=false;canWrite=false}
+      if(IS_OWNER&&d.hh&&HK&&d.hh!==hsh(HK)){IS_OWNER=false;canWrite=false;BADKEY=true;try{localStorage.removeItem('m7k-'+ROOMC)}catch(e){}HK=''}
       if(d.writer===CID)return;
       if(d.sentAt===S.sentAt&&d.writer===S.writer)return;
       if(!init)skew=d.sentAt-Date.now();
@@ -582,6 +603,7 @@ const sWhoosh=()=>{if(!AC)return;[200,300,450].forEach((f,i)=>beep(f,.25,'sine',
 
 /* ================= RENDER ROOT ================= */
 function after(){
+  hostLoginUI();
   if(IS_OWNER===false&&ROUTE!=='play'){ROUTE='play';drawer=false;stageKey='';$('#app').innerHTML='';try{history.replaceState(null,'','#play')}catch(e){}}
   checkFlash();checkTeamFlash();
   if(ROUTE==='screen')renderScreen();
@@ -594,8 +616,33 @@ function setRoute(r){ROUTE=r;try{history.replaceState(null,'',r?'#'+r:location.p
 window.addEventListener('hashchange',()=>{const r=location.hash.replace('#','');if(r!==ROUTE){ROUTE=r;stageKey='';$('#app').innerHTML='';after()}});
 
 function linkFor(route,host){const u=new URL(location.href);u.search='';u.hash='';u.searchParams.set('r',ROOMC);if(host)u.searchParams.set('k',HK);return u.toString()+(route?'#'+route:'')}
-function newRoom(){const A='ABCDEFGHJKLMNPQRSTUVWXYZ23456789';let c='',k='';const r=crypto.getRandomValues(new Uint32Array(18));for(let i=0;i<6;i++)c+=A[r[i]%A.length];for(let i=6;i<18;i++)k+=A[r[i]%A.length].toLowerCase();
+function newRoom(){const A='ABCDEFGHJKLMNPQRSTUVWXYZ23456789';let c='';const r=crypto.getRandomValues(new Uint32Array(6));for(let i=0;i<6;i++)c+=A[r[i]%A.length];
+  const el=document.getElementById('npw');const k=cleanPw(el&&el.value);const m=document.getElementById('npwm');
+  if(k.length<4){if(m)m.textContent='كلمة المرور لازم تكون 4 أحرف أو أرقام إنجليزية على الأقل.';return}
   try{localStorage.setItem('m7k-'+c,k);localStorage.setItem('m7-last',c)}catch(e){}location.href=location.pathname+'?r='+c+'&k='+k}
+function joinHost(){const c=(document.getElementById('jcode').value||'').toUpperCase().replace(/[^A-Z0-9]/g,'');const k=cleanPw(document.getElementById('jpw').value);const m=document.getElementById('jm');
+  if(c.length<4||k.length<4){m.textContent='اكتب رمز الغرفة وكلمة مرور المقدم.';return}
+  try{localStorage.setItem('m7k-'+c,k);localStorage.setItem('m7-last',c)}catch(e){}location.href=location.pathname+'?r='+c+'&k='+k+'#control'}
+const randPw=()=>{const r=crypto.getRandomValues(new Uint32Array(1))[0];return String(100000+r%900000)};
+/* ---- host sign-in from any device (contestant pages) ---- */
+function hostLoginUI(){
+  let el=document.getElementById('hostLogin');
+  if(IS_OWNER!==false||!ROOMC){if(el)el.remove();return}
+  if(!el){el=document.createElement('div');el.id='hostLogin';el.dir='rtl';
+    el.innerHTML=`<button class="hl-btn" data-hl="open">🔑 دخول المقدم</button><div class="hl-box" hidden><b>دخول المقدم</b><span>غرفة ${esc(ROOMC)}</span><input id="hlpw" type="password" placeholder="كلمة مرور المقدم" autocomplete="current-password" aria-label="كلمة مرور المقدم"><div class="hl-row"><button class="hl-go" data-hl="go">دخول</button><button data-hl="x">إلغاء</button></div><p id="hlmsg"></p></div>`;
+    document.body.appendChild(el)}
+  if(BADKEY){BADKEY=false;const box=el.querySelector('.hl-box');box.hidden=false;el.querySelector('#hlmsg').textContent='كلمة المرور غير صحيحة، حاول مرة ثانية.'}
+}
+document.addEventListener('click',e=>{const b=e.target.closest('[data-hl]');if(!b)return;const box=document.querySelector('#hostLogin .hl-box');const a=b.dataset.hl;const m=document.getElementById('hlmsg');
+  if(a==='open'){box.hidden=false;document.getElementById('hlpw').focus()}
+  else if(a==='x'){box.hidden=true;m.textContent=''}
+  else if(a==='go'){const pw=cleanPw(document.getElementById('hlpw').value);
+    if(!S.hh){m.textContent='انتظر لحظة حتى يتصل الجهاز بالغرفة…';return}
+    if(hsh(pw)!==S.hh){m.textContent='كلمة المرور غير صحيحة.';return}
+    try{localStorage.setItem('m7k-'+ROOMC,pw)}catch(e){}location.href=location.pathname+'?r='+ROOMC+'&k='+pw+'#control'}});
+document.addEventListener('keydown',e=>{if(e.key==='Enter'&&e.target&&e.target.id==='hlpw'){e.preventDefault();const g=document.querySelector('[data-hl="go"]');g&&g.click()}
+  if(e.key==='Enter'&&e.target&&(e.target.id==='jpw'||e.target.id==='jcode')){e.preventDefault();joinHost()}
+  if(e.key==='Enter'&&e.target&&e.target.id==='npw'){e.preventDefault();newRoom()}});
 function drawQR(el,text,size){if(!el)return;el.innerHTML='';try{new QRCode(el,{text,width:size,height:size,colorDark:'#090d1c',colorLight:'#eef1ff',correctLevel:QRCode.CorrectLevel.M})}catch(e){}}
 function copyTxt(t,btn){const done=()=>{if(btn){const o=btn.textContent;btn.textContent='تم النسخ ✓';setTimeout(()=>btn.textContent=o,1500)}};
   try{navigator.clipboard.writeText(t).then(done,()=>{prompt('انسخ الرابط:',t)})}catch(e){prompt('انسخ الرابط:',t)}}
@@ -604,8 +651,10 @@ function renderGate(){
     $('#app').innerHTML=`<div class="gate wrap"><div class="gate-in">
      <h1>المهمة <b>7</b></h1>
      <p>للمقدم: ابدأ مسابقة جديدة، وبيطلع لك رابط للشاشة ورابط لجوالك ورابط ورمز QR للفرق.</p>
+     <div class="hostcard"><b>مسابقة جديدة</b><label>اختر كلمة مرور المقدم (أرقام أو أحرف إنجليزية)<input id="npw" value="${randPw()}" maxlength="24" autocomplete="new-password"></label><p class="hm">احفظها: بها تدخل التحكم من أي جهاز.</p><p class="hm" id="npwm"></p></div>
      <div class="choices"><button class="choice" data-act="newroom" style="border-color:#ffb21e"><span class="ico">NEW GAME</span><strong>ابدأ مسابقة جديدة</strong><span>غرفة جديدة بنقاط صفر والمهام السبع.</span></button>
      ${last?`<button class="choice" data-act="lastroom"><span class="ico">ROOM ${esc(last)}</span><strong>كمّل مسابقتي السابقة</strong><span>يرجعك لنفس الغرفة بنفس النقاط.</span></button>`:''}</div>
+     <div class="hostcard"><b>أنا المقدم وعندي غرفة</b><div class="jrow"><input id="jcode" placeholder="رمز الغرفة" maxlength="8" autocomplete="off" aria-label="رمز الغرفة" style="direction:ltr;text-transform:uppercase"><input id="jpw" type="password" placeholder="كلمة المرور" maxlength="24" aria-label="كلمة مرور المقدم"><button class="tbtn" data-act="joinhost">دخول</button></div><p class="hm" id="jm"></p></div>
      <p class="conn">الفرق ما تحتاج حسابات: تفتح الرابط أو تمسح الرمز فقط.</p>
     </div></div>`;return}
   const pl=linkFor('play',false);
@@ -625,7 +674,8 @@ function renderGate(){
        <p class="conn">⚠️ رابطا الشاشة والتحكم فيهما مفتاح المقدم، لا ترسلهما للفرق. أرسل لهم «رابط الفرق» فقط.</p>
      </div>
    </div>
-   <button class="tbtn" data-act="newroom">إنشاء غرفة جديدة</button>
+   <p class="hm" style="text-align:center">🔑 كلمة مرور المقدم لهذه الغرفة: <b style="direction:ltr;unicode-bidi:isolate">${esc(HK)}</b> · ادخل بها من أي جهاز عبر «دخول المقدم» في صفحة المتسابقين.</p>
+   <button class="tbtn" data-act="newroomgate">إنشاء غرفة جديدة</button>
   </div></div>`;
   drawQR($('#qrP'),pl,200);
 }
@@ -1004,6 +1054,8 @@ const PACT={
 /* ================= ACTIONS ================= */
 const ACT={
   newroom:()=>newRoom(),
+  joinhost:()=>joinHost(),
+  newroomgate:()=>{location.href=location.pathname},
   lastroom:()=>{let c='';try{c=localStorage.getItem('m7-last')||''}catch(e){}if(c)location.href=location.pathname+'?r='+c},
   copy:v=>{const m={p:linkFor('play',false),s:linkFor('screen',true),c:linkFor('control',true)};copyTxt(m[v],document.querySelector(`[data-act="copy:${v}"]`))},
   'race-on':()=>commit(n=>{n.raceOn=true;n.view='race'}),
@@ -1043,7 +1095,7 @@ document.addEventListener('click',e=>{
     if(k!=='pteam'&&k!=='pstart'&&!(PS.sub&&pState()==='play'))return;
     PACT[k](v);return;
   }
-  if(k==='newroom'||k==='lastroom'||k==='copy'){ACT[k](v);return}
+  if(k==='newroom'||k==='lastroom'||k==='copy'||k==='joinhost'||k==='newroomgate'){ACT[k](v);return}
   if(!ROOMC)return;
   if(IS_OWNER===false)return;
   if(k!=='route'&&k!=='snd'&&k!=='fs'&&k!=='drawer'&&k!=='amt'&&!canWrite)return;
