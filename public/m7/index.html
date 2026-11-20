@@ -454,6 +454,8 @@ button:focus-visible,input:focus-visible{outline:3px solid var(--sig);outline-of
 .c4leg{display:flex;gap:16px;justify-content:center;font-size:14px;color:var(--mute)}
 .c4leg i{display:inline-block;width:14px;height:14px;border-radius:50%;margin-inline-end:6px;vertical-align:middle}
 .c4code{font-size:clamp(40px,13vw,72px)!important;letter-spacing:.04em;direction:ltr;max-width:100%;overflow-wrap:anywhere}
+.trt{display:flex;align-items:center;gap:8px}
+.trt .b.ext{min-height:38px;padding:4px 10px;font-size:14px;background:var(--t3);color:var(--ink);border-color:var(--t3)}
 </style>
 <script src="https://unpkg.com/mqtt@5.10.1/dist/mqtt.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
@@ -770,7 +772,9 @@ const tW=[false,false,false,false],tPend=[null,null,null,null];
 try{const l=JSON.parse(localStorage.getItem(SK('teams'))||'null');if(Array.isArray(l)&&l.length===4&&l.every(t=>t&&t.v===1))TD=l}catch(e){}
 let seenLast=TD.map(t=>t.last&&t.last.id);
 const tsk=i=>TD[i].writer===CID?0:tskew[i];
-function tRem(i){const t=TD[i];const D=durM(t.mission);if(!t.startedAt)return D;return Math.max(0,t.startedAt+D-tsk(i)-Date.now())}
+const TIMEOUT_PEN=30;
+const extOf=i=>{const t=TD[i],e=S.ext&&S.ext[i];return e&&t&&e.run&&e.run===t.run?(e.ms||0):0};
+function tRem(i){const t=TD[i];const D=durM(t.mission)+(t.startedAt?extOf(i):0);if(!t.startedAt)return D;return Math.max(0,t.startedAt+D-tsk(i)-Date.now())}
 const total=i=>(typeof TRY!=='undefined'&&TRY!==null)?(TD[i].score||0):(S.teams[i].score||0)+(TD[i].score||0);
 function tcommit(i,fn){
   const n=structuredClone(TD[i]);
@@ -1094,7 +1098,7 @@ function checkTeamFlash(){
   TD.forEach((t,i)=>{const L=t.last;if(!L||L.id===seenLast[i])return;seenLast[i]=L.id;if(ROUTE!=='screen')return;
     const nm=S.teams[i].name,mt=P[L.mission].title;
     if(L.s==='unlock'){showFx(i,false,`🔓 ${nm} فتح قفل «${mt}»`,'');return}
-    if(L.s==='timeout'){showFx(i,false,`انتهى وقت ${nm} في «${mt}»`,'');return}
+    if(L.s==='timeout'){showFx(i,false,`⏱ انتهى وقت ${nm} في «${mt}» −${TIMEOUT_PEN}`,'');return}
     if(L.mission===6)showFx(i,true,`${nm} فتح الخزنة!`,`+${L.pts}`);
     else showFx(i,!!L.first,L.first?`${nm} أول من يحسم «${mt}»!`:`${nm} أنجز «${mt}»  +${L.pts}`,`+${L.pts}`);
   });
@@ -1131,7 +1135,7 @@ function tickTeams(){
   if(pt){const r=tRem(MYT);pt.textContent=fmt(r);pt.className='pt'+(!d.startedAt?' idle':r<=30000?' danger':'');
     if(d.startedAt&&d.mission<7){const sec=Math.ceil(r/1000);if(sec!==pLastSec){if(sec<=10&&sec>0)sTick();pLastSec=sec}}}
   if(d.startedAt&&d.mission<7&&tRem(MYT)<=0&&toFired!==PS.key){toFired=PS.key;const m=d.mission;sBuzz();
-    tcommit(MYT,n=>{if(n.mission!==m||!n.startedAt)return false;n.results[m]={s:'timeout',pts:0,sec:Math.round(durM(m)/1000),first:false,wrong:n.curWrong||0};n.mission=m+1;n.startedAt=0;n.curWrong=0;n.last={id:rid(),mission:m,pts:0,first:false,s:'timeout'}})}
+    tcommit(MYT,n=>{if(n.mission!==m||!n.startedAt)return false;n.results[m]={s:'timeout',pts:-TIMEOUT_PEN,sec:Math.round(durM(m)/1000),first:false,wrong:n.curWrong||0};n.score=(n.score||0)-TIMEOUT_PEN;n.mission=m+1;n.startedAt=0;n.curWrong=0;n.last={id:rid(),mission:m,pts:-TIMEOUT_PEN,first:false,s:'timeout'}})}
   const sub=PS.sub;
   if(sub&&P[d.mission]&&P[d.mission].type==='memory'&&sub.phase==='show'){
     const left=Math.max(0,Math.ceil((sub.showUntil-Date.now())/1000));const mc=$('#pmem');
@@ -1171,8 +1175,8 @@ function renderControl(root){
    ${S.view==='mission'?missionCtl(m):''}
       <div class="sec"><h3>سباق الجوالات · الفرق تلعب من «صفحة المتسابقين»</h3>
      <div class="row">${S.raceOn?'<button class="b hot" data-act="race-off">إيقاف فتح المهام</button>':'<button class="b pri" data-act="race-on">ابدأ السباق للفرق</button>'}<button class="b ${S.view==='race'?'on':''}" data-act="view:race">شاشة السباق</button></div>
-     <div>${S.teams.map((x,i)=>{const d=TD[i];return `<div class="trow"><i style="background:${TC[i]}"></i><span class="nm">${esc(x.name)}<small style="font-size:14px;color:var(--mute)">${d.mission>=7?'أنهى السباق':`المهمة ${d.mission+1}: ${esc(P[d.mission].title)}${d.startedAt?'':' · لم تبدأ'}`}</small></span><span class="num" style="font-size:20px" ${d.startedAt&&d.mission<7?`data-rt="${i}"`:''}>${d.startedAt&&d.mission<7?fmt(tRem(i)):(d.score||0)}</span></div>`}).join('')}</div>
-     <p class="note">نقاط المهمة: 100 + مكافأة سرعة − 10 لكل خطأ · أول فريق يُنجز المهمة +30 · الخزنة مضاعفة · انتهاء الوقت = 0 وتُفتح المهمة التالية.</p>
+     <div>${S.teams.map((x,i)=>{const d=TD[i];return `<div class="trow"><i style="background:${TC[i]}"></i><span class="nm">${esc(x.name)}<small style="font-size:14px;color:var(--mute)">${d.mission>=7?'أنهى السباق':`المهمة ${d.mission+1}: ${esc(P[d.mission].title)}${d.startedAt?'':' · لم تبدأ'}`}</small></span><span class="trt"><span class="num" style="font-size:20px" ${d.startedAt&&d.mission<7?`data-rt="${i}"`:''}>${d.startedAt&&d.mission<7?fmt(tRem(i)):(d.score||0)}</span>${d.startedAt&&d.mission<7?`<button class="b ext" data-act="ext:${i}">+1 د</button>`:''}</span></div>`}).join('')}</div>
+     <p class="note">نقاط المهمة: 100 + مكافأة سرعة − 10 لكل خطأ · أول فريق يُنجز المهمة +30 · الخزنة مضاعفة · انتهاء الوقت = −30 وتُفتح المهمة التالية · زر «+1 د» يمدّد وقت الفريق اللي يلعب الآن.</p>
    </div>
    <div class="sec"><h3>النقاط ${S.view==='mission'?'· زر ✓ يعني أنجز المهمة (يمنح نقاط الترتيب تلقائيًا)':''}</h3>
      <div class="amts">${[10,25,50,100].map(a=>`<button class="b ${amt===a?'on':''}" data-act="amt:${a}">${a}</button>`).join('')}</div>
@@ -1273,7 +1277,7 @@ function pHTML(){
     el.innerHTML=`<div class="pcard win">${d.results[6]&&d.results[6].s==='timeout'?'<span class="counter">TIME OUT</span><h1 class="ptitle">انتهى الوقت… والخزنة بقيت مقفلة</h1>':'<span class="counter">MISSION ACCOMPLISHED</span><h1 class="ptitle">فتحتم الخزنة!</h1>'}<span class="big">${total(MYT)}</span><p>نقطة · ترتيبكم الآن ${rank} من 4</p><p class="note">ارفعوا رؤوسكم للشاشة… إعلان البطل قادم.</p></div>`;return out}
   if(st==='wait'){el.innerHTML=`<div class="pcard"><span class="counter">STANDBY</span><h1 class="ptitle">بانتظار إشارة البدء</h1><p>عندما يطلق المقدم السباق، تظهر لكم المهمة الأولى هنا مباشرة.</p><p class="note">7 مهام · الوقت يظهر أعلى الشاشة · لا تُفتح المهمة التالية إلا بعد إنهاء الحالية · كل خطأ = −10 نقاط وتجميد مؤقت.</p><button class="tbtn" data-act="pleave">لستم ${esc(S.teams[MYT].name)}؟ غيّروا الفريق</button></div>`;return out}
   if(st==='ready'){const last=d.mission>0?d.results[d.mission-1]:null,m=P[d.mission];
-    el.innerHTML=`${last?`<div class="pcard win"><span class="counter">${last.s==='timeout'?'TIME OUT':'MISSION COMPLETE'}</span><h2 class="ptitle">${last.s==='timeout'?'انتهى الوقت!':last.first?'الأسرع بين الفرق!':'أحسنتم!'}</h2><span class="big">+${last.pts}</span>${last.first?'<p class="note">شامل مكافأة السبق +30</p>':''}</div>`:''}
+    el.innerHTML=`${last?`<div class="pcard win"><span class="counter">${last.s==='timeout'?'TIME OUT':'MISSION COMPLETE'}</span><h2 class="ptitle">${last.s==='timeout'?'انتهى الوقت!':last.first?'الأسرع بين الفرق!':'أحسنتم!'}</h2><span class="big" ${last.pts<0?'style="color:var(--hot)"':''}>${last.pts<0?'−'+Math.abs(last.pts):'+'+last.pts}</span>${last.s==='timeout'?'<p class="note">خصم انتهاء الوقت</p>':''}${last.first?'<p class="note">شامل مكافأة السبق +30</p>':''}</div>`:''}
     <div class="pcard"><span class="counter">المهمة ${d.mission+1} من 7 · ${esc(m.kind)}</span><h1 class="ptitle">${esc(m.title)}</h1><p>${esc(m.intro)}</p>
     ${lockPending(MYT)?lockCard(d.mission):`<button class="b pri" style="font-size:22px;min-height:66px" data-act="pstart">${d.mission===0?'ابدأوا المهمة الأولى':'افتحوا المهمة التالية'}</button><p class="note">عدّاد ${Math.round(durM(d.mission)/60000)} دقائق يبدأ فور الضغط.</p>`}</div>`;return out}
   el.innerHTML=pMission();return out;
@@ -1506,6 +1510,8 @@ document.addEventListener('input',e=>{const id=e.target&&e.target.id||'';if(!id.
 
 /* ================= ACTIONS ================= */
 const ACT={
+  ext:v=>{const i=+v,t=TD[i];if(!t||!t.startedAt||t.mission>=7)return;commit(n=>{n.ext=n.ext||{};const e=n.ext[i];const ms=(e&&e.run===t.run?(e.ms||0):0)+60000;n.ext[i]={run:t.run,ms};
+    n.flash={id:Math.random().toString(36).slice(2),at:Date.now(),team:i,big:false,text:`⏱ +1 دقيقة لـ ${n.teams[i].name}`,sub:''}})},
   lkrand:v=>{const D=lkDraft();const r=crypto.getRandomValues(new Uint32Array(1))[0];D[+v].c=String(1000000+r%9000000);const e=$('#lkc'+v);if(e)e.value=D[+v].c},
   lksave:()=>{const D=lkDraft();const bad=[];const out=[null];
     for(let m=1;m<7;m++){const c=toLat(D[m].c);if(c&&c.length!==7)bad.push(m+1);out[m]=c.length===7?{h:hsh(c),x:lockEnc(c),hint:String(D[m].h||'').slice(0,220)}:null}
