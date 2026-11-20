@@ -1270,7 +1270,7 @@ function pRender(){
 function pHTML(){
   const d=TD[MYT],st=pState();let out='';const el={set innerHTML(v){out=v}};
   if(st==='fin'){const rank=sorted().findIndex(t=>t.i===MYT)+1;
-    el.innerHTML=`<div class="pcard win"><span class="counter">MISSION ACCOMPLISHED</span><h1 class="ptitle">فتحتم الخزنة!</h1><span class="big">${total(MYT)}</span><p>نقطة · ترتيبكم الآن ${rank} من 4</p><p class="note">ارفعوا رؤوسكم للشاشة… إعلان البطل قادم.</p></div>`;return out}
+    el.innerHTML=`<div class="pcard win">${d.results[6]&&d.results[6].s==='timeout'?'<span class="counter">TIME OUT</span><h1 class="ptitle">انتهى الوقت… والخزنة بقيت مقفلة</h1>':'<span class="counter">MISSION ACCOMPLISHED</span><h1 class="ptitle">فتحتم الخزنة!</h1>'}<span class="big">${total(MYT)}</span><p>نقطة · ترتيبكم الآن ${rank} من 4</p><p class="note">ارفعوا رؤوسكم للشاشة… إعلان البطل قادم.</p></div>`;return out}
   if(st==='wait'){el.innerHTML=`<div class="pcard"><span class="counter">STANDBY</span><h1 class="ptitle">بانتظار إشارة البدء</h1><p>عندما يطلق المقدم السباق، تظهر لكم المهمة الأولى هنا مباشرة.</p><p class="note">7 مهام · الوقت يظهر أعلى الشاشة · لا تُفتح المهمة التالية إلا بعد إنهاء الحالية · كل خطأ = −10 نقاط وتجميد مؤقت.</p><button class="tbtn" data-act="pleave">لستم ${esc(S.teams[MYT].name)}؟ غيّروا الفريق</button></div>`;return out}
   if(st==='ready'){const last=d.mission>0?d.results[d.mission-1]:null,m=P[d.mission];
     el.innerHTML=`${last?`<div class="pcard win"><span class="counter">${last.s==='timeout'?'TIME OUT':'MISSION COMPLETE'}</span><h2 class="ptitle">${last.s==='timeout'?'انتهى الوقت!':last.first?'الأسرع بين الفرق!':'أحسنتم!'}</h2><span class="big">+${last.pts}</span>${last.first?'<p class="note">شامل مكافأة السبق +30</p>':''}</div>`:''}
