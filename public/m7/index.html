@@ -440,6 +440,20 @@ button:focus-visible,input:focus-visible{outline:3px solid var(--sig);outline-of
 .sortstrip em{font-style:normal;color:var(--mute);font-size:14px;direction:rtl}
 .sortans{display:flex;flex-wrap:wrap;gap:8px;direction:ltr}
 .sortans span{font-family:var(--num);font-weight:700;font-size:clamp(20px,2vw,30px);background:var(--ink2);border:1px solid var(--t3);color:var(--t3);border-radius:10px;padding:4px 12px}
+.c4score{display:flex;justify-content:space-between;align-items:center;font-weight:700}
+.c4score b{font-size:26px}
+.c4msg{text-align:center;font-family:var(--display);font-size:24px;min-height:36px}
+.c4msg.think{color:var(--mute);animation:blink 1s infinite}
+.c4board{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:5px;background:#1f3fb0;padding:8px;border-radius:16px;direction:ltr;box-shadow:inset 0 -6px 0 #142a7a}
+.c4cell{aspect-ratio:1;max-width:100%;border-radius:50%;background:#0a1236;border:0;padding:0;cursor:pointer;box-shadow:inset 0 3px 6px #000a}
+.c4cell.p{background:radial-gradient(circle at 35% 30%,color-mix(in srgb,var(--tc) 60%,#fff),var(--tc))}
+.c4cell.a{background:radial-gradient(circle at 35% 30%,#fff,#c9cfe6)}
+.c4cell.drop{animation:c4drop .35s cubic-bezier(.3,1.4,.5,1)}
+@keyframes c4drop{from{transform:translateY(-220%)}}
+.c4cell.win{box-shadow:0 0 0 4px var(--sig),0 0 18px var(--sig)}
+.c4leg{display:flex;gap:16px;justify-content:center;font-size:14px;color:var(--mute)}
+.c4leg i{display:inline-block;width:14px;height:14px;border-radius:50%;margin-inline-end:6px;vertical-align:middle}
+.c4code{font-size:clamp(40px,13vw,72px)!important;letter-spacing:.04em;direction:ltr;max-width:100%;overflow-wrap:anywhere}
 </style>
 <script src="https://unpkg.com/mqtt@5.10.1/dist/mqtt.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
@@ -623,8 +637,39 @@ const P=[
  {type:'clues',title:'الأدلة السبعة',kind:'رمز الخزنة',dur:480000,intro:'تم إخفاء رمز الخزنة المكوّن من 7 أرقام. أمامكم 7 أدلة، كل دليل يعطيكم رقمًا واحدًا. اكتبوا الأرقام بالترتيب في بطاقة الرمز، وفي النهاية أدخلوا الرمز كاملًا. ⏱ 8 دقائق'},
  {type:'code',title:'الشيفرة',kind:'محطة الشيفرة',intro:'اعرفوا الشيفرة وأدخلوها. بمجرد إدخالها الصحيح تنتقلون مباشرة للمهمة الخامسة.'},
  {type:'sort',title:'ترتيب الأرقام الفردية',kind:'تحدي ترتيب',intro:'🚨 أمامكم 50 رقمًا فرديًا مبعثرة. اضغطوها بالترتيب من الأصغر إلى الأكبر. الضغطة الخاطئة توقفكم 5 ثوانٍ.'},
- {type:'riddles',title:'عقل المحقق',kind:'ألغاز منطقية',intro:'ألغاز تتصاعد صعوبتها. الإجابة الخاطئة توقفكم 5 ثوانٍ.'},
+ {type:'c4',title:'أربع تربح',kind:'تحدي ذكاء',dur:420000,intro:'العبوا «أربع تربح» ضد الكمبيوتر (مستوى فوق المتوسط). أول من يصفّ 4 أقراص متتالية أفقيًا أو عموديًا أو قطريًا يفوز بالجولة. اكسبوا جولتين من ثلاث، ويظهر لكم رمز الخزنة الأخيرة. ⏱ 7 دقائق'},
  {type:'vault',title:'الخزنة',kind:'المهمة السابعة',intro:'الخزنة الأخيرة بقفلين. نقاط هذه المهمة مضاعفة.'}];
+/* ---- mission 6: Connect Four vs computer (above-average: 3-ply alpha-beta, always takes wins and blocks, occasional slip) ---- */
+const C4W=7,C4H=6;
+function c4Drop(b,c,p){for(let r=C4H-1;r>=0;r--){if(!b[r*C4W+c]){b[r*C4W+c]=p;return r}}return -1}
+function c4Win(b,p){const g=(r,c)=>r>=0&&r<C4H&&c>=0&&c<C4W&&b[r*C4W+c]===p;
+  for(let r=0;r<C4H;r++)for(let c=0;c<C4W;c++){if(!g(r,c))continue;
+    if(g(r,c+1)&&g(r,c+2)&&g(r,c+3))return [[r,c],[r,c+1],[r,c+2],[r,c+3]];
+    if(g(r+1,c)&&g(r+2,c)&&g(r+3,c))return [[r,c],[r+1,c],[r+2,c],[r+3,c]];
+    if(g(r+1,c+1)&&g(r+2,c+2)&&g(r+3,c+3))return [[r,c],[r+1,c+1],[r+2,c+2],[r+3,c+3]];
+    if(g(r+1,c-1)&&g(r+2,c-2)&&g(r+3,c-3))return [[r,c],[r+1,c-1],[r+2,c-2],[r+3,c-3]]}
+  return null}
+const c4Full=b=>b.slice(0,C4W).every(Boolean);
+function c4Score(b){let sc=0;const W=(a,bb,c,d)=>{const w=[a,bb,c,d];const ai=w.filter(x=>x==='a').length,pl=w.filter(x=>x==='p').length;
+    if(ai&&pl)return 0;if(ai===4)return 1e5;if(pl===4)return -1e5;if(ai===3)return 6;if(ai===2)return 2;if(pl===3)return -8;if(pl===2)return -2;return 0};
+  for(let r=0;r<C4H;r++)if(b[r*C4W+3]==='a')sc+=3;
+  for(let r=0;r<C4H;r++)for(let c=0;c<C4W;c++){const v=(rr,cc)=>b[rr*C4W+cc];
+    if(c+3<C4W)sc+=W(v(r,c),v(r,c+1),v(r,c+2),v(r,c+3));
+    if(r+3<C4H)sc+=W(v(r,c),v(r+1,c),v(r+2,c),v(r+3,c));
+    if(r+3<C4H&&c+3<C4W)sc+=W(v(r,c),v(r+1,c+1),v(r+2,c+2),v(r+3,c+3));
+    if(r+3<C4H&&c-3>=0)sc+=W(v(r,c),v(r+1,c-1),v(r+2,c-2),v(r+3,c-3))}
+  return sc}
+const C4ORD=[3,2,4,1,5,0,6];
+function c4Mini(b,d,al,be,max){if(c4Win(b,'a'))return 1e6+d;if(c4Win(b,'p'))return -1e6-d;if(d===0||c4Full(b))return c4Score(b);
+  if(max){let v=-Infinity;for(const c of C4ORD){if(b[c])continue;const r=c4Drop(b,c,'a');v=Math.max(v,c4Mini(b,d-1,al,be,false));b[r*C4W+c]=0;al=Math.max(al,v);if(al>=be)break}return v}
+  let v=Infinity;for(const c of C4ORD){if(b[c])continue;const r=c4Drop(b,c,'p');v=Math.min(v,c4Mini(b,d-1,al,be,true));b[r*C4W+c]=0;be=Math.min(be,v);if(al>=be)break}return v}
+function c4AI(b0){const b=b0.slice();const legal=C4ORD.filter(c=>!b[c]);
+  for(const c of legal){const r=c4Drop(b,c,'a');const w=c4Win(b,'a');b[r*C4W+c]=0;if(w)return c}
+  for(const c of legal){const r=c4Drop(b,c,'p');const w=c4Win(b,'p');b[r*C4W+c]=0;if(w)return c}
+  const sc=legal.map(c=>{const r=c4Drop(b,c,'a');const v=c4Mini(b,2,-Infinity,Infinity,false);b[r*C4W+c]=0;return {c,v}}).sort((x,y)=>y.v-x.v);
+  /* occasional slip keeps it beatable: pick the 2nd choice when it is not a losing move */
+  if(sc.length>1&&Math.random()<.2&&sc[1].v>-5e5)return sc[1].c;
+  return sc[0].c}
 /* ---- mission 5: 50 odd numbers, different set per team ---- */
 const SORT_N=50;const SORT_MEMO=new Map();
 function sortSet(seed){if(SORT_MEMO.has(seed))return SORT_MEMO.get(seed);const r=mulb(seed*31+7);
@@ -660,10 +705,12 @@ const DEF_CT={
   Object.assign({q:RID[2].q},placeAt(RID[2].o,2)),
   Object.assign({q:RID[3].q},placeAt(['5:48','5:52','6:12','5:40'],1)),
   Object.assign({q:RID[4].q},placeAt(RID[4].o,0))],
+ c4:{code:'2468135',hint:'اكتبوا هذا الرمز في ورقة، وبعدها أدخلوه لفتح المهمة الأخيرة.'},
  vault:{q1:'رقم الخزنة = عدد أركان الإسلام × عدد أيام الأسبوع − عدد الفرق المتنافسة. ما الرقم؟',a1:'31',q2:'فكّوا هذه الكلمة: كل حرف استُبدل بالحرف الذي يليه في الأبجدية.',shown:'قيس',a2:'فوز'}};
 let CT=structuredClone(DEF_CT);
+const mergeCT=d=>Object.assign(structuredClone(DEF_CT),d);
 function validCT(d){try{return d&&Array.isArray(d.q30)&&d.q30.length&&Array.isArray(d.clues)&&d.clues.length&&Array.isArray(d.rid)&&d.rid.length&&d.vault&&d.code4}catch(e){return false}}
-try{const l=JSON.parse(localStorage.getItem('m7-ct-'+(new URLSearchParams(location.search).get('r')||'').toUpperCase())||'null');if(validCT(l))CT=l}catch(e){}
+try{const l=JSON.parse(localStorage.getItem('m7-ct-'+(new URLSearchParams(location.search).get('r')||'').toUpperCase())||'null');if(validCT(l))CT=mergeCT(l)}catch(e){}
 const clueCode=()=>CT.clues.map(c=>String(c.d||'')).join('');
 /* host-mode screen views read the same content */
 const MEMORY_M=M[2],M6_STATIC=M[6].qs.slice();
@@ -673,11 +720,9 @@ M[0].stepName=i=>`السؤال ${i+1} من ${CT.q30.length}`;
 M[0].keyText=s=>{const x=CT.q30[s];return x?`الإجابة: ${'أبجد'[x.a]}) ${x.o[x.a]}`:''};
 M[2]={type:'clues',title:'الأدلة السبعة',kind:'رمز الخزنة',goal:'تم إخفاء رمز الخزنة المكوّن من 7 أرقام. كل دليل يعطيكم رقمًا واحدًا، اجمعوها بالترتيب.',task:'اكتبوا كل رقم في بطاقة الرمز، وسلّموا الرمز الكامل في النهاية.',score:RANK_TXT,
  get steps(){return CT.clues.length},stepName:i=>`الدليل ${i+1}: ${CT.clues[i]?CT.clues[i].t:''}`,keyText:s=>{const c=CT.clues[s];return c?`الإجابة: ${c.o[c.a]} · رقم الخزنة: ${c.d} · الرمز الكامل: ${clueCode()}`:''}};
+M[5]={type:'c4',title:'أربع تربح',kind:'تحدي ذكاء',goal:'كل فريق يلعب «أربع تربح» ضد الكمبيوتر في جواله: أفضل جولتين من ثلاث.',task:'الفائز يحصل على رمز يفتح المهمة الأخيرة.',score:RANK_TXT,steps:1,stepName:()=>'المباراة',keyText:()=>`الرمز: ${CT.c4.code}`};
 M[4]={type:'sort',title:'ترتيب الأرقام الفردية',kind:'تحدي ترتيب',goal:'أمامكم 50 رقمًا فرديًا مبعثرة. رتّبوها من الأصغر إلى الأكبر.',task:'الضغطة الخاطئة توقف الفريق 5 ثوانٍ.',score:RANK_TXT,steps:1,stepName:()=>'الترتيب',keyText:()=>'الحل: '+sortSet(4242).sorted.join(' - ')};
 M[3]={type:'code',title:'الشيفرة',kind:'محطة الشيفرة',goal:'اعرفوا الشيفرة وأدخلوها في الجوال.',task:'بمجرد إدخالها الصحيح ينتقل الفريق للمهمة الخامسة.',score:RANK_TXT,steps:1,stepName:()=>'إدخال الشيفرة',keyText:()=>`الشيفرة: ${CT.code4.code}`};
-Object.defineProperty(M[5],'qs',{get(){return CT.rid.map(x=>({q:x.q,a:x.o[x.a]}))}});
-Object.defineProperty(M[5],'steps',{get(){return CT.rid.length}});
-M[5].stepName=i=>`اللغز ${i+1} من ${CT.rid.length}`;
 Object.defineProperty(M[6],'qs',{get(){return [M6_STATIC[0],{t:'رقم الخزنة',q:CT.vault.q1,a:CT.vault.a1},{t:'الكلمة الأخيرة',q:CT.vault.q2+'  «'+CT.vault.shown+'»',a:CT.vault.a2},M6_STATIC[3]]}});
 const shuf=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.random()*(i+1)|0;[a[i],a[j]]=[a[j],a[i]]}return a};
 const norm=x=>String(x).replace(/[ً-ْـ]/g,'').replace(/[أإآ]/g,'ا').replace(/ة/g,'ه').replace(/ى/g,'ي').replace(/[٠-٩]/g,d=>'٠١٢٣٤٥٦٧٨٩'.indexOf(d)).replace(/[\s«»"'.,،]+/g,'');
@@ -781,7 +826,7 @@ function initNet(bi){
       if(d.sentAt===S.sentAt&&d.writer===S.writer)return;
       if(!init)skew=d.sentAt-Date.now();
       S=d;if(init)lastFlash=S.flash&&S.flash.id;after();
-    }else if(k==='content'){if(d.writer===CID)return;const c=d.ct;if(validCT(c)){CT=c;try{localStorage.setItem(SK('ct'),JSON.stringify(c))}catch(e){}stageKey='';after()}
+    }else if(k==='content'){if(d.writer===CID)return;const c=d.ct;if(validCT(c)){CT=mergeCT(c);try{localStorage.setItem(SK('ct'),JSON.stringify(c))}catch(e){}stageKey='';after()}
     }else if(/^team[0-3]$/.test(k)){
       if(typeof TRY!=='undefined'&&TRY!==null)return;
       const i=+k[4];if(d.writer===CID)return;if(d.sentAt===TD[i].sentAt&&d.writer===TD[i].writer)return;
@@ -940,6 +985,7 @@ function stageHTML(prev){
      <div class="clues">${m.clues.map((c,i)=>i<s?`<div class="card clue ${i+1===freshClue?'fresh':''}"><span class="n">${i+1}</span><span>${esc(c)}</span></div>`:`<div class="card clue locked"><span class="n">${i+1}</span><span>دليل مختوم… يُكشف لاحقًا</span></div>`).join('')}
      ${r?`<div class="card" style="border-color:var(--hot)"><b style="color:var(--hot)">الحل:</b> ${esc(m.why)}</div>`:`<p class="note">${esc(m.task)}</p>`}</div></div></div>`;
   }
+  if(m.type==='c4'){return `<div class="panel">${head}<div class="lockc"><span class="lk-ico" style="font-size:90px">🔴🟡</span><h2 class="big-q">${esc(m.goal)}</h2><p class="goal">${esc(m.task)}</p>${r?`<span class="ans"><small>الرمز</small>${esc(CT.c4.code)}</span>`:''}</div></div>`}
   if(m.type==='sort'){const T=sortSet(4242);
     return `<div class="panel">${head}<p class="goal">${esc(m.goal)}</p>
      ${r?`<div class="sortans">${T.sorted.map(v=>`<span>${v}</span>`).join('')}</div>`:`<div class="sortgrid big">${T.grid.map(v=>`<span class="sc">${v}</span>`).join('')}</div>`}
@@ -1205,6 +1251,7 @@ function initSub(type){switch(type){
   case 'quiz':return{q:0,ord:QOPT.map(()=>shuf([0,1,2,3]))};
   case 'tap':return{round:0,next:0,cells:shuf([...Array(25).keys()])};
   case 'sort':return{seed:(Math.random()*1e9)|0,next:0};
+  case 'c4':return c4New(1,0,0);
   case 'riddles':return{q:0};
   case 'vault':return{stage:0,code:''};}}
 function renderPlay(){
@@ -1237,6 +1284,23 @@ function mcqHTML(list,s,label,act){const q=list[Math.min(s.q,list.length-1)];if(
     <h2 class="ptitle qtext">${esc(q.q)}</h2><div class="opts">${q.o.map((o,i)=>o===''?'':`<button class="opt q30o" data-act="${act}:${i}"><small>${'أبجد'[i]})</small> ${esc(o)}</button>`).join('')}</div></div>`}
 function codePad(len,val,act,dispId){return `<div class="vdisp lkd" id="${dispId}">${val?esc(val):'·'.repeat(len)}</div>
    <div class="keypad">${[1,2,3,4,5,6,7,8,9].map(n=>`<button class="b" data-act="${act}-k:${n}">${n}</button>`).join('')}<button class="b" data-act="${act}-del">⌫</button><button class="b" data-act="${act}-k:0">0</button><button class="b pri" data-act="${act}-go">تأكيد</button></div>`}
+function c4New(round,w,l){return {round,w,l,b:Array(42).fill(0),turn:round===2?'a':'p',over:null,line:null,phase:'play',code:'',last:-1}}
+function c4HTML(s){const tc=TC[MYT]||'var(--sig)';
+  const score=`<div class="c4score"><span style="color:${tc}">أنتم <b class="num">${s.w}</b></span><span class="counter">الجولة ${s.round} من 3</span><span>الكمبيوتر <b class="num">${s.l}</b></span></div>`;
+  if(s.phase==='code')return `<div class="pcard">${score}<div class="lockc"><span class="lk-ico">🏆</span><b>فزتم بالمباراة!</b><p class="lk-msg">${esc(CT.c4.hint||'')}</p><div class="digitbox"><span>رمز الخزنة الأخيرة</span><b class="num c4code">${esc(CT.c4.code)}</b></div><button class="b pri" style="min-height:60px;font-size:20px" data-act="pc4-wrote">كتبناه ✓ أدخل الرمز</button></div></div>`;
+  if(s.phase==='enter')return `<div class="pcard"><div class="lockc"><span class="lk-ico">🔐</span><b>أدخلوا الرمز اللي كتبتوه</b>${codePad(String(CT.c4.code).length,s.code,'pc4c','pc4d')}<p class="note">بعد الرمز الصحيح تنفتح المهمة الأخيرة.</p></div></div>`;
+  if(s.phase==='lost')return `<div class="pcard">${score}<div class="lockc"><span class="lk-ico">🤖</span><b>الكمبيوتر فاز بالمباراة</b><p class="lk-msg">ما زال عندكم وقت! ابدأوا مباراة جديدة من ثلاث جولات.</p><button class="b pri" style="min-height:60px;font-size:20px" data-act="pc4-again">مباراة جديدة</button></div></div>`;
+  const win=new Set((s.line||[]).map(([r,c])=>r*7+c));
+  const msg=s.over==='p'?'🎉 فزتم بالجولة!':s.over==='a'?'🤖 الكمبيوتر فاز بالجولة':s.over==='d'?'تعادل! تُعاد الجولة':s.turn==='p'?'دوركم: اضغطوا على عمود':'الكمبيوتر يفكّر…';
+  return `<div class="pcard">${score}<div class="c4msg ${s.turn==='a'&&!s.over?'think':''}">${msg}</div>
+    <div class="c4board" style="--tc:${tc}">${Array.from({length:42},(_,i)=>{const v=s.b[i],c=i%7;return `<button class="c4cell ${v==='p'?'p':v==='a'?'a':''} ${win.has(i)?'win':''} ${i===s.last?'drop':''}" data-act="pc4:${c}" aria-label="العمود ${c+1}" ${s.over||s.turn!=='p'?'tabindex="-1"':''}></button>`}).join('')}</div>
+    ${s.over?`<button class="b pri" style="min-height:56px;font-size:19px" data-act="pc4-next">${s.over==='d'?'إعادة الجولة':'الجولة التالية'}</button>`:''}
+    <div class="c4leg"><span><i style="background:${tc}"></i>أنتم</span><span><i style="background:#eef1ff"></i>الكمبيوتر</span></div></div>`}
+function c4After(s){const w=c4Win(s.b,'p'),a=c4Win(s.b,'a');
+  if(w){s.over='p';s.line=w;s.w++;sFan()}else if(a){s.over='a';s.line=a;s.l++;sBuzz()}else if(c4Full(s.b)){s.over='d'}
+  if(s.over&&s.over!=='d'){if(s.w>=2)setTimeout(()=>{s.phase='code';pSave();pRender()},1600);else if(s.l>=2)setTimeout(()=>{s.phase='lost';pSave();pRender()},1600)}}
+function c4AIMove(){const s=PS.sub;if(!s||s.over||s.turn!=='a'||s.phase!=='play')return;
+  setTimeout(()=>{const s2=PS.sub;if(s2!==s||s.over||s.turn!=='a')return;const c=c4AI(s.b);const r=c4Drop(s.b,c,'a');s.last=r*7+c;beep(330,.1,'triangle',.12);s.turn='p';c4After(s);pSave();pRender()},550)}
 function pMission(){
   const d=TD[MYT],m=P[d.mission],s=PS.sub;
   if(m.type==='twin'){const T=twinRound(s.seed,s.round);
@@ -1270,6 +1334,7 @@ function pMission(){
     return pHead('اختاروا الأغراض التي كانت في الحقيبة')+`<div class="pcard"><div class="pgrid">${s.order.map(k=>`<button class="mi ${s.picks.includes(k)?'sel':''}" data-act="pm-pick:${k}">${all[k][0]}<small>${esc(all[k][1])}</small></button>`).join('')}</div><button class="b pri" data-act="pm-sub" ${s.picks.length<10?'disabled':''}>تسليم (${s.picks.length} مختار)</button></div>`;}
   if(m.type==='quiz'){const q=M[3].qs[s.q];
     return `<div class="pcard"><span class="counter">QUESTION ${s.q+1} / 10</span><h2 class="ptitle" style="font-size:30px">${esc(q.q)}</h2><div class="opts">${s.ord[s.q].map(o=>`<button class="opt" data-act="pq:${o}">${esc(QOPT[s.q][o])}</button>`).join('')}</div></div>`;}
+  if(m.type==='c4'){if(s.turn==='a'&&!s.over&&s.phase==='play')setTimeout(c4AIMove,0);return c4HTML(s)}
   if(m.type==='sort'){const T=sortSet(s.seed),done=new Set(T.sorted.slice(0,s.next));
     return `<div class="pcard"><div class="q30h"><span class="counter">رتّبوا من الأصغر إلى الأكبر</span><span class="counter" id="psoc">${s.next} / ${SORT_N}</span></div><div class="q30bar"><i id="psob" style="width:${s.next/SORT_N*100}%"></i></div>
       <div class="sortstrip" id="psos">${s.next?T.sorted.slice(Math.max(0,s.next-8),s.next).map(v=>`<span>${v}</span>`).join('<i>‹</i>'):'<em>اضغطوا أصغر رقم أولًا</em>'}</div>
@@ -1308,6 +1373,14 @@ const PACT={
   ptw:v=>{const s=PS.sub;const T=twinRound(s.seed,s.round);
     if(+v===T.ans){pGood();const e=$('#tw'+v);if(e)e.classList.add('hit');s.round++;if(s.round>=5){setTimeout(()=>pComplete(0),350);return}pSave();setTimeout(pRender,350)}
     else{const e=$('#tw'+v);if(e){e.classList.add('bad');setTimeout(()=>e.classList.remove('bad'),900)}pShake();sBuzz();try{navigator.vibrate&&navigator.vibrate(250)}catch(x){}lockTitle='ليست هي!';lockMsg='انتظروا 5 ثوانٍ وركّزوا أكثر';lockUntil=Date.now()+5000}},
+  pc4:v=>{const s=PS.sub;if(s.phase!=='play'||s.over||s.turn!=='p')return;const c=+v;if(s.b[c])return;const r=c4Drop(s.b,c,'p');s.last=r*7+c;beep(520,.08,'triangle',.12);
+    s.turn='a';c4After(s);pSave();pRender();if(!s.over)c4AIMove()},
+  'pc4-next':()=>{const s=PS.sub;if(!s.over||s.phase!=='play')return;if(s.w>=2||s.l>=2)return;const nr=s.over==='d'?s.round:s.round+1;PS.sub=c4New(nr,s.w,s.l);pSave();pRender()},
+  'pc4-again':()=>{PS.sub=c4New(1,0,0);pSave();pRender()},
+  'pc4-wrote':()=>{const s=PS.sub;if(s.phase!=='code')return;s.phase='enter';s.code='';pSave();pRender()},
+  'pc4c-k':v=>{const s=PS.sub;const n=String(CT.c4.code).length;if(s.code.length<n)s.code+=v;const e=$('#pc4d');if(e)e.textContent=s.code||'·'.repeat(n);beep(700,.05,'square',.06)},
+  'pc4c-del':()=>{const s=PS.sub;s.code=s.code.slice(0,-1);const e=$('#pc4d');if(e)e.textContent=s.code||'·'.repeat(String(CT.c4.code).length)},
+  'pc4c-go':()=>{const s=PS.sub;if(s.code===String(CT.c4.code)){pComplete(0,true);return}s.code='';const e=$('#pc4d');if(e)e.textContent='·'.repeat(String(CT.c4.code).length);lockTitle='الرمز غير صحيح';lockMsg='انتظروا 5 ثوانٍ';pShake('pc4d');sBuzz();lockUntil=Date.now()+5000},
   pso:v=>{const s=PS.sub,T=sortSet(s.seed),n=+v;if(T.sorted.slice(0,s.next).includes(n))return;
     if(n===T.sorted[s.next]){s.next++;beep(420+s.next*14,.07,'triangle',.1);try{navigator.vibrate&&navigator.vibrate(20)}catch(e){}
       const b=$('#so'+n);if(b)b.classList.add('hit');
@@ -1367,17 +1440,17 @@ function tryCtl(){return `<div class="sec"><h3>🧪 جرّب المهام بنف
   <div class="mchips">${P.map((x,k)=>`<button class="b" data-act="tryopen:${k+1}" title="${esc(x.title)}">${k+1}</button>`).join('')}</div>
   <p class="note">يفتح المهمة على جهازك كأنك فريق: تقدر تجاوب وتجرّب الأقفال والشيفرات، ونتيجتك ما تُحسب ولا تظهر على الشاشة.</p></div>`}
 let EDM={tab:'q30',idx:null,d:null,msg:'',arm:''},edOpen=false;
-const ED_TABS=[['q30','المهمة 1 · الأسئلة'],['clues','المهمة 3 · الأدلة'],['code4','المهمة 4 · الشيفرة'],['rid','المهمة 6 · الألغاز'],['vault','المهمة 7 · الخزنة']];
+const ED_TABS=[['q30','المهمة 1 · الأسئلة'],['clues','المهمة 3 · الأدلة'],['code4','المهمة 4 · الشيفرة'],['c4','المهمة 6 · أربع تربح'],['vault','المهمة 7 · الخزنة']];
 function edStart(tab,idx){EDM.tab=tab;EDM.idx=idx;EDM.msg='';EDM.arm='';
-  if(tab==='code4')EDM.d=structuredClone(CT.code4);
+  if(tab==='code4'||tab==='c4')EDM.d=structuredClone(CT[tab]);
   else if(tab==='vault')EDM.d=structuredClone(CT.vault);
   else if(idx===null)EDM.d=null;
   else{const L=CT[tab];const it=idx>=0&&L[idx]?structuredClone(L[idx]):{q:'',o:['','','',''],a:0,t:'',d:''};while(it.o.length<4)it.o.push('');EDM.d=it}
   after()}
 function editorCtl(){
   const tab=EDM.tab;let body='';
-  if(tab==='code4'||tab==='vault'){if(!EDM.d)EDM.d=structuredClone(CT[tab]);const d=EDM.d;
-    body=tab==='code4'?`<label class="edl">الشيفرة (أرقام فقط)<input id="ed-code" inputmode="numeric" maxlength="10" value="${esc(d.code)}"></label>
+  if(tab==='code4'||tab==='c4'||tab==='vault'){if(!EDM.d)EDM.d=structuredClone(CT[tab]);const d=EDM.d;
+    body=(tab==='code4'||tab==='c4')?`<label class="edl">${tab==='c4'?'الرمز اللي يظهر لهم بعد الفوز (أرقام فقط)':'الشيفرة (أرقام فقط)'}<input id="ed-code" inputmode="numeric" maxlength="10" value="${esc(d.code)}"></label>
       <label class="edl">رسالة تظهر للفرق فوق لوحة الأرقام<textarea id="ed-hint" rows="2" maxlength="220">${esc(d.hint)}</textarea></label>`
     :`<label class="edl">القفل الأول: السؤال<textarea id="ed-q1" rows="2" maxlength="220">${esc(d.q1)}</textarea></label>
       <label class="edl">القفل الأول: الرقم الصحيح<input id="ed-a1" inputmode="numeric" maxlength="7" value="${esc(d.a1)}"></label>
@@ -1419,7 +1492,7 @@ const EDACT={
     const L=CT[tab];if(EDM.idx>=0)L[EDM.idx]=it;else L.push(it);saveCT();EDM.msg='✓ تم الحفظ';const keepTab=tab;edStart(keepTab,null);EDM.msg='✓ تم الحفظ';after()},
   'ed-del':()=>{if(EDM.arm!=='del'){edArm('del');return}const L=CT[EDM.tab];if(L.length<=1){EDM.msg='لازم يبقى سؤال واحد على الأقل.';after();return}L.splice(EDM.idx,1);saveCT();edStart(EDM.tab,null);EDM.msg='✓ تم الحذف';after()},
   'ed-save1':()=>{const d=EDM.d,tab=EDM.tab;
-    if(tab==='code4'){const c=toLat(d.code);if(c.length<3){EDM.msg='الشيفرة لازم تكون 3 أرقام على الأقل.';after();return}CT.code4={code:c,hint:String(d.hint||'').trim()}}
+    if(tab==='code4'||tab==='c4'){const c=toLat(d.code);if(c.length<3){EDM.msg='الرمز لازم يكون 3 أرقام على الأقل.';after();return}CT[tab]={code:c,hint:String(d.hint||'').trim()}}
     else{const a1=toLat(d.a1);if(!a1){EDM.msg='اكتب رقم القفل الأول.';after();return}if(!String(d.a2||'').trim()||!String(d.shown||'').trim()){EDM.msg='اكتب كلمة القفل الثاني وإجابتها.';after();return}
       CT.vault={q1:String(d.q1||'').trim(),a1,q2:String(d.q2||'').trim(),shown:String(d.shown).trim(),a2:String(d.a2).trim()}}
     saveCT();EDM.d=null;EDM.msg='✓ تم الحفظ';after()},
