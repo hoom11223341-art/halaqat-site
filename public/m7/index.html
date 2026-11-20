@@ -550,6 +550,13 @@ body::after{content:"";position:fixed;inset:0;pointer-events:none;z-index:0;
 .gate-in>p{color:var(--mute)}
 .gate .conn{color:var(--mute)}
 .intro .joinqr{top:0;bottom:auto;inset-inline-start:auto;inset-inline-end:0;box-shadow:0 0 0 1px #4dff7c55,0 0 24px #4dff7c33}
+.f7msg{display:flex;flex-wrap:wrap;gap:14px 22px;justify-content:center;padding-block:8px}
+.f7w{display:flex;gap:4px;padding:6px 8px;border-radius:12px;background:#03110a;box-shadow:inset 0 0 0 1px #24502f}
+.f7w b{font-size:30px;line-height:1.2;min-width:1.1em;text-align:center;color:#e9ffe9;text-shadow:0 0 12px #4dff7c66;font-family:'Segoe UI Symbol','Noto Sans Symbols 2','DejaVu Sans',sans-serif;font-weight:400}
+.f7sheet{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:6px}
+.f7sheet span{display:grid;justify-items:center;gap:2px;padding:6px 0;border-radius:10px;background:#03110a;border:1px solid #24502f}
+.f7sheet b{font-size:24px;line-height:1.2;font-weight:400;font-family:'Segoe UI Symbol','Noto Sans Symbols 2','DejaVu Sans',sans-serif}
+.f7sheet i{font-style:normal;font-family:var(--display);font-size:20px;color:var(--sig)}
 </style>
 <script src="https://unpkg.com/mqtt@5.10.1/dist/mqtt.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
@@ -734,8 +741,20 @@ const P=[
  {type:'code',title:'الشيفرة',kind:'محطة الشيفرة',intro:'اعرفوا الشيفرة وأدخلوها. بمجرد إدخالها الصحيح تنتقلون مباشرة للمهمة الخامسة.'},
  {type:'sort',title:'ترتيب الأرقام الفردية',kind:'تحدي ترتيب',intro:'🚨 أمامكم 50 رقمًا فرديًا مبعثرة. اضغطوها بالترتيب من الأصغر إلى الأكبر. الضغطة الخاطئة توقفكم 5 ثوانٍ.'},
  {type:'c4',title:'أربع تربح',kind:'تحدي ذكاء',dur:420000,intro:'العبوا «أربع تربح» ضد الكمبيوتر (مستوى فوق المتوسط). أول من يصفّ 4 أقراص متتالية أفقيًا أو عموديًا أو قطريًا يفوز بالجولة. اكسبوا جولتين من ثلاث، ويظهر لكم رمز الخزنة الأخيرة. ⏱ 7 دقائق'},
- {type:'final7',title:'الشيفرة الأخيرة',kind:'المهمة السابعة',dur:420000,intro:'🔐 سبع شيفرات مختلفة تخفي رمز الخزنة الأخيرة. فكّوا كل شيفرة لتعرفوا رقمها، ثم أدخلوا الرمز كاملًا. كل فريق عنده شيفرات مختلفة، والنقاط هنا مضاعفة! ⏱ 7 دقائق'}];
-/* ---- mission 7: seven ciphers hide a 7-digit code, different for every team ---- */
+ {type:'final7',title:'الشيفرة الأخيرة',kind:'المهمة السابعة',dur:420000,intro:'🔐 أمامكم رسالة مشفّرة بالرموز وورقة فك الشفرات: كل رمز يقابل حرفًا. فكّوا الرسالة لتعرفوا المطلوب، ثم أدخلوا الرقم الصحيح ليظهر لكم الرمز النهائي. النقاط مضاعفة! ⏱ 7 دقائق'}];
+/* ---- mission 7 (sheet): symbol ↔ letter key, different per team; answer + reveal codes come from the host ---- */
+const VS='\uFE0E';
+const SHEET_SYMS=['★','◆','●','▲','■','♥','♣','☾','✿','⬟','✦','✚','◐','✉','☀','☁','⚑','✈','☂','♞','♜','⚓','✂','☯','♫','⌘','⚡','❄','⬢','♠','✪','☎','⌛','⚙','✎','➤'];
+const SHEET_LET=['ا','ب','ت','ث','ج','ح','خ','د','ذ','ر','ز','س','ش','ص','ض','ط','ظ','ع','غ','ف','ق','ك','ل','م','ن','ه','و','ي','ة','ى'];
+const normL=c=>({'أ':'ا','إ':'ا','آ':'ا','ؤ':'و','ئ':'ي'})[c]||c;
+const SHEET_MEMO=new Map();
+function sheetFor(i){const key=(ROOMC||'X')+'|'+i;if(SHEET_MEMO.has(key))return SHEET_MEMO.get(key);
+  const r=mulb(parseInt(hsh('sheet|'+key),36)%1e9+3);const sy=SHEET_SYMS.slice();for(let k=sy.length-1;k>0;k--){const j=Math.floor(r()*(k+1));[sy[k],sy[j]]=[sy[j],sy[k]]}
+  const map={};SHEET_LET.forEach((l,k)=>map[l]=sy[k]);const out={map};SHEET_MEMO.set(key,out);return out}
+function encodeMsg(msg,i){const m=sheetFor(i).map;return String(msg||'').split(/\s+/).filter(Boolean).map(w=>[...w].map(c=>{const l=normL(c);return m[l]?{s:m[l]+VS,l}:{s:c,l:c}}))}
+const encB=(txt,key)=>{const b=new TextEncoder().encode(String(txt)),k=new TextEncoder().encode(String(key)||'k');let o='';b.forEach((v,i)=>o+=String.fromCharCode(v^k[i%k.length]));return btoa(o)};
+const decB=(b64,key)=>{try{const k=new TextEncoder().encode(String(key)||'k');const o=Uint8Array.from(atob(b64||''),c=>c.charCodeAt(0)).map((v,i)=>v^k[i%k.length]);return new TextDecoder().decode(o)}catch(e){return ''}};
+/* ---- older generated-cipher version (kept for reference, no longer shown) ---- */
 const NUMW=['صفر','واحد','اثنان','ثلاث','اربع','خمس','ست','سبع','ثمان','تسع'];
 const ROMAN=['','I','II','III','IV','V','VI','VII','VIII','IX'];
 const SYMS=['★','◆','●','▲','■','♥','♣','☾','✿','⬟'];
@@ -826,6 +845,7 @@ const DEF_CT={
   Object.assign({q:RID[2].q},placeAt(RID[2].o,2)),
   Object.assign({q:RID[3].q},placeAt(['5:48','5:52','6:12','5:40'],1)),
   Object.assign({q:RID[4].q},placeAt(RID[4].o,0))],
+ f7:{msg:'آخر سبعة أرقام من جوال الجمعية',h:'',x:'',cx:[]},
  c4:{code:'2468135',hint:'اكتبوا هذا الرمز في ورقة، وبعدها أدخلوه لفتح المهمة الأخيرة.'},
  vault:{q1:'رقم الخزنة = عدد أركان الإسلام × عدد أيام الأسبوع − عدد الفرق المتنافسة. ما الرقم؟',a1:'31',q2:'فكّوا هذه الكلمة: كل حرف استُبدل بالحرف الذي يليه في الأبجدية.',shown:'قيس',a2:'فوز'}};
 let CT=structuredClone(DEF_CT);
@@ -1414,7 +1434,7 @@ function initSub(type){switch(type){
   case 'c4':return c4New(1,0,0);
   case 'riddles':return{q:0};
   case 'vault':return{stage:0,code:''};
-  case 'final7':return{code:'',hint:''};}}
+  case 'final7':return{code:'',phase:'enter',ans:''};}}
 function renderPlay(){
   const app=$('#app');
   if(MYT===null){app.innerHTML=`<div class="pl wrap" style="padding-block:24px"><div class="pcard"><span class="counter">PLAYERS</span><h1 class="ptitle">اختاروا فريقكم</h1><p class="note">جهاز واحد لكل فريق. لا يمكن تغيير الفريق بعد بدء السباق إلا من المقدم.</p><div class="tpick">${S.teams.map((t,i)=>`<button class="b" style="background:${TC[i]}" data-act="pteam:${i}">${esc(t.name)}</button>`).join('')}</div></div><button class="tbtn" data-act="route:" ${IS_OWNER===false?"hidden":""}>رجوع</button></div>`;PS.key='';return}
@@ -1506,10 +1526,14 @@ function pMission(){
   if(m.type==='riddles')return mcqHTML(CT.rid,s,'RIDDLE','pr');
   if(m.type==='riddles_old'){const r=RID[s.q];
     return `<div class="pcard"><span class="counter">RIDDLE ${s.q+1} / 5</span><h2 class="ptitle" style="font-size:28px;line-height:1.35">${esc(r.q)}</h2>${r.o?`<div class="opts">${s.ord[s.q].map(o=>`<button class="opt" data-act="pr:${o}">${esc(r.o[o])}</button>`).join('')}</div>`:`<input class="pin" id="pri" placeholder="${esc(r.ph)}" inputmode="numeric" autocomplete="off"><button class="b pri" data-act="pr-chk">تحقّق</button>`}</div>`;}
-  if(m.type==='final7'){const F=final7(TRY!==null?0:MYT);
-    return `<div class="pcard"><span class="counter">🔐 فكّوا الشيفرات السبع · كل شيفرة = رقم واحد</span><p class="note">اكتبوا كل رقم في ورقة بالترتيب من 1 إلى 7، ثم أدخلوا الرمز كاملًا تحت.</p></div>
-      ${F.cards.map((c,k)=>`<div class="pcard f7card"><div class="f7head"><span class="f7n num">${k+1}</span><b>${esc(CT7_LABEL[c.t])}</b><span class="note">الرقم ${k+1}</span></div>${c.html}</div>`).join('')}
-      <div class="pcard"><div class="lockc"><span class="lk-ico">🗝️</span><b>رمز الخزنة الأخيرة</b>${codePad(7,s.code,'pf7','pf7d')}${s.hint?`<p class="lk-msg" id="pf7h">${esc(s.hint)}</p>`:''}</div></div>`}
+  if(m.type==='final7'){const ti=TRY!==null?0:MYT,F=CT.f7;
+    if(!F.h)return `<div class="pcard"><div class="lockc"><span class="lk-ico">⏳</span><b>المقدم يجهّز الشيفرة الأخيرة</b><p class="note">انتظروا لحظة… وبلّغوا المقدم إذا طال الانتظار.</p></div></div>`;
+    if(s.phase==='code'){const code=decB((F.cx||[])[ti],s.ans)||decB((F.cx||[])[0],s.ans);
+      return `<div class="pcard"><div class="lockc"><span class="lk-ico">🏆</span><b>فككتم الشيفرة!</b><div class="digitbox"><span>رمزكم النهائي</span><b class="num c4code">${esc(code)}</b></div><p class="lk-msg">✍️ اكتبوا هذا الرمز في ورقة وسلّموه للمشرف.</p><button class="b pri" style="min-height:62px;font-size:20px" data-act="pf7-done">كتبناه ✓ أنهوا المهمة</button></div></div>`}
+    const enc=encodeMsg(F.msg,ti),map=sheetFor(ti).map;
+    return `<div class="pcard"><span class="counter">📜 الرسالة المشفّرة</span><div class="f7msg">${enc.map(w=>`<span class="f7w">${w.map(x=>`<b>${esc(x.s)}</b>`).join('')}</span>`).join('')}</div><p class="note">كل رمز يقابل حرفًا. استخدموا ورقة فك الشفرات تحت.</p></div>
+      <div class="pcard"><span class="counter">🗝️ ورقة فك الشفرات</span><div class="f7sheet">${SHEET_LET.map(l=>`<span><b>${esc(map[l]+VS)}</b><i>${l}</i></span>`).join('')}</div></div>
+      <div class="pcard"><div class="lockc"><span class="lk-ico">🔐</span><b>أدخلوا الأرقام السبعة</b>${codePad(7,s.code,'pf7','pf7d')}<p class="note">إذا كان الرقم صحيحًا يظهر لكم الرمز النهائي.</p></div></div>`}
   if(m.type==='vault'){
     if(s.stage===0)return pHead('القفل الأول')+`<div class="pcard"><p style="font-size:18px">${esc(CT.vault.q1)}</p><div class="vdisp" id="pvd">${s.code||'·'.repeat(String(CT.vault.a1).length)}</div><div class="keypad">${[1,2,3,4,5,6,7,8,9].map(n=>`<button class="b" data-act="pv-key:${n}">${n}</button>`).join('')}<button class="b" data-act="pv-clr">مسح</button><button class="b" data-act="pv-key:0">0</button><button class="b pri" data-act="pv-ent">فتح</button></div></div>`;
     if(s.stage===1)return pHead('القفل الثاني')+`<div class="pcard"><p style="font-size:18px">${esc(CT.vault.q2)}</p><div class="pcode" style="text-align:center;font-size:56px">${esc(CT.vault.shown)}</div><div class="abc">${[...AB].map(x=>`<span>${x}</span>`).join('')}</div><input class="pin" id="pvw" placeholder="الكلمة الأصلية" autocomplete="off"><button class="b pri" data-act="pv-word">فتح الخزنة</button></div>`;
@@ -1549,10 +1573,10 @@ const PACT={
   'pc4c-go':()=>{const s=PS.sub;if(s.code===String(CT.c4.code)){pComplete(0,true);return}s.code='';const e=$('#pc4d');if(e)e.textContent='·'.repeat(String(CT.c4.code).length);lockTitle='الرمز غير صحيح';lockMsg='انتظروا 5 ثوانٍ';pShake('pc4d');sBuzz();lockUntil=Date.now()+5000},
   'pf7-k':v=>{const s=PS.sub;if(s.code.length<7)s.code+=v;const e=$('#pf7d');if(e)e.textContent=s.code||'·······';beep(700,.05,'square',.06)},
   'pf7-del':()=>{const s=PS.sub;s.code=s.code.slice(0,-1);const e=$('#pf7d');if(e)e.textContent=s.code||'·······'},
-  'pf7-go':()=>{const s=PS.sub,F=final7(TRY!==null?0:MYT);if(s.code.length!==7)return;
-    if(s.code===F.code){s.hint='';finaleWin();setTimeout(()=>pComplete(0),2600);return}
-    let ok=0;for(let k=0;k<7;k++)if(s.code[k]===F.code[k])ok++;s.hint=`✓ ${ok} من 7 أرقام في مكانها الصحيح. راجعوا الباقي.`;s.code='';pSave();pRender();
-    lockTitle='الرمز غير صحيح';lockMsg=`${ok} من 7 صحيحة · انتظروا 5 ثوانٍ`;pShake('pf7d');sBuzz();lockUntil=Date.now()+5000},
+  'pf7-go':()=>{const s=PS.sub,F=CT.f7;if(s.code.length!==7||!F.h)return;
+    if(hsh(s.code)===F.h){s.ans=s.code;s.phase='code';pGood();sFan();pSave();pRender();return}
+    s.code='';pSave();pRender();lockTitle='الرقم غير صحيح';lockMsg='فكّوا الرسالة مرة ثانية · انتظروا 5 ثوانٍ';pShake('pf7d');sBuzz();lockUntil=Date.now()+5000},
+  'pf7-done':()=>{const s=PS.sub;if(s.phase!=='code')return;s.phase='done';finaleWin();setTimeout(()=>pComplete(0),2600)},
   pso:v=>{const s=PS.sub,T=sortSet(s.seed),n=+v;if(T.sorted.slice(0,s.next).includes(n))return;
     if(n===T.sorted[s.next]){s.next++;beep(420+s.next*14,.07,'triangle',.1);try{navigator.vibrate&&navigator.vibrate(20)}catch(e){}
       const b=$('#so'+n);if(b)b.classList.add('hit');
@@ -1609,24 +1633,33 @@ const PACT={
 /* ================= HOST: TEST MODE + CONTENT EDITOR ================= */
 const tryURL=k=>location.pathname+'?r='+ROOMC+'&k='+HK+'&try='+k+'#play';
 let codesOpen=false;
-function codesCtl(){return `<details class="sec" id="cdDet" ${codesOpen?'open':''}><summary style="cursor:pointer;font-weight:700">🗝️ رموز المهمة 7 · لكل فريق رمز مختلف</summary>
-  ${S.teams.map((t,i)=>{const F=final7(i);const d=TD[i];const done=d.results[6]&&d.results[6].s==='done';return `<div class="f7host"><div class="f7hh"><b style="color:${TC[i]}">${esc(t.name)}</b><span class="num f7code">${F.code}</span>${done?'<span class="pill" style="background:var(--t3);color:var(--ink);border-color:var(--t3)">✓ فتحوها</span>':''}</div>
-    <ol>${F.cards.map(c=>`<li><b>${esc(CT7_LABEL[c.t])}:</b> ${esc(c.how)}</li>`).join('')}</ol></div>`}).join('')}
-  <p class="note">الرموز ثابتة لهذه الغرفة. إذا أخطأ الفريق، يظهر له كم رقمًا صحيحًا في مكانه.</p></details>`}
+function codesCtl(){const F=CT.f7,ans=F.x?lockDec(F.x):'';
+  return `<details class="sec" id="cdDet" ${codesOpen?'open':''}><summary style="cursor:pointer;font-weight:700">🗝️ المهمة 7 · الشيفرة الأخيرة ${F.h?'':'<span class="pill" style="background:var(--hot);color:#fff;border-color:var(--hot)">لم تُجهَّز بعد</span>'}</summary>
+  ${F.h?`<p class="note" style="margin-top:8px">الرسالة: <b style="color:var(--fg)">${esc(F.msg)}</b><br>الرقم المطلوب: <b class="num" style="color:var(--sig);font-size:18px">${esc(ans)}</b></p>
+  ${S.teams.map((t,i)=>{const d=TD[i];const done=d.results[6]&&d.results[6].s==='done';return `<div class="f7hh" style="padding-block:6px;border-top:1px solid var(--line)"><b style="color:${TC[i]}">${esc(t.name)}</b><span class="num f7code">${esc(decB((F.cx||[])[i],ans))}</span>${done?'<span class="pill" style="background:var(--t3);color:var(--ink);border-color:var(--t3)">✓ أنهوا</span>':''}</div>`}).join('')}
+  <p class="note">لكل فريق ورقة رموز مختلفة، والرسالة نفسها. تعدّلها من «تعديل محتوى المهام» ثم «المهمة 7».</p>`:`<p class="note" style="margin-top:8px;color:var(--hot)">ادخل «تعديل محتوى المهام» ثم تبويب «المهمة 7» واكتب الرقم المطلوب ورموز الفرق قبل بدء السباق.</p>`}</details>`}
 function tryCtl(){return `<div class="sec"><h3>🧪 جرّب المهام بنفسك · ما يأثر على الفرق</h3>
   <div class="mchips">${P.map((x,k)=>`<button class="b" data-act="tryopen:${k+1}" title="${esc(x.title)}">${k+1}</button>`).join('')}</div>
   <p class="note">يفتح المهمة على جهازك كأنك فريق: تقدر تجاوب وتجرّب الأقفال والشيفرات، ونتيجتك ما تُحسب ولا تظهر على الشاشة.</p></div>`}
 let EDM={tab:'q30',idx:null,d:null,msg:'',arm:''},edOpen=false;
-const ED_TABS=[['q30','المهمة 1 · الأسئلة'],['clues','المهمة 3 · الأدلة'],['code4','المهمة 4 · الشيفرة'],['c4','المهمة 6 · أربع تربح']];
+const ED_TABS=[['f7','المهمة 7 · الشيفرة الأخيرة'],['q30','المهمة 1 · الأسئلة'],['clues','المهمة 3 · الأدلة'],['code4','المهمة 4 · الشيفرة'],['c4','المهمة 6 · أربع تربح']];
+function f7Draft(){const F=CT.f7,ans=F.x?lockDec(F.x):'';const rc=()=>String(100000+(crypto.getRandomValues(new Uint32Array(1))[0]%900000));return {msg:F.msg,ans,codes:[0,1,2,3].map(i=>(F.cx&&F.cx[i]&&ans)?decB(F.cx[i],ans):rc())}}
 function edStart(tab,idx){EDM.tab=tab;EDM.idx=idx;EDM.msg='';EDM.arm='';
   if(tab==='code4'||tab==='c4')EDM.d=structuredClone(CT[tab]);
+  else if(tab==='f7')EDM.d=f7Draft();
   else if(tab==='vault')EDM.d=structuredClone(CT.vault);
   else if(idx===null)EDM.d=null;
   else{const L=CT[tab];const it=idx>=0&&L[idx]?structuredClone(L[idx]):{q:'',o:['','','',''],a:0,t:'',d:''};while(it.o.length<4)it.o.push('');EDM.d=it}
   after()}
 function editorCtl(){
   const tab=EDM.tab;let body='';
-  if(tab==='code4'||tab==='c4'||tab==='vault'){if(!EDM.d)EDM.d=structuredClone(CT[tab]);const d=EDM.d;
+  if(tab==='f7'){if(!EDM.d)EDM.d=f7Draft();const d=EDM.d;
+    body=`<label class="edl">الرسالة اللي تنشفّر بالرموز (يفكّونها بورقة الشفرات)<textarea id="ed-msg" rows="2" maxlength="120">${esc(d.msg)}</textarea></label>
+      <label class="edl">🔑 الرقم المطلوب: آخر 7 أرقام من جوال الجمعية<input id="ed-ans" inputmode="numeric" maxlength="7" value="${esc(d.ans)}" placeholder="7 أرقام" style="direction:ltr;text-align:center;letter-spacing:.2em;font-size:22px"></label>
+      <p class="note">الرمز النهائي اللي يظهر لكل فريق بعد الحل (تقدر تخليه مختلفًا لكل فريق):</p>
+      ${S.teams.map((t,i)=>`<label class="edl" style="grid-template-columns:110px 1fr;align-items:center"><b style="color:${TC[i]}">${esc(t.name)}</b><input id="ed-rc${i}" maxlength="12" value="${esc(d.codes[i]||'')}" style="direction:ltr;text-align:center"></label>`).join('')}
+      <div class="row"><button class="b pri" data-act="ed-save7">احفظ الشيفرة الأخيرة</button></div>`}
+  else if(tab==='code4'||tab==='c4'||tab==='vault'){if(!EDM.d)EDM.d=structuredClone(CT[tab]);const d=EDM.d;
     body=(tab==='code4'||tab==='c4')?`<label class="edl">${tab==='c4'?'الرمز اللي يظهر لهم بعد الفوز (أرقام فقط)':'الشيفرة (أرقام فقط)'}<input id="ed-code" inputmode="numeric" maxlength="10" value="${esc(d.code)}"></label>
       <label class="edl">رسالة تظهر للفرق فوق لوحة الأرقام<textarea id="ed-hint" rows="2" maxlength="220">${esc(d.hint)}</textarea></label>`
     :`<label class="edl">القفل الأول: السؤال<textarea id="ed-q1" rows="2" maxlength="220">${esc(d.q1)}</textarea></label>
@@ -1653,6 +1686,11 @@ function editorCtl(){
 function saveCT(){CT=structuredClone(CT);try{localStorage.setItem(SK('ct'),JSON.stringify(CT))}catch(e){}pub('content',{v:1,ct:CT,writer:CID,sentAt:Date.now()},true);stageKey='';}
 function edArm(k){EDM.arm=k;after();setTimeout(()=>{if(EDM.arm===k){EDM.arm='';after()}},3500)}
 const EDACT={
+  'ed-save7':()=>{const d=EDM.d;if(!d)return;const ans=toLat(d.ans);const msg=String(d.msg||'').trim();
+    if(!msg){EDM.msg='اكتب الرسالة.';after();return}
+    if(ans.length!==7){EDM.msg='الرقم المطلوب لازم يكون 7 أرقام بالضبط.';after();return}
+    const codes=d.codes.map(c=>String(c||'').trim());if(codes.some(c=>!c)){EDM.msg='اكتب رمزًا لكل فريق.';after();return}
+    CT.f7={msg,h:hsh(ans),x:lockEnc(ans),cx:codes.map(c=>encB(c,ans))};saveCT();EDM.d=null;EDM.msg='✓ تم حفظ الشيفرة الأخيرة';after()},
   tryopen:v=>{location.href=tryURL(+v)},
   'ed-tab':v=>edStart(v,null),
   'ed-pick':v=>edStart(EDM.tab,+v),
@@ -1679,6 +1717,7 @@ document.addEventListener('input',e=>{const id=e.target&&e.target.id||'';if(!id.
   if(id==='ed-q')d.q=v;else if(id==='ed-t')d.t=v;else if(id==='ed-d'){e.target.value=toLat(v).slice(0,1);d.d=e.target.value}
   else if(/^ed-o\d$/.test(id))d.o[+id[4]]=v;
   else if(id==='ed-code'){e.target.value=toLat(v);d.code=e.target.value}else if(id==='ed-hint')d.hint=v;
+  else if(id==='ed-msg')d.msg=v;else if(id==='ed-ans'){e.target.value=toLat(v).slice(0,7);d.ans=e.target.value}else if(/^ed-rc\d$/.test(id))d.codes[+id[5]]=v;
   else if(id==='ed-a1'){e.target.value=toLat(v);d.a1=e.target.value}else if(id==='ed-q1')d.q1=v;else if(id==='ed-q2')d.q2=v;else if(id==='ed-shown')d.shown=v;else if(id==='ed-a2')d.a2=v});
 
 /* ================= ACTIONS ================= */
