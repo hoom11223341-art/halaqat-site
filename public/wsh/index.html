@@ -400,7 +400,10 @@ let ROOMC=(QSP.get('r')||'').toUpperCase().replace(/[^A-Z0-9]/g,'').slice(0,8);
 const cleanPw=x=>String(x||'').replace(/[٠-٩]/g,d=>'٠١٢٣٤٥٦٧٨٩'.indexOf(d)).replace(/[۰-۹]/g,d=>'۰۱۲۳۴۵۶۷۸۹'.indexOf(d)).replace(/[^A-Za-z0-9]/g,'').slice(0,24);
 let HK=cleanPw(QSP.get('k'));let BADKEY=false;
 const hsh=x=>{let h=5381;for(const c of String(x))h=((h<<5)+h+c.charCodeAt(0))|0;return (h>>>0).toString(36)};
-try{if(ROOMC){if(HK)localStorage.setItem('wfb-k-'+ROOMC,HK);else HK=localStorage.getItem('wfb-k-'+ROOMC)||''}}catch(e){}
+let PLAYER_LOCK=false;try{PLAYER_LOCK=!!ROOMC&&!HK&&(location.hash==='#buzz'||sessionStorage.getItem('wfb-play-'+ROOMC)==='1');if(PLAYER_LOCK)sessionStorage.setItem('wfb-play-'+ROOMC,'1')}catch(e){PLAYER_LOCK=!!ROOMC&&!HK&&location.hash==='#buzz'}
+try{if(ROOMC){if(HK)localStorage.setItem('wfb-k-'+ROOMC,HK);else if(!PLAYER_LOCK)HK=localStorage.getItem('wfb-k-'+ROOMC)||''}}catch(e){}
+if(PLAYER_LOCK){ROUTE='buzz';try{history.replaceState(null,'','#buzz');history.pushState({w:1},'','#buzz')}catch(e){}
+  window.addEventListener('popstate',()=>{try{history.pushState({w:1},'','#buzz')}catch(e){}})}
 let IS_OWNER=ROOMC?(HK?true:false):null;
 const SK=k=>'wfb-'+k+'-'+ROOMC;
 let MYT=null;try{const v=localStorage.getItem(SK('t'));if(v!==null&&v!==''&&+v>=0&&+v<4)MYT=+v}catch(e){}
@@ -521,8 +524,8 @@ function after(){
   else renderGate();
   if(drawer&&ROUTE==='screen')renderControl($('#drawerIn'));
 }
-function setRoute(r){ROUTE=r;try{history.replaceState(null,'',r?'#'+r:location.pathname+location.search)}catch(e){location.hash=r}stageKey='';$('#app').innerHTML='';after();if(r==='screen'){try{navigator.wakeLock&&navigator.wakeLock.request('screen').catch(()=>{})}catch(e){}}}
-window.addEventListener('hashchange',()=>{const r=location.hash.replace('#','');if(r!==ROUTE){ROUTE=r;stageKey='';$('#app').innerHTML='';after()}});
+function setRoute(r){if(PLAYER_LOCK&&r!=='buzz')r='buzz';ROUTE=r;try{history.replaceState(null,'',r?'#'+r:location.pathname+location.search)}catch(e){location.hash=r}stageKey='';$('#app').innerHTML='';after();if(r==='screen'){try{navigator.wakeLock&&navigator.wakeLock.request('screen').catch(()=>{})}catch(e){}}}
+window.addEventListener('hashchange',()=>{const r=location.hash.replace('#','');if(PLAYER_LOCK&&r!=='buzz'){try{history.replaceState(null,'','#buzz')}catch(e){}return}if(r!==ROUTE){ROUTE=r;stageKey='';$('#app').innerHTML='';after()}});
 
 function linkFor(route,host){const u=new URL(location.href);u.search='';u.hash='';u.searchParams.set('r',ROOMC);if(host)u.searchParams.set('k',HK);return u.toString()+(route?'#'+route:'')}
 function newRoom(){const A='ABCDEFGHJKLMNPQRSTUVWXYZ23456789';let c='';const r=crypto.getRandomValues(new Uint32Array(6));for(let i=0;i<6;i++)c+=A[r[i]%A.length];
