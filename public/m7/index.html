@@ -380,6 +380,21 @@ button:focus-visible,input:focus-visible{outline:3px solid var(--sig);outline-of
 .q30bar i{display:block;height:100%;background:linear-gradient(90deg,var(--sig),var(--t3));border-radius:99px;transition:width .3s}
 .q30o{font-size:20px}
 .q30o small{color:var(--sig);font-weight:700}
+.twstage{display:grid;grid-template-columns:minmax(150px,230px) auto;gap:20px;align-items:start}
+.twtarget{display:grid;justify-items:center;gap:8px;text-align:center}
+.twtarget svg{width:min(150px,42vw);height:auto;border-radius:14px;box-shadow:0 0 0 3px var(--sig),0 10px 30px #0008}
+.twstage .twtarget svg{width:100%}
+.twgrid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:6px;width:100%}
+.twgrid.big{gap:8px;width:min(100%,60vh);justify-self:center}
+.twstage{justify-content:center}
+.twc{position:relative;padding:0;border-radius:10px;border:2px solid transparent;background:none;line-height:0;cursor:pointer;transition:transform .1s}
+.twc svg{width:100%;height:auto;display:block;border-radius:8px}
+.twc:active{transform:scale(.94)}
+.twc.hit{border-color:var(--t3);box-shadow:0 0 0 3px var(--t3)}
+.twc.bad{border-color:var(--hot);animation:shake .4s}
+.twc.dim{opacity:.3}
+.twc i{position:absolute;top:3px;inset-inline-start:5px;font-style:normal;font-family:var(--num);font-size:12px;line-height:1;color:#fff;text-shadow:0 1px 2px #000}
+@media (max-width:640px){.twstage{grid-template-columns:1fr}}
 </style>
 <script src="https://unpkg.com/mqtt@5.10.1/dist/mqtt.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
@@ -416,6 +431,57 @@ const CASE_M={type:'case',title:'الملف الأحمر',kind:'تحقيق جن�
  why:'سالم كذب مرتين: لم يكن هناك مطر، والبوابة الرئيسية كانت مغلقة. كان واقفًا بجوار الخزنة ومعه المفتاح الوحيد.',
  steps:5, stepName:i=>i===0?'القضية والمشتبهون':`كشف الدليل ${i} من 4`,
  keyText:()=>'اللص: سالم (الحارس). الدليل: لا مطر + البوابة مغلقة + المفتاح معه. اكشف دليلًا كل دقيقة تقريبًا.'};
+
+/* ================= TWIN PICTURES (procedural, no image files) ================= */
+const TW_LV=['الشكل يختلف','اللون يختلف','الأماكن تتبدّل','الاتجاه يختلف','فرق دقيق جدًا'];
+const TW_COL=['#ff4d5e','#3ea6ff','#2fd47b','#ffb21e','#b67cff','#ff8fc8','#17c3b2','#f1f1f1'];
+const TW_SHADE={'#ff4d5e':'#ff8a95','#3ea6ff':'#7cc4ff','#2fd47b':'#79e8a8','#ffb21e':'#ffd27a','#b67cff':'#d2adff','#ff8fc8':'#ffc0e0','#17c3b2':'#6fe0d4','#f1f1f1':'#c9c9c9'};
+const TW_BG=['#1d2550','#2a1d47','#13343a','#3a2a14'];
+const TW_SH=['circle','square','triangle','star','arrow','dome'];
+const TW_ASYM=['triangle','arrow','dome'];
+const TW_SLOT=[[30,32],[70,34],[50,72]];
+function mulb(a){return function(){a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
+const pick=(r,a)=>a[Math.floor(r()*a.length)];
+function twKey(p){return p.bg+'|'+p.sh.map(x=>[x.t,x.c,x.r,x.z].join(',')).join('|')}
+function twBase(r,lv){const sh=[];const used=new Set();
+  for(let k=0;k<3;k++){let t;do{t=pick(r,lv===3?TW_ASYM:TW_SH)}while(used.has(t)&&used.size<5);used.add(t);
+    sh.push({t,c:pick(r,TW_COL),r:pick(r,[0,90,180,270]),z:1})}
+  return {bg:pick(r,TW_BG),sh}}
+function twMutate(r,b,lv){const p=structuredClone(b);const k=Math.floor(r()*3);const x=p.sh[k];
+  if(lv===0){x.t=pick(r,TW_SH.filter(t=>t!==x.t))}
+  else if(lv===1){x.c=pick(r,TW_COL.filter(c=>c!==x.c))}
+  else if(lv===2){const k2=(k+1+Math.floor(r()*2))%3;const t=p.sh[k];p.sh[k]=p.sh[k2];p.sh[k2]=t;if(twKey(p)===twKey(b))p.sh[k].c=pick(r,TW_COL.filter(c=>c!==p.sh[k].c))}
+  else if(lv===3){if(TW_ASYM.includes(x.t))x.r=pick(r,[0,90,180,270].filter(v=>v!==x.r));else x.t=pick(r,TW_ASYM)}
+  else{const m=r();if(m<.5)x.c=TW_SHADE[x.c]||x.c;else x.z=x.z===1?.74:1;if(twKey(p)===twKey(b))x.z=.74}
+  return p}
+const TW_MEMO=new Map();
+function twinRound(seed,lv){const mk=seed+'|'+lv;if(TW_MEMO.has(mk))return TW_MEMO.get(mk);const out=twinRound0(seed,lv);if(TW_MEMO.size>40)TW_MEMO.clear();TW_MEMO.set(mk,out);return out}
+function twinRound0(seed,lv){const r=mulb(seed*7919+lv*104729+13);const base=twBase(r,lv);const bk=twKey(base);const seen=new Set([bk]);const cards=[];
+  /* subtle levels have few single-change variants, so widen step by step (always bounded) */
+  const plan=[[lv,1,300],[lv,2,300],[lv,3,300],[1,1,200],[0,1,200],[1,2,400],[0,2,400]];
+  for(const [L,k,cap] of plan){let g=0;while(cards.length<24&&g++<cap){let d=base;for(let i=0;i<k;i++)d=twMutate(r,d,L);const key=twKey(d);if(!seen.has(key)){seen.add(key);cards.push(d)}}if(cards.length>=24)break}
+  let g=0;while(cards.length<24&&g++<5000){const d=structuredClone(base);d.bg=pick(r,TW_BG);d.sh.forEach(x=>{x.c=pick(r,TW_COL)});const key=twKey(d);if(!seen.has(key)){seen.add(key);cards.push(d)}}
+  /* order decoys randomly so harder variants are mixed in */
+  for(let i=cards.length-1;i>0;i--){const j=Math.floor(r()*(i+1));[cards[i],cards[j]]=[cards[j],cards[i]]}
+  const ans=Math.floor(r()*25);cards.splice(ans,0,base);return {base,cards,ans}}
+function twShape(x,cx,cy){const tf=`translate(${cx} ${cy}) rotate(${x.r}) scale(${x.z})`,f=`fill="${x.c}"`;
+  switch(x.t){
+    case 'circle':return `<circle cx="${cx}" cy="${cy}" r="${13*x.z}" ${f}/>`;
+    case 'square':return `<rect x="-12" y="-12" width="24" height="24" rx="3" ${f} transform="${tf}"/>`;
+    case 'triangle':return `<polygon points="0,-15 13,11 -13,11" ${f} transform="${tf}"/>`;
+    case 'star':return `<polygon points="0,-15 4,-5 15,-5 6,2 9,13 0,6 -9,13 -6,2 -15,-5 -4,-5" ${f} transform="${tf}"/>`;
+    case 'arrow':return `<polygon points="0,-15 12,0 5,0 5,14 -5,14 -5,0 -12,0" ${f} transform="${tf}"/>`;
+    case 'dome':return `<path d="M-14 6 A14 14 0 0 1 14 6 Z" ${f} transform="${tf}"/>`;}
+  return ''}
+function twSVG(p){return `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><rect width="100" height="100" rx="10" fill="${p.bg}"/>${p.sh.map((x,i)=>twShape(x,TW_SLOT[i][0],TW_SLOT[i][1])).join('')}</svg>`}
+
+const CIPHER_M={type:'cipher',title:'شيفرة الظل',kind:'فك تشفير',
+ goal:'اعترضنا رسائل سرية مشفّرة. القاعدة: كل حرف استُبدل بالحرف الذي يليه في الترتيب الأبجدي (والياء تصبح ألفًا).',
+ task:'اكتبوا الرسالة الأصلية. رسالة الذهب عليها 30 نقطة إضافية لأول من يحلها.',
+ score:RANK_TXT+' · رسالة الذهب +30',
+ msgs:[{l:'الرسالة الأولى',p:'السر خلف الباب'},{l:'الرسالة الثانية',p:'النصر لمن يصبر'},{l:'رسالة الذهب',p:'سبع خطوات نحو الكنز',gold:1}],
+ steps:3, stepName:i=>['الرسالة الأولى','+ الرسالة الثانية','+ رسالة الذهب'][i],
+ keyText:s=>CIPHER_M.msgs.slice(0,s+1).map(m=>`${enc(m.p)} ← ${m.p}`).join(' | ')};
 const Q30=[{"q": "ما لون الموز؟", "o": ["أحمر", "أصفر", "أزرق", "أسود"], "a": 1}, {"q": "كم عدد أيام الأسبوع؟", "o": ["5", "6", "7", "8"], "a": 2}, {"q": "ما ناتج 2 + 2؟", "o": ["3", "4", "5", "6"], "a": 1}, {"q": "أي هذه حيوان؟", "o": ["كرسي", "سيارة", "قط", "قلم"], "a": 2}, {"q": "ما عاصمة المملكة العربية السعودية؟", "o": ["جدة", "الرياض", "مكة", "الطائف"], "a": 1}, {"q": "كم عدد أصابع اليد الواحدة؟", "o": ["4", "5", "6", "7"], "a": 1}, {"q": "أي مما يلي من الفواكه؟", "o": ["الجزر", "التفاح", "البطاطس", "الخيار"], "a": 1}, {"q": "ما ناتج 5 + 3؟", "o": ["7", "8", "9", "10"], "a": 1}, {"q": "أي هذه وسيلة نقل؟", "o": ["شجرة", "سيارة", "كتاب", "باب"], "a": 1}, {"q": "ما لون السماء في يوم صافٍ؟", "o": ["أخضر", "أزرق", "أحمر", "بنفسجي"], "a": 1}, {"q": "كم عدد أركان الإسلام؟", "o": ["4", "5", "6", "7"], "a": 1}, {"q": "ما ناتج 9 - 4؟", "o": ["3", "4", "5", "6"], "a": 2}, {"q": "أي هذه من الحيوانات الأليفة؟", "o": ["الأسد", "الكلب", "النمر", "الذئب"], "a": 1}, {"q": "ما اسم الشهر الذي يأتي بعد رمضان؟", "o": ["شعبان", "شوال", "محرم", "صفر"], "a": 1}, {"q": "ما عاصمة مصر؟", "o": ["دمشق", "القاهرة", "بغداد", "عمان"], "a": 1}, {"q": "كم عدد الأيام في الشهر إذا كان 30 يومًا؟", "o": ["28", "29", "30", "31"], "a": 2}, {"q": "أي مما يلي يعد من أدوات الكتابة؟", "o": ["الملعقة", "القلم", "الكرسي", "الحذاء"], "a": 1}, {"q": "ما ناتج 10 + 7؟", "o": ["16", "17", "18", "19"], "a": 1}, {"q": "ما عدد فصول السنة؟", "o": ["2", "3", "4", "5"], "a": 2}, {"q": "أي هذه من الخضروات؟", "o": ["البرتقال", "التفاح", "الجزر", "الموز"], "a": 2}, {"q": "ما ناتج 12 - 5؟", "o": ["6", "7", "8", "9"], "a": 1}, {"q": "أي الكواكب نعيش عليه؟", "o": ["المريخ", "الزهرة", "الأرض", "عطارد"], "a": 2}, {"q": "ما ناتج 6 × 2؟", "o": ["10", "11", "12", "13"], "a": 2}, {"q": "أي هذه من الأشكال الهندسية؟", "o": ["كرة", "مثلث", "سمكة", "شجرة"], "a": 1}, {"q": "كم عدد أضلاع المربع؟", "o": ["3", "4", "5", "6"], "a": 1}, {"q": "ما ناتج 15 + 5؟", "o": ["18", "19", "20", "21"], "a": 2}, {"q": "إذا كان معك 8 تفاحات وأكلت 3، فكم تبقى؟", "o": ["4", "5", "6", "7"], "a": 1}, {"q": "ما ناتج 24 ÷ 3؟", "o": ["6", "7", "8", "9"], "a": 2}, {"q": "إذا كان لديك 3 علب، وفي كل علبة 4 أقلام، فكم قلمًا لديك؟", "o": ["10", "11", "12", "13"], "a": 2}, {"q": "ما ناتج 9 + 6 - 4؟", "o": ["10", "11", "12", "13"], "a": 1}];
 const M=[
 {type:'quiz',title:'سباق الثلاثين',kind:'أسئلة سريعة',
@@ -425,14 +491,12 @@ const M=[
  qs:Q30.map(x=>({q:x.q,a:x.o[x.a]})),
  steps:30, stepName:i=>`السؤال ${i+1} من 30`,
  keyText:s=>`الإجابة: ${'أبجد'[Q30[s].a]}) ${Q30[s].o[Q30[s].a]}`},
-{type:'cipher',title:'شيفرة الظل',kind:'فك تشفير',
- goal:'اعترضنا رسائل سرية مشفّرة. القاعدة: كل حرف استُبدل بالحرف الذي يليه في الترتيب الأبجدي (والياء تصبح ألفًا).',
- task:'اكتبوا الرسالة الأصلية. رسالة الذهب عليها 30 نقطة إضافية لأول من يحلها.',
- score:RANK_TXT+' · رسالة الذهب +30',
- msgs:[{l:'الرسالة الأولى',p:'السر خلف الباب'},{l:'الرسالة الثانية',p:'النصر لمن يصبر'},{l:'رسالة الذهب',p:'سبع خطوات نحو الكنز',gold:1}],
- steps:3, stepName:i=>['الرسالة الأولى','+ الرسالة الثانية','+ رسالة الذهب'][i],
- keyText:s=>M[1].msgs.slice(0,s+1).map(m=>`${enc(m.p)} ← ${m.p}`).join(' | ')},
-
+{type:'twin',title:'توأم الصورة',kind:'دقة ملاحظة',
+ goal:'صورة واحدة فقط من الخمس والعشرين نسخة مطابقة تمامًا للصورة الأصلية. الباقي فيه فرق صغير.',
+ task:'خمس جولات، وكل جولة أصعب من اللي قبلها. الخطأ يوقف الفريق 5 ثوانٍ.',
+ score:RANK_TXT,
+ steps:5, stepName:i=>`الجولة ${i+1} من 5 · ${TW_LV[i]}`,
+ keyText:s=>`المطابقة في المربع رقم ${twinRound(9000+S.mission*10,s).ans+1} (العدّ من اليمين، صفًا صفًا)`},
 {type:'memory',title:'ذاكرة العميل',kind:'لعبة ذاكرة',
  goal:'ستظهر حقيبة العميل 20 ثانية فقط. احفظوا كل ما فيها.',
  task:'بعد الاختفاء: اكتبوا أكبر عدد من الأغراض في ورقة. كل غرض صحيح = 5 نقاط، وكل غرض غير موجود = خصم 5.',
@@ -497,7 +561,7 @@ const M=[
 /* ================= PLAYER MISSIONS (in-app, auto-checked) ================= */
 const P=[
  {type:'mcq30',title:'سباق الثلاثين',kind:'أسئلة سريعة',intro:'30 سؤالًا بأربعة خيارات، واحد بعد الثاني. الإجابة الخاطئة توقفكم 5 ثوانٍ قبل ما تقدرون تجاوبون مرة ثانية.'},
- {type:'cipher',title:'شيفرة الظل',kind:'فك تشفير',intro:'رسائل مشفّرة: كل حرف استُبدل بالحرف الذي يليه أبجديًا. فكّوا رسالتين، ورسالة الذهب مكافأة إضافية.'},
+ {type:'twin',title:'توأم الصورة',kind:'دقة ملاحظة',intro:'خمس جولات، في كل جولة 25 صورة متشابهة وواحدة فقط مطابقة تمامًا للصورة الأصلية. الخطأ يوقفكم 5 ثوانٍ.'},
  {type:'memory',title:'ذاكرة العميل',kind:'لعبة ذاكرة',intro:'ستُفتح الحقيبة 20 ثانية فقط. احفظوا الأغراض، ثم اختاروها من بين أغراض مخادعة.'},
  {type:'quiz',title:'الرد السريع',kind:'مسابقة',intro:'عشرة أسئلة متتالية. لا تنتقلون للسؤال التالي إلا بإجابة صحيحة.'},
  {type:'tap',title:'أصابع البرق',kind:'لعبة سرعة',intro:'جولتان: اضغطوا الأرقام من 1 إلى 25 بالترتيب، ثم الحروف من الألف إلى الياء.'},
@@ -770,6 +834,11 @@ function stageHTML(prev){
      <div class="clues">${m.clues.map((c,i)=>i<s?`<div class="card clue ${i+1===freshClue?'fresh':''}"><span class="n">${i+1}</span><span>${esc(c)}</span></div>`:`<div class="card clue locked"><span class="n">${i+1}</span><span>دليل مختوم… يُكشف لاحقًا</span></div>`).join('')}
      ${r?`<div class="card" style="border-color:var(--hot)"><b style="color:var(--hot)">الحل:</b> ${esc(m.why)}</div>`:`<p class="note">${esc(m.task)}</p>`}</div></div></div>`;
   }
+  if(m.type==='twin'){const T=twinRound(9000+S.mission*10,s);
+    return `<div class="panel">${head}<p class="goal">${esc(m.goal)}</p>
+     <div class="twstage"><div class="twtarget"><span class="counter">الصورة الأصلية · ${esc(TW_LV[s])}</span>${twSVG(T.base)}</div>
+     <div class="twgrid big">${T.cards.map((c,i)=>`<div class="twc ${r&&i===T.ans?'hit':''} ${r&&i!==T.ans?'dim':''}">${twSVG(c)}<i>${i+1}</i></div>`).join('')}</div></div></div>`;
+  }
   if(m.type==='cipher'){
     return `<div class="panel">${head}<p class="goal">${esc(m.goal)}</p>
      <div class="abc" aria-label="الأبجدية">${[...AB].map(c=>`<span>${c}</span>`).join('')}</div>
@@ -1004,6 +1073,7 @@ function pLoad(k){try{const o=JSON.parse(localStorage.getItem(SK('ps'))||'null')
 function initSub(type){switch(type){
   case 'case':return{stage:0,pick:[]};
   case 'mcq30':return{q:0};
+  case 'twin':return{round:0,seed:(Math.random()*1e9)|0};
   case 'cipher':return{ok:[0,0,0],val:['','','']};
   case 'memory':return{phase:'ready',showUntil:0,picks:[],order:shuf([...Array(24).keys()]),msg:''};
   case 'quiz':return{q:0,ord:QOPT.map(()=>shuf([0,1,2,3]))};
@@ -1037,6 +1107,10 @@ function pHTML(){
 const pHead=t=>`<div class="pcard"><span class="counter">المهمة ${TD[MYT].mission+1} · ${esc(P[TD[MYT].mission].kind)}</span><h1 class="ptitle">${esc(P[TD[MYT].mission].title)}</h1>${t?`<p>${t}</p>`:''}</div>`;
 function pMission(){
   const d=TD[MYT],m=P[d.mission],s=PS.sub;
+  if(m.type==='twin'){const T=twinRound(s.seed,s.round);
+    return `<div class="pcard"><div class="q30h"><span class="counter">ROUND ${s.round+1} / 5</span><span class="counter">${esc(TW_LV[s.round])}</span></div><div class="q30bar"><i style="width:${s.round/5*100}%"></i></div>
+      <div class="twtarget"><span class="note">ابحثوا عن هذه الصورة بالضبط 👇</span>${twSVG(T.base)}</div>
+      <div class="twgrid">${T.cards.map((c,i)=>`<button class="twc" data-act="ptw:${i}" id="tw${i}" aria-label="صورة ${i+1}">${twSVG(c)}</button>`).join('')}</div></div>`}
   if(m.type==='mcq30'){const q=Q30[s.q];
     return `<div class="pcard"><div class="q30h"><span class="counter">QUESTION ${s.q+1} / 30</span><span class="counter">${30-s.q} متبقي</span></div><div class="q30bar"><i style="width:${s.q/30*100}%"></i></div>
       <h2 class="ptitle" style="font-size:30px;line-height:1.4">${esc(q.q)}</h2><div class="opts">${q.o.map((o,i)=>`<button class="opt q30o" data-act="p30:${i}"><small>${'أبجد'[i]})</small> ${esc(o)}</button>`).join('')}</div></div>`}
@@ -1044,7 +1118,7 @@ function pMission(){
     return pHead(esc(c.goal))+`<div class="pcard"><h3>الأدلة</h3>${c.clues.map((x,i)=>s.stage===1?`<button class="opt ${s.pick.includes(i)?'sel':''}" data-act="pc-clue:${i}">${i+1}. ${esc(x)}</button>`:`<div class="clue"><span class="n">${i+1}</span><span>${esc(x)}</span></div>`).join('')}</div>`+
     (s.stage===0?`<div class="pcard"><h3>أقوال المشتبهين · من اللص؟</h3><div class="opts">${c.suspects.map((p,i)=>`<button class="opt" data-act="pc-sus:${i}">${esc(p.n)} <small>${esc(p.r)}</small><span class="st">${esc(p.s)}</span></button>`).join('')}</div></div>`
     :`<div class="pcard"><span class="okline">صحيح، سالم هو اللص!</span><h3>الآن اختاروا الدليلين اللذين يثبتان كذبه (من القائمة أعلاه)</h3><button class="b pri" data-act="pc-ok" ${s.pick.length!==2?'disabled':''}>تأكيد الدليلين (${s.pick.length}/2)</button></div>`);}
-  if(m.type==='cipher'){const c=M[1];
+  if(m.type==='cipher'){const c=CIPHER_M;
     return pHead(esc(c.goal))+`<div class="pcard"><div class="abc">${[...AB].map(x=>`<span>${x}</span>`).join('')}</div></div>`+
     c.msgs.map((x,i)=>`<div class="pcard" id="pcm${i}"><span class="counter">${esc(x.l)}${x.gold?' · اختيارية +30':''}</span><div class="pcode">${esc(enc(x.p))}</div>${s.ok[i]?`<div class="okline">${esc(x.p)} ✓</div>`:`<input class="pin" id="pci${i}" value="${esc(s.val[i])}" placeholder="اكتبوا الرسالة الأصلية" autocomplete="off"><button class="b" data-act="pc-chk:${i}">تحقّق</button>`}</div>`).join('')+
     `<button class="b pri" style="min-height:62px;font-size:20px" data-act="pc-fin" ${s.ok[0]&&s.ok[1]?'':'disabled'}>${s.ok[0]&&s.ok[1]?'أنهوا المهمة':'فكّوا الرسالتين الأولى والثانية لإنهاء المهمة'}</button>`;}
@@ -1082,6 +1156,9 @@ function pComplete(bonus){
   tcommit(i,n=>{if(n.mission!==m||!n.startedAt)return false;n.results[m]={s:'done',pts,sec:300-remS,first,wrong:n.curWrong||0};n.score=(n.score||0)+pts;n.mission=m+1;n.startedAt=0;n.curWrong=0;n.last={id:rid(),mission:m,pts,first,s:'done'}});
 }
 const PACT={
+  ptw:v=>{const s=PS.sub;const T=twinRound(s.seed,s.round);
+    if(+v===T.ans){pGood();const e=$('#tw'+v);if(e)e.classList.add('hit');s.round++;if(s.round>=5){setTimeout(()=>pComplete(0),350);return}pSave();setTimeout(pRender,350)}
+    else{const e=$('#tw'+v);if(e){e.classList.add('bad');setTimeout(()=>e.classList.remove('bad'),900)}pShake();sBuzz();try{navigator.vibrate&&navigator.vibrate(250)}catch(x){}lockTitle='ليست هي!';lockMsg='انتظروا 5 ثوانٍ وركّزوا أكثر';lockUntil=Date.now()+5000}},
   p30:v=>{const s=PS.sub,q=Q30[s.q];if(!q)return;
     if(+v===q.a){pGood();s.q++;if(s.q>=30){pComplete(0);return}pSave();pRender()}
     else{pShake();sBuzz();try{navigator.vibrate&&navigator.vibrate(250)}catch(e){}lockTitle='إجابة خاطئة';lockMsg='انتظروا 5 ثوانٍ';lockUntil=Date.now()+5000}},
@@ -1098,7 +1175,7 @@ const PACT={
   'pc-clue':v=>{const p=PS.sub.pick,k=+v;const j=p.indexOf(k);if(j>=0)p.splice(j,1);else if(p.length<2)p.push(k);pSave();pRender()},
   'pc-ok':()=>{const p=PS.sub.pick.slice().sort().join();if(p==='0,2')pComplete(0);else{PS.sub.pick=[];pSave();pRender();pShake();pFail(15)}},
   'pc-chk':v=>{const i=+v,inp=$('#pci'+i);if(!inp)return;const val=inp.value;PS.sub.val[i]=val;
-    if(norm(val)&&norm(val)===norm(M[1].msgs[i].p)){PS.sub.ok[i]=1;pGood();pSave();pRender()}else{pSave();pShake('pcm'+i);pFail(8)}},
+    if(norm(val)&&norm(val)===norm(CIPHER_M.msgs[i].p)){PS.sub.ok[i]=1;pGood();pSave();pRender()}else{pSave();pShake('pcm'+i);pFail(8)}},
   'pc-fin':()=>{if(PS.sub.ok[0]&&PS.sub.ok[1])pComplete(PS.sub.ok[2]?30:0)},
   'pm-open':()=>{PS.sub.phase='show';PS.sub.showUntil=Date.now()+20000;PS.sub.msg='';pSave();pRender()},
   'pm-pick':v=>{const p=PS.sub.picks,k=+v,j=p.indexOf(k);if(j>=0)p.splice(j,1);else p.push(k);pSave();pRender()},
