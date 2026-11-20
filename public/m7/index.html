@@ -751,7 +751,7 @@ const P=[
  {type:'twin',title:'توأم الصورة',kind:'دقة ملاحظة',intro:'أمامكم 15 صورة وأشكال متشابهة، وواحدة فقط مطابقة تمامًا للصورة الأصلية. لاقوها! الخطأ يوقفكم 5 ثوانٍ.'},
  {type:'clues',title:'الأدلة السبعة',kind:'رمز الخزنة',dur:480000,intro:'تم إخفاء رمز الخزنة المكوّن من 7 أرقام. أمامكم 7 أدلة، كل دليل يعطيكم رقمًا واحدًا. اكتبوا الأرقام بالترتيب في بطاقة الرمز، وفي النهاية أدخلوا الرمز كاملًا. ⏱ 8 دقائق'},
  {type:'code',fixed:100,title:'الشيفرة',kind:'محطة الشيفرة',intro:'اعرفوا الشيفرة وأدخلوها. بمجرد إدخالها الصحيح تنتقلون مباشرة للمهمة الخامسة.'},
- {type:'sort',title:'ترتيب الأرقام الفردية',kind:'تحدي ترتيب',intro:'🚨 أمامكم 50 رقمًا فرديًا مبعثرة. اضغطوها بالترتيب من الأصغر إلى الأكبر. الضغطة الخاطئة توقفكم 5 ثوانٍ.'},
+ {type:'sort',title:'ترتيب الأرقام الفردية',kind:'تحدي ترتيب',intro:'🚨 أمامكم 30 رقمًا فرديًا مبعثرة. اضغطوها بالترتيب من الأصغر إلى الأكبر. الضغطة الخاطئة توقفكم 5 ثوانٍ.'},
  {type:'c4',title:'أربع تربح',kind:'تحدي ذكاء',dur:420000,intro:'العبوا «أربع تربح» ضد الكمبيوتر (مستوى متوسط). أول من يصفّ 4 أقراص متتالية أفقيًا أو عموديًا أو قطريًا يفوز بالجولة. اكسبوا جولتين من ثلاث، ويظهر لكم رمز الخزنة الأخيرة. ⏱ 7 دقائق'},
  {type:'final7',title:'الشيفرة الأخيرة',kind:'المهمة السابعة',dur:420000,intro:'🔐 أمامكم رسالة مشفّرة بالرموز وورقة فك الشفرات: كل رمز يقابل حرفًا. فكّوا الرسالة لتعرفوا المطلوب، ثم أدخلوا الرقم الصحيح ليظهر لكم الرمز النهائي. النقاط مضاعفة! ⏱ 7 دقائق'}];
 /* ---- mission 7 (sheet): symbol ↔ letter key, different per team; answer + reveal codes come from the host ---- */
@@ -823,9 +823,9 @@ function c4AI(b0){const b=b0.slice();const legal=C4ORD.filter(c=>!b[c]);
   if(sc.length>1&&Math.random()<.3&&sc[1].v>-5e5)return sc[1].c;
   return sc[0].c}
 /* ---- mission 5: 50 odd numbers, different set per team ---- */
-const SORT_N=50;const SORT_MEMO=new Map();
+const SORT_N=30;const SORT_MEMO=new Map();
 function sortSet(seed){if(SORT_MEMO.has(seed))return SORT_MEMO.get(seed);const r=mulb(77777);
-  const odds=[];for(let v=1;v<100;v+=2)odds.push(v);
+  const odds=[];for(let v=1;v<60;v+=2)odds.push(v);
   for(let i=odds.length-1;i>0;i--){const j=Math.floor(r()*(i+1));[odds[i],odds[j]]=[odds[j],odds[i]]}
   const grid=odds.slice(0,SORT_N);const sorted=grid.slice().sort((a,b)=>a-b);const out={grid,sorted};SORT_MEMO.set(seed,out);return out}
 Object.defineProperty(P[0],'title',{get(){const n=(typeof CT!=='undefined'&&CT.q30)?CT.q30.length:30;return n===30?'سباق الثلاثين':`سباق الأسئلة (${n})`}});
@@ -876,7 +876,7 @@ M[0].keyText=s=>{const x=CT.q30[s];return x?`الإجابة: ${'أبجد'[x.a]})
 M[2]={type:'clues',title:'الأدلة السبعة',kind:'رمز الخزنة',goal:'تم إخفاء رمز الخزنة المكوّن من 7 أرقام. كل دليل يعطيكم رقمًا واحدًا، اجمعوها بالترتيب.',task:'اكتبوا كل رقم في بطاقة الرمز، وسلّموا الرمز الكامل في النهاية.',score:RANK_TXT,
  get steps(){return CT.clues.length},stepName:i=>`الدليل ${i+1}: ${CT.clues[i]?CT.clues[i].t:''}`,keyText:s=>{const c=CT.clues[s];return c?`الإجابة: ${c.o[c.a]} · رقم الخزنة: ${c.d} · الرمز الكامل: ${clueCode()}`:''}};
 M[5]={type:'c4',title:'أربع تربح',kind:'تحدي ذكاء',goal:'كل فريق يلعب «أربع تربح» ضد الكمبيوتر في جواله: أفضل جولتين من ثلاث.',task:'الفائز يحصل على رمز يفتح المهمة الأخيرة.',score:RANK_TXT,steps:1,stepName:()=>'المباراة',keyText:()=>`الرمز: ${CT.c4.code}`};
-M[4]={type:'sort',title:'ترتيب الأرقام الفردية',kind:'تحدي ترتيب',goal:'أمامكم 50 رقمًا فرديًا مبعثرة. رتّبوها من الأصغر إلى الأكبر.',task:'الضغطة الخاطئة توقف الفريق 5 ثوانٍ.',score:RANK_TXT,steps:1,stepName:()=>'الترتيب',keyText:()=>'الحل: '+sortSet(4242).sorted.join(' - ')};
+M[4]={type:'sort',title:'ترتيب الأرقام الفردية',kind:'تحدي ترتيب',goal:'أمامكم 30 رقمًا فرديًا مبعثرة. رتّبوها من الأصغر إلى الأكبر.',task:'الضغطة الخاطئة توقف الفريق 5 ثوانٍ.',score:RANK_TXT,steps:1,stepName:()=>'الترتيب',keyText:()=>'الحل: '+sortSet(4242).sorted.join(' - ')};
 M[3]={type:'code',title:'الشيفرة',kind:'محطة الشيفرة',goal:'اعرفوا الشيفرة وأدخلوها في الجوال.',task:'بمجرد إدخالها الصحيح ينتقل الفريق للمهمة الخامسة.',score:RANK_TXT,steps:1,stepName:()=>'إدخال الشيفرة',keyText:()=>`الشيفرة: ${CT.code4.code}`};
 Object.defineProperty(M[6],'qs',{get(){return [M6_STATIC[0],{t:'رقم الخزنة',q:CT.vault.q1,a:CT.vault.a1},{t:'الكلمة الأخيرة',q:CT.vault.q2+'  «'+CT.vault.shown+'»',a:CT.vault.a2},M6_STATIC[3]]}});
 const shuf=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.random()*(i+1)|0;[a[i],a[j]]=[a[j],a[i]]}return a};
