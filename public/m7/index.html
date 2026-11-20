@@ -443,13 +443,15 @@ button:focus-visible,input:focus-visible{outline:3px solid var(--sig);outline-of
 .c4score{display:flex;justify-content:space-between;align-items:center;font-weight:700}
 .c4score b{font-size:26px}
 .c4msg{text-align:center;font-family:var(--display);font-size:24px;min-height:36px}
-.c4msg.think{color:var(--mute);animation:blink 1s infinite}
+.c4msg.think{color:var(--mute)}
+.pcard.still{animation:none}
 .c4board{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:5px;background:#145a32;padding:8px;border-radius:16px;direction:ltr;box-shadow:inset 0 -6px 0 #0b3a20}
 .c4cell{aspect-ratio:1;max-width:100%;border-radius:50%;background:#03110a;border:0;padding:0;cursor:pointer;box-shadow:inset 0 3px 6px #000a}
 .c4cell.p{background:radial-gradient(circle at 35% 30%,color-mix(in srgb,var(--tc) 60%,#fff),var(--tc))}
 .c4cell.a{background:radial-gradient(circle at 35% 30%,#fff,#c9cfe6)}
-.c4cell.drop{animation:c4drop .35s cubic-bezier(.3,1.4,.5,1)}
-@keyframes c4drop{from{transform:translateY(-220%)}}
+.c4cell.drop{animation:c4drop .22s ease-in}
+@keyframes c4drop{from{transform:translateY(-60%);opacity:.4}}
+@media (prefers-reduced-motion:reduce){.c4cell.drop{animation:none}}
 .c4cell.win{box-shadow:0 0 0 4px var(--sig),0 0 18px var(--sig)}
 .c4leg{display:flex;gap:16px;justify-content:center;font-size:14px;color:var(--mute)}
 .c4leg i{display:inline-block;width:14px;height:14px;border-radius:50%;margin-inline-end:6px;vertical-align:middle}
@@ -740,7 +742,7 @@ const P=[
  {type:'clues',title:'الأدلة السبعة',kind:'رمز الخزنة',dur:480000,intro:'تم إخفاء رمز الخزنة المكوّن من 7 أرقام. أمامكم 7 أدلة، كل دليل يعطيكم رقمًا واحدًا. اكتبوا الأرقام بالترتيب في بطاقة الرمز، وفي النهاية أدخلوا الرمز كاملًا. ⏱ 8 دقائق'},
  {type:'code',title:'الشيفرة',kind:'محطة الشيفرة',intro:'اعرفوا الشيفرة وأدخلوها. بمجرد إدخالها الصحيح تنتقلون مباشرة للمهمة الخامسة.'},
  {type:'sort',title:'ترتيب الأرقام الفردية',kind:'تحدي ترتيب',intro:'🚨 أمامكم 50 رقمًا فرديًا مبعثرة. اضغطوها بالترتيب من الأصغر إلى الأكبر. الضغطة الخاطئة توقفكم 5 ثوانٍ.'},
- {type:'c4',title:'أربع تربح',kind:'تحدي ذكاء',dur:420000,intro:'العبوا «أربع تربح» ضد الكمبيوتر (مستوى فوق المتوسط). أول من يصفّ 4 أقراص متتالية أفقيًا أو عموديًا أو قطريًا يفوز بالجولة. اكسبوا جولتين من ثلاث، ويظهر لكم رمز الخزنة الأخيرة. ⏱ 7 دقائق'},
+ {type:'c4',title:'أربع تربح',kind:'تحدي ذكاء',dur:420000,intro:'العبوا «أربع تربح» ضد الكمبيوتر (مستوى متوسط). أول من يصفّ 4 أقراص متتالية أفقيًا أو عموديًا أو قطريًا يفوز بالجولة. اكسبوا جولتين من ثلاث، ويظهر لكم رمز الخزنة الأخيرة. ⏱ 7 دقائق'},
  {type:'final7',title:'الشيفرة الأخيرة',kind:'المهمة السابعة',dur:420000,intro:'🔐 أمامكم رسالة مشفّرة بالرموز وورقة فك الشفرات: كل رمز يقابل حرفًا. فكّوا الرسالة لتعرفوا المطلوب، ثم أدخلوا الرقم الصحيح ليظهر لكم الرمز النهائي. النقاط مضاعفة! ⏱ 7 دقائق'}];
 /* ---- mission 7 (sheet): symbol ↔ letter key, different per team; answer + reveal codes come from the host ---- */
 const VS='\uFE0E';
@@ -779,7 +781,7 @@ function final7(i){const key=(ROOMC||'X')+'|'+i;if(F7_MEMO.has(key))return F7_ME
     else if(t==='abjad'){html=`<p class="f7rule">ما ترتيب هذا الحرف في الأبجدية (أ ب ت ث ج ح خ د ذ …)؟</p><div class="f7big">${AB[d-1]}</div>`;how=`«${AB[d-1]}» ترتيبه ${d}`}
     return {t,d,html,how}});
   const out={code:digits.join(''),cards};F7_MEMO.set(key,out);return out}
-/* ---- mission 6: Connect Four vs computer (above-average: 3-ply alpha-beta, always takes wins and blocks, occasional slip) ---- */
+/* ---- mission 6: Connect Four vs computer (medium: 2-ply look-ahead, always takes a win, blocks most threats, slips now and then) ---- */
 const C4W=7,C4H=6;
 function c4Drop(b,c,p){for(let r=C4H-1;r>=0;r--){if(!b[r*C4W+c]){b[r*C4W+c]=p;return r}}return -1}
 function c4Win(b,p){const g=(r,c)=>r>=0&&r<C4H&&c>=0&&c<C4W&&b[r*C4W+c]===p;
@@ -805,10 +807,10 @@ function c4Mini(b,d,al,be,max){if(c4Win(b,'a'))return 1e6+d;if(c4Win(b,'p'))retu
   let v=Infinity;for(const c of C4ORD){if(b[c])continue;const r=c4Drop(b,c,'p');v=Math.min(v,c4Mini(b,d-1,al,be,true));b[r*C4W+c]=0;be=Math.min(be,v);if(al>=be)break}return v}
 function c4AI(b0){const b=b0.slice();const legal=C4ORD.filter(c=>!b[c]);
   for(const c of legal){const r=c4Drop(b,c,'a');const w=c4Win(b,'a');b[r*C4W+c]=0;if(w)return c}
-  for(const c of legal){const r=c4Drop(b,c,'p');const w=c4Win(b,'p');b[r*C4W+c]=0;if(w)return c}
-  const sc=legal.map(c=>{const r=c4Drop(b,c,'a');const v=c4Mini(b,2,-Infinity,Infinity,false);b[r*C4W+c]=0;return {c,v}}).sort((x,y)=>y.v-x.v);
+  if(Math.random()<.8)for(const c of legal){const r=c4Drop(b,c,'p');const w=c4Win(b,'p');b[r*C4W+c]=0;if(w)return c}
+  const sc=legal.map(c=>{const r=c4Drop(b,c,'a');const v=c4Mini(b,1,-Infinity,Infinity,false);b[r*C4W+c]=0;return {c,v}}).sort((x,y)=>y.v-x.v);
   /* occasional slip keeps it beatable: pick the 2nd choice when it is not a losing move */
-  if(sc.length>1&&Math.random()<.2&&sc[1].v>-5e5)return sc[1].c;
+  if(sc.length>1&&Math.random()<.3&&sc[1].v>-5e5)return sc[1].c;
   return sc[0].c}
 /* ---- mission 5: 50 odd numbers, different set per team ---- */
 const SORT_N=50;const SORT_MEMO=new Map();
@@ -1473,7 +1475,7 @@ function c4HTML(s){const tc=TC[MYT]||'var(--sig)';
   if(s.phase==='lost')return `<div class="pcard">${score}<div class="lockc"><span class="lk-ico">🤖</span><b>الكمبيوتر فاز بالمباراة</b><p class="lk-msg">ما زال عندكم وقت! ابدأوا مباراة جديدة من ثلاث جولات.</p><button class="b pri" style="min-height:60px;font-size:20px" data-act="pc4-again">مباراة جديدة</button></div></div>`;
   const win=new Set((s.line||[]).map(([r,c])=>r*7+c));
   const msg=s.over==='p'?'🎉 فزتم بالجولة!':s.over==='a'?'🤖 الكمبيوتر فاز بالجولة':s.over==='d'?'تعادل! تُعاد الجولة':s.turn==='p'?'دوركم: اضغطوا على عمود':'الكمبيوتر يفكّر…';
-  return `<div class="pcard">${score}<div class="c4msg ${s.turn==='a'&&!s.over?'think':''}">${msg}</div>
+  return `<div class="pcard still">${score}<div class="c4msg ${s.turn==='a'&&!s.over?'think':''}">${msg}</div>
     <div class="c4board" style="--tc:${tc}">${Array.from({length:42},(_,i)=>{const v=s.b[i],c=i%7;return `<button class="c4cell ${v==='p'?'p':v==='a'?'a':''} ${win.has(i)?'win':''} ${i===s.last?'drop':''}" data-act="pc4:${c}" aria-label="العمود ${c+1}" ${s.over||s.turn!=='p'?'tabindex="-1"':''}></button>`}).join('')}</div>
     ${s.over?`<button class="b pri" style="min-height:56px;font-size:19px" data-act="pc4-next">${s.over==='d'?'إعادة الجولة':'الجولة التالية'}</button>`:''}
     <div class="c4leg"><span><i style="background:${tc}"></i>أنتم</span><span><i style="background:#f1f5ec"></i>الكمبيوتر</span></div></div>`}
