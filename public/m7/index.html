@@ -824,8 +824,8 @@ function c4AI(b0){const b=b0.slice();const legal=C4ORD.filter(c=>!b[c]);
   return sc[0].c}
 /* ---- mission 5: 50 odd numbers, different set per team ---- */
 const SORT_N=50;const SORT_MEMO=new Map();
-function sortSet(seed){if(SORT_MEMO.has(seed))return SORT_MEMO.get(seed);const r=mulb(seed*31+7);
-  const odds=[];for(let v=1;v<200;v+=2)odds.push(v);
+function sortSet(seed){if(SORT_MEMO.has(seed))return SORT_MEMO.get(seed);const r=mulb(77777);
+  const odds=[];for(let v=1;v<100;v+=2)odds.push(v);
   for(let i=odds.length-1;i>0;i--){const j=Math.floor(r()*(i+1));[odds[i],odds[j]]=[odds[j],odds[i]]}
   const grid=odds.slice(0,SORT_N);const sorted=grid.slice().sort((a,b)=>a-b);const out={grid,sorted};SORT_MEMO.set(seed,out);return out}
 Object.defineProperty(P[0],'title',{get(){const n=(typeof CT!=='undefined'&&CT.q30)?CT.q30.length:30;return n===30?'سباق الثلاثين':`سباق الأسئلة (${n})`}});
