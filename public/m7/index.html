@@ -568,6 +568,8 @@ body::after{content:"";position:fixed;inset:0;pointer-events:none;z-index:0;
 .finale.small .fl.f-intro,.finale.small .fl.f-rank,.finale.small .fl.f-vault{font-size:24px}
 .finale.small .fl.f-winner{font-size:54px}
 .finale.small .fl.f-sub{font-size:20px}
+.tpick .b.taken{opacity:.45;display:grid;gap:2px;cursor:not-allowed}
+.tpick .b.taken small{font-family:var(--body);font-size:13px}
 </style>
 <script src="https://unpkg.com/mqtt@5.10.1/dist/mqtt.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
@@ -749,7 +751,7 @@ const P=[
  {type:'mcq30',title:'سباق الثلاثين',kind:'أسئلة سريعة',intro:'أسئلة اختيار متتالية. الإجابة الخاطئة توقفكم 5 ثوانٍ قبل ما تقدرون تجاوبون مرة ثانية.'},
  {type:'twin',title:'توأم الصورة',kind:'دقة ملاحظة',intro:'خمس جولات من الصور والأشكال. في كل جولة 25 صورة، وواحدة فقط مطابقة تمامًا للأصل. الخطأ يوقفكم 5 ثوانٍ.'},
  {type:'clues',title:'الأدلة السبعة',kind:'رمز الخزنة',dur:480000,intro:'تم إخفاء رمز الخزنة المكوّن من 7 أرقام. أمامكم 7 أدلة، كل دليل يعطيكم رقمًا واحدًا. اكتبوا الأرقام بالترتيب في بطاقة الرمز، وفي النهاية أدخلوا الرمز كاملًا. ⏱ 8 دقائق'},
- {type:'code',title:'الشيفرة',kind:'محطة الشيفرة',intro:'اعرفوا الشيفرة وأدخلوها. بمجرد إدخالها الصحيح تنتقلون مباشرة للمهمة الخامسة.'},
+ {type:'code',fixed:100,title:'الشيفرة',kind:'محطة الشيفرة',intro:'اعرفوا الشيفرة وأدخلوها. بمجرد إدخالها الصحيح تنتقلون مباشرة للمهمة الخامسة.'},
  {type:'sort',title:'ترتيب الأرقام الفردية',kind:'تحدي ترتيب',intro:'🚨 أمامكم 50 رقمًا فرديًا مبعثرة. اضغطوها بالترتيب من الأصغر إلى الأكبر. الضغطة الخاطئة توقفكم 5 ثوانٍ.'},
  {type:'c4',title:'أربع تربح',kind:'تحدي ذكاء',dur:420000,intro:'العبوا «أربع تربح» ضد الكمبيوتر (مستوى متوسط). أول من يصفّ 4 أقراص متتالية أفقيًا أو عموديًا أو قطريًا يفوز بالجولة. اكسبوا جولتين من ثلاث، ويظهر لكم رمز الخزنة الأخيرة. ⏱ 7 دقائق'},
  {type:'final7',title:'الشيفرة الأخيرة',kind:'المهمة السابعة',dur:420000,intro:'🔐 أمامكم رسالة مشفّرة بالرموز وورقة فك الشفرات: كل رمز يقابل حرفًا. فكّوا الرسالة لتعرفوا المطلوب، ثم أدخلوا الرقم الصحيح ليظهر لكم الرمز النهائي. النقاط مضاعفة! ⏱ 7 دقائق'}];
@@ -827,6 +829,7 @@ function sortSet(seed){if(SORT_MEMO.has(seed))return SORT_MEMO.get(seed);const r
   const odds=[];for(let v=1;v<200;v+=2)odds.push(v);
   for(let i=odds.length-1;i>0;i--){const j=Math.floor(r()*(i+1));[odds[i],odds[j]]=[odds[j],odds[i]]}
   const grid=odds.slice(0,SORT_N);const sorted=grid.slice().sort((a,b)=>a-b);const out={grid,sorted};SORT_MEMO.set(seed,out);return out}
+Object.defineProperty(P[0],'title',{get(){const n=(typeof CT!=='undefined'&&CT.q30)?CT.q30.length:30;return n===30?'سباق الثلاثين':`سباق الأسئلة (${n})`}});
 const durM=m=>(P[m]&&P[m].dur)||MDUR;
 const MDUR=300000;
 const QOPT=[['الفهد','الأسد','الغزال','النمر'],['206','212','198','186'],['المريخ','الزهرة','المشتري','عطارد'],['المحيط الهادئ','المحيط الأطلسي','المحيط الهندي','المحيط المتجمد الشمالي'],['الحديد','الفلور','الفضة','الرصاص'],['كانبرا','سيدني','ملبورن','بيرث'],['البنكرياس','الكبد','المعدة','الكلى'],['6','5','8','7'],['1932م','1902م','1945م','1926م'],['1440','1200','3600','1640']];
@@ -846,7 +849,7 @@ const DEF_CT={
   {t:'الذكاء',q:'ثلاثة أشخاص دخلوا سباقًا:\n• أحمد قبل خالد\n• خالد قبل محمد\nمن جاء في المركز الثالث؟',o:['أحمد','خالد','محمد','لا يمكن معرفة ذلك'],a:2,d:'3'},
   {t:'الملاحظة',q:'لديك الكلمات التالية:\nقلم - كتاب - سيارة - دفتر - مسطرة\nأي كلمة لا تنتمي للمجموعة؟',o:['قلم','كتاب','سيارة','دفتر'],a:2,d:'5'},
   {t:'الحساب',q:'إذا كان: 5 × 4 = 20\nفكم يساوي: 8 × 3 ؟',o:['21','24','26','28'],a:1,d:'4'},
-  {t:'الثقافة',q:'كم عدد أركان الإسلام؟',o:['3','4','5','6'],a:2,d:'5'},
+  {t:'الثقافة',q:'كم عدد الصلوات المفروضة في اليوم والليلة؟',o:['3','4','5','6'],a:2,d:'5'},
   {t:'المنطق',q:'لديك:\nكل القطط حيوانات.\nبعض الحيوانات سريعة.\nهل نستطيع الجزم أن كل القطط سريعة؟',o:['نعم','لا'],a:1,d:'2'},
   {t:'النهاية',q:'أنا رقم:\n• أكبر من 5\n• أصغر من 10\n• إذا ضربتني في نفسي يكون الناتج 49\nمن أنا؟',o:['6','7','8','9'],a:1,d:'7'}],
  code4:{code:'1357924',hint:'اطلبوا الشيفرة من المقدم.'},
@@ -868,6 +871,7 @@ const clueCode=()=>CT.clues.map(c=>String(c.d||'')).join('');
 const MEMORY_M=M[2],M6_STATIC=M[6].qs.slice();
 Object.defineProperty(M[0],'qs',{get(){return CT.q30.map(x=>({q:x.q,a:x.o[x.a]}))}});
 Object.defineProperty(M[0],'steps',{get(){return CT.q30.length}});
+Object.defineProperty(M[0],'title',{get(){return P[0].title}});
 M[0].stepName=i=>`السؤال ${i+1} من ${CT.q30.length}`;
 M[0].keyText=s=>{const x=CT.q30[s];return x?`الإجابة: ${'أبجد'[x.a]}) ${x.o[x.a]}`:''};
 M[2]={type:'clues',title:'الأدلة السبعة',kind:'رمز الخزنة',goal:'تم إخفاء رمز الخزنة المكوّن من 7 أرقام. كل دليل يعطيكم رقمًا واحدًا، اجمعوها بالترتيب.',task:'اكتبوا كل رقم في بطاقة الرمز، وسلّموا الرمز الكامل في النهاية.',score:RANK_TXT,
@@ -916,7 +920,9 @@ const lockOf=m=>{const L=S.locks&&S.locks[m];return L&&L.h?L:null};
 const lockPending=i=>{const d=TD[i];return d.mission>=1&&d.mission<7&&!d.startedAt&&!!lockOf(d.mission)&&!(d.unlocked&&d.unlocked[d.mission])};
 const toLat=x=>String(x||'').replace(/[٠-٩]/g,d=>'٠١٢٣٤٥٦٧٨٩'.indexOf(d)).replace(/[۰-۹]/g,d=>'۰۱۲۳۴۵۶۷۸۹'.indexOf(d)).replace(/\D/g,'');
 let lkIn='',LKD=null,lkOpen=false;
-const freshT=()=>({v:1,unlocked:[0,0,0,0,0,0,0],mission:0,startedAt:0,run:'',curWrong:0,score:0,results:[null,null,null,null,null,null,null],last:null,sentAt:0,writer:''});
+let DEV='';try{DEV=localStorage.getItem('m7-dev')||'';if(!DEV){DEV='d'+Math.random().toString(36).slice(2,10);localStorage.setItem('m7-dev',DEV)}}catch(e){DEV='d'+Math.random().toString(36).slice(2,10)}
+const takenBy=i=>{const d=TD[i];return d&&d.dev&&d.dev!==DEV?d.dev:''};
+const freshT=()=>({v:1,dev:'',unlocked:[0,0,0,0,0,0,0],mission:0,startedAt:0,run:'',curWrong:0,score:0,results:[null,null,null,null,null,null,null],last:null,sentAt:0,writer:''});
 let TD=[0,1,2,3].map(freshT),tskew=[0,0,0,0],firstT=true;
 const tW=[false,false,false,false],tPend=[null,null,null,null];
 try{const l=JSON.parse(localStorage.getItem(SK('teams'))||'null');if(Array.isArray(l)&&l.length===4&&l.every(t=>t&&t.v===1))TD=l}catch(e){}
@@ -1016,7 +1022,7 @@ document.addEventListener('click',e=>{if(e.target.closest('[data-fin="close"]'))
 function after(){
   setTimeout(ctlFinale,0);
   hostLoginUI();
-  if(IS_OWNER===false&&ROUTE!=='play'){ROUTE='play';drawer=false;stageKey='';$('#app').innerHTML='';try{history.replaceState(null,'','#play')}catch(e){}}
+  if(IS_OWNER===false&&ROUTE!=='play'&&ROUTE!=='screen'){ROUTE='play';drawer=false;stageKey='';$('#app').innerHTML='';try{history.replaceState(null,'','#play')}catch(e){}}
   checkFlash();checkTeamFlash();
   if(ROUTE==='screen')renderScreen();
   else if(ROUTE==='control')renderControl($('#app'));
@@ -1039,7 +1045,7 @@ const randPw=()=>{const r=crypto.getRandomValues(new Uint32Array(1))[0];return S
 /* ---- host sign-in from any device (contestant pages) ---- */
 function hostLoginUI(){
   let el=document.getElementById('hostLogin');
-  if(IS_OWNER!==false||!ROOMC){if(el)el.remove();return}
+  if(IS_OWNER!==false||!ROOMC||ROUTE==='screen'){if(el)el.remove();return}
   if(el)el.hidden=(typeof MYT!=='undefined'&&MYT!==null)&&!BADKEY;
   if(!el){el=document.createElement('div');el.id='hostLogin';el.dir='rtl';el.hidden=(typeof MYT!=='undefined'&&MYT!==null)&&!BADKEY;
     el.innerHTML=`<button class="hl-btn" data-hl="open">🔑 دخول المقدم</button><div class="hl-box" hidden><b>دخول المقدم</b><span>غرفة ${esc(ROOMC)}</span><input id="hlpw" type="password" placeholder="كلمة مرور المقدم" autocomplete="current-password" aria-label="كلمة مرور المقدم"><div class="hl-row"><button class="hl-go" data-hl="go">دخول</button><button data-hl="x">إلغاء</button></div><p id="hlmsg"></p></div>`;
@@ -1082,9 +1088,9 @@ function renderGate(){
      <div class="qrbox"><div id="qrP"></div><b>رابط الفرق</b><span>امسح للدخول</span></div>
      <div class="links">
        <div class="lk"><b>الفرق</b><span class="u">${esc(pl)}</span><button class="tbtn" data-act="copy:p">نسخ</button></div>
-       <div class="lk host"><b>شاشة العرض</b><span class="u">${esc(linkFor('screen',true))}</span><button class="tbtn" data-act="copy:s">نسخ</button></div>
+       <div class="lk"><b>شاشة العرض</b><span class="u">${esc(linkFor('screen',false))}</span><button class="tbtn" data-act="copy:s">نسخ</button></div>
        <div class="lk host"><b>جهاز التحكم</b><span class="u">${esc(linkFor('control',true))}</span><button class="tbtn" data-act="copy:c">نسخ</button></div>
-       <p class="conn">⚠️ رابطا الشاشة والتحكم فيهما مفتاح المقدم، لا ترسلهما للفرق. أرسل لهم «رابط الفرق» فقط.</p>
+       <p class="conn">⚠️ رابط «جهاز التحكم» فيه مفتاح المقدم، لا ترسله لأحد. رابط الشاشة للعرض فقط وآمن على البروجكتر.</p>
      </div>
    </div>
    <p class="hm" style="text-align:center">🔑 كلمة مرور المقدم لهذه الغرفة: <b style="direction:ltr;unicode-bidi:isolate">${esc(HK)}</b> · ادخل بها من أي جهاز عبر «دخول المقدم» في صفحة المتسابقين.</p>
@@ -1105,7 +1111,7 @@ function renderScreen(){
         <div class="tools">
           <button class="tbtn" data-act="snd" id="sndBtn">تفعيل الصوت</button>
           <button class="tbtn" data-act="fs">ملء الشاشة</button>
-          <button class="tbtn" data-act="drawer" id="drwBtn">لوحة التحكم</button>
+          ${IS_OWNER?'<button class="tbtn" data-act="drawer" id="drwBtn">لوحة التحكم</button>':''}
         </div>
         <div class="clock idle" id="clock">05:00</div>
       </header>
@@ -1116,9 +1122,9 @@ function renderScreen(){
   }
   const m=M[S.mission];
   $('#mchip').innerHTML=S.view==='mission'?`<small>MISSION ${S.mission+1}/7 · ${esc(m.kind)}</small><span>${esc(m.title)}</span>`:S.view==='board'?`<small>LEADERBOARD</small><span>ترتيب الفرق</span>`:S.view==='finale'?`<small>THE FINALE</small><span>الختام</span>`:S.view==='winner'?`<small>FINAL</small><span>البطل</span>`:S.view==='race'?`<small>LIVE RELAY</small><span>سباق المهام السبع</span>`:`<small>BRIEFING</small><span>سبع مهام · أربع فرق</span>`;
-  $('#clock').hidden=S.view==='race'||S.view==='finale';$('.tbar').hidden=S.view==='race'||S.view==='finale';
+  $('#clock').hidden=S.view!=='mission';$('.tbar').hidden=S.view!=='mission';
   $('#sndBtn').classList.toggle('on',sound);$('#sndBtn').textContent=sound?'الصوت يعمل':'تفعيل الصوت';
-  $('#drwBtn').classList.toggle('on',drawer);
+  {const d=$('#drwBtn');if(d)d.classList.toggle('on',drawer)}
   const key=[S.view,S.mission,S.step,S.reveal,S.view==='mission'&&m.type==='charades'?S.cw.join()+S.turnEnds:'',S.view!=='mission'?S.teams.map((t,i)=>t.name+total(i)).join():''].join('|');
   if(S.view==='finale'){if(stageKey!=='finale|'+S.finaleId){stageKey='finale|'+S.finaleId;$('#stage').innerHTML='<div class="finale" id="finale"></div>';stopConfetti();runFinale()}}
   else if(S.view==='race'){stageKey='race';$('#stage').innerHTML=raceViewHTML();stopConfetti()}
@@ -1255,10 +1261,12 @@ function finaleLines(){
     {t:'بعضهم تعثّر… بعضهم نهض من جديد… وبعضهم كتب اسمه في التاريخ.',c:''}];
   if(firstVault)L.push({t:`🔓 أول من كسر الشيفرة الأخيرة وفتح الخزنة: ${S.teams[firstVault.i].name}`,c:'f-vault',col:TC[firstVault.i]});
   L.push({t:'والآن… لحظة الحقيقة. الترتيب النهائي:',c:'f-intro'});
-  for(let k=n-1;k>=1;k--){const t=st[k];L.push({t:`المركز ${['الأول','الثاني','الثالث','الرابع'][k]} … ${t.name} — ${t.score} نقطة`,c:'f-rank',col:TC[t.i],pause:1300})}
+  const nTie=st.filter(t=>t.score===st[0].score).length;
+  for(let k=n-1;k>=nTie;k--){const t=st[k];L.push({t:`المركز ${['الأول','الثاني','الثالث','الرابع'][k]} … ${t.name} — ${t.score} نقطة`,c:'f-rank',col:TC[t.i],pause:1300})}
   L.push({t:'وفي المركز الأول…',c:'f-intro',pause:2200});
-  L.push({t:`🏆 ${top.name} 🏆`,c:'f-winner',col:TC[top.i],winner:true});
-  L.push({t:`${top.score} نقطة · أبطال المهمة السابعة`,c:'f-sub'});
+  const tie=st.filter(t=>t.score===top.score);
+  if(tie.length>1){L.push({t:`🏆 ${tie.map(t=>t.name).join(' و ')} 🏆`,c:'f-winner',col:'var(--sig)',winner:true});L.push({t:`تعادل في القمة! ${top.score} نقطة لكل منهم`,c:'f-sub'})}
+  else{L.push({t:`🏆 ${top.name} 🏆`,c:'f-winner',col:TC[top.i],winner:true});L.push({t:`${top.score} نقطة · أبطال المهمة السابعة`,c:'f-sub'})}
   return L}
 function runFinale(sel){sel=sel||'#finale';const my=++finRun;const box=$(sel);if(!box)return;const lines=finaleLines();let li=0;
   const sleep=ms=>new Promise(r=>setTimeout(r,ms));
@@ -1353,32 +1361,26 @@ function renderControl(root){
   const connTxt=connLabel();
   root.innerHTML=`<div class="ctl ${root.id==='app'?'wrap':''}" style="${root.id==='app'?'':'padding-inline:16px'}">
    <div class="ctl-top">
-     <span class="clk" id="cclk">${fmt(remaining())}</span>
+     <span class="clk" style="font-size:22px;letter-spacing:.1em">${esc(ROOMC)}</span>
      <div class="meta"><span class="conn" id="connL">${connTxt}</span><b>${S.view==='mission'?`${S.mission+1}. ${esc(m.title)}`:({intro:'شاشة البداية',board:'الترتيب',winner:'إعلان البطل',race:'شاشة السباق',finale:'🎬 الختام يُعرض الآن'})[S.view]||''}</b></div>
      ${root.id==='app'?'<button class="tbtn" data-act="route:">خروج</button>':'<button class="tbtn" data-act="drawer">إغلاق</button>'}
    </div>
    ${!canWrite?'<div class="sec"><p class="note" style="color:var(--hot)">هذا الجهاز ليس جهاز المقدم. افتح رابط التحكم الذي فيه المفتاح.</p></div>':''}
-   <div class="sec"><h3>المهمة</h3>
-     <div class="mchips">${M.map((x,i)=>`<button class="b ${S.view==='mission'&&S.mission===i?'on':''}" data-act="mis:${i}" aria-label="${esc(x.title)}">${i+1}</button>`).join('')}</div>
-     <div class="row"><button class="b ${S.view==='intro'?'on':''}" data-act="view:intro">البداية</button><button class="b ${S.view==='board'?'on':''}" data-act="view:board">الترتيب</button><button class="b ${S.view==='winner'?'on':''}" data-act="view:winner">البطل</button></div>
+   ${importCtl()}
+   <div class="sec"><h3>شاشة العرض</h3>
+     <div class="row"><button class="b ${S.view==='intro'?'on':''}" data-act="view:intro">البداية</button><button class="b ${S.view==='race'?'on':''}" data-act="view:race">السباق</button><button class="b ${S.view==='board'?'on':''}" data-act="view:board">الترتيب</button></div>
      <button class="b pri" style="min-height:56px;font-size:18px" data-act="view:finale">🎬 ${S.view==='finale'?'أعد تشغيل الختام':'الختام: إعلان الفائز والترتيب'}</button>
      ${S.view==='finale'?'<p class="note" style="color:var(--t3)">✓ الختام يُعرض الآن على شاشة العرض، وتشوفه هنا أيضًا. شغّل الصوت على الشاشة.</p>':'<p class="note">يُعرض على شاشة العرض (وعلى هذا الجهاز). افتح شاشة العرض قبل الضغط.</p>'}
    </div>
-   <div class="sec"><h3>المؤقت · 5 دقائق</h3>
-     <div class="row">
-       ${t.status==='running'?'<button class="b" data-act="t-pause">إيقاف مؤقت</button>':`<button class="b pri" data-act="t-start">${t.status==='paused'?'استئناف':'ابدأ'}</button>`}
-       <button class="b" data-act="t-add">+30 ث</button><button class="b" data-act="t-reset">إعادة</button>
-     </div></div>
-   ${S.view==='mission'?missionCtl(m):''}
       <div class="sec"><h3>سباق الجوالات · الفرق تلعب من «صفحة المتسابقين»</h3>
      <div class="row">${S.raceOn?'<button class="b hot" data-act="race-off">إيقاف فتح المهام</button>':'<button class="b pri" data-act="race-on">ابدأ السباق للفرق</button>'}<button class="b ${S.view==='race'?'on':''}" data-act="view:race">شاشة السباق</button></div>
-     <div>${S.teams.map((x,i)=>{const d=TD[i];return `<div class="trow"><i style="background:${TC[i]}"></i><span class="nm">${esc(x.name)}<small style="font-size:14px;color:var(--mute)">${d.mission>=7?'أنهى السباق':`المهمة ${d.mission+1}: ${esc(P[d.mission].title)}${d.startedAt?'':' · لم تبدأ'}`}</small></span><span class="trt"><span class="num" style="font-size:20px" ${d.startedAt&&d.mission<7?`data-rt="${i}"`:''}>${d.startedAt&&d.mission<7?fmt(tRem(i)):(d.score||0)}</span>${d.startedAt&&d.mission<7?`<button class="b ext" data-act="ext:${i}">+1 د</button>`:''}</span></div>`}).join('')}</div>
-     <p class="note">نقاط المهمة: 100 + مكافأة سرعة − 10 لكل خطأ · أول فريق يُنجز المهمة +30 · الخزنة مضاعفة · انتهاء الوقت = −30 وتُفتح المهمة التالية · زر «+1 د» يمدّد وقت الفريق اللي يلعب الآن.</p>
+     <div>${S.teams.map((x,i)=>{const d=TD[i];return `<div class="trow"><i style="background:${TC[i]}"></i><span class="nm">${esc(x.name)}<small style="font-size:14px;color:var(--mute)">${d.mission>=7?'أنهى السباق':`المهمة ${d.mission+1}: ${esc(P[d.mission].title)}${d.startedAt?'':' · لم تبدأ'}`}</small></span>${d.dev?`<button class="b ext" style="background:var(--ink3);color:var(--mute);border-color:var(--line)" data-act="unclaim:${i}" title="يسمح لجوال آخر باختيار الفريق">فك الحجز</button>`:''}<span class="trt"><span class="num" style="font-size:20px" ${d.startedAt&&d.mission<7?`data-rt="${i}"`:''}>${d.startedAt&&d.mission<7?fmt(tRem(i)):(d.score||0)}</span>${d.startedAt&&d.mission<7?`<button class="b ext" data-act="ext:${i}">+1 د</button>`:''}</span></div>`}).join('')}</div>
+     <p class="note">نقاط المهمة: 100 + مكافأة سرعة (نقطة لكل 3 ثوانٍ متبقية) · أول فريق يُنجز المهمة +30 · المهمة 4 ثابتة 100 · المهمة 7 مضاعفة · الخطأ = تجميد 5 ثوانٍ بدون خصم · انتهاء الوقت = −30 وتُفتح المهمة التالية · زر «+1 د» يمدّد وقت الفريق اللي يلعب الآن.</p>
    </div>
-   <div class="sec"><h3>النقاط ${S.view==='mission'?'· زر ✓ يعني أنجز المهمة (يمنح نقاط الترتيب تلقائيًا)':''}</h3>
+   <div class="sec"><h3>تعديل النقاط يدويًا</h3>
      <div class="amts">${[10,25,50,100].map(a=>`<button class="b ${amt===a?'on':''}" data-act="amt:${a}">${a}</button>`).join('')}</div>
-     <div>${S.teams.map((x,i)=>{const d=x.done[S.mission];return `<div class="trow"><i style="background:${TC[i]}"></i><span class="nm">${esc(x.name)}<small>${total(i)}</small></span>
-       <span class="acts">${S.view==='mission'?`<button class="b fin ${d?'on':''}" data-act="fin:${i}" aria-label="أنجز المهمة">${d?'✓'+d:'✓'}</button>`:''}<button class="b" data-act="sub:${i}" aria-label="خصم">−</button><button class="b pri" data-act="add:${i}" aria-label="إضافة">+${amt}</button></span></div>`}).join('')}</div>
+     <div>${S.teams.map((x,i)=>`<div class="trow"><i style="background:${TC[i]}"></i><span class="nm">${esc(x.name)}<small>${total(i)}</small></span>
+       <span class="acts"><button class="b" data-act="sub:${i}" aria-label="خصم">−</button><button class="b pri" data-act="add:${i}" aria-label="إضافة">+${amt}</button></span></div>`).join('')}</div>
    </div>
    ${codesCtl()}
    ${tryCtl()}
@@ -1459,7 +1461,7 @@ function initSub(type){switch(type){
   case 'final7':return{code:'',phase:'enter',ans:''};}}
 function renderPlay(){
   const app=$('#app');
-  if(MYT===null){app.innerHTML=`<div class="pl wrap" style="padding-block:24px"><div class="pcard"><span class="counter">PLAYERS</span><h1 class="ptitle">اختاروا فريقكم</h1><p class="note">جهاز واحد لكل فريق. لا يمكن تغيير الفريق بعد بدء السباق إلا من المقدم.</p><div class="tpick">${S.teams.map((t,i)=>`<button class="b" style="background:${TC[i]}" data-act="pteam:${i}">${esc(t.name)}</button>`).join('')}</div></div><button class="tbtn" data-act="route:" ${IS_OWNER===false?"hidden":""}>رجوع</button></div>`;PS.key='';return}
+  if(MYT===null){app.innerHTML=`<div class="pl wrap" style="padding-block:24px"><div class="pcard"><span class="counter">PLAYERS</span><h1 class="ptitle">اختاروا فريقكم</h1><p class="note">جهاز واحد لكل فريق. لا يمكن تغيير الفريق بعد بدء السباق إلا من المقدم.</p><div class="tpick">${S.teams.map((t,i)=>takenBy(i)?`<button class="b taken" style="background:${TC[i]}" disabled>🔒 ${esc(t.name)}<small>مأخوذ من جوال آخر</small></button>`:`<button class="b" style="background:${TC[i]}" data-act="pteam:${i}">${esc(t.name)}</button>`).join('')}</div><p class="note">إذا كان فريقكم مقفلًا بالغلط، اطلبوا من المقدم «فك الحجز».</p></div><button class="tbtn" data-act="route:" ${IS_OWNER===false?"hidden":""}>رجوع</button></div>`;PS.key='';return}
   if(!$('.pl.playing'))app.innerHTML=`<div class="pl playing wrap" style="--c:${TC[MYT]}"><div class="phead" id="phead"></div><div id="pmain" style="display:grid;gap:14px"></div></div><div id="plock"></div>`;
   const d=TD[MYT];
   $('#phead').innerHTML=`${TRY!==null?`<div class="trybar"><b>🧪 وضع التجربة</b><span>جرّب أي مهمة، ولا يتأثر شيء في المسابقة</span><div class="trych">${P.map((x,k)=>`<button class="b ${d.mission===k?'on':''}" data-act="tryto:${k}" title="${esc(x.title)}">${k+1}</button>`).join('')}<button class="b" data-act="tryexit">رجوع للتحكم</button></div></div>`:''}<div class="r1"><span class="tm">${esc(TRY!==null?'تجربة المقدم':S.teams[MYT].name)}</span><span class="sc">${total(MYT)}</span><span class="pt" id="ptimer">${fmt(tRem(MYT))}</span></div><div class="dots">${P.map((_,k)=>{const r=d.results[k];return `<i class="${r?(r.s==='timeout'?'x':r.first?'g':'d'):k===d.mission?'n':''}"></i>`}).join('')}</div>`;
@@ -1474,7 +1476,7 @@ function pHTML(){
   const d=TD[MYT],st=pState();let out='';const el={set innerHTML(v){out=v}};
   if(st==='fin'){const rank=sorted().findIndex(t=>t.i===MYT)+1;
     el.innerHTML=`<div class="pcard win">${d.results[6]&&d.results[6].s==='timeout'?'<span class="counter">TIME OUT</span><h1 class="ptitle">انتهى الوقت… والخزنة بقيت مقفلة</h1>':'<span class="counter">MISSION ACCOMPLISHED</span><div class="f7trophy">🏆</div><h1 class="ptitle">تم إنجاز المهمة 7 بنجاح!</h1>'}<span class="big">${total(MYT)}</span><p>نقطة · ترتيبكم الآن ${rank} من 4</p><p class="note">ارفعوا رؤوسكم للشاشة… إعلان البطل قادم.</p></div>`;return out}
-  if(st==='wait'){el.innerHTML=`<div class="pcard"><span class="counter">STANDBY</span><h1 class="ptitle">بانتظار إشارة البدء</h1><p>عندما يطلق المقدم السباق، تظهر لكم المهمة الأولى هنا مباشرة.</p><p class="note">7 مهام · الوقت يظهر أعلى الشاشة · لا تُفتح المهمة التالية إلا بعد إنهاء الحالية · كل خطأ = −10 نقاط وتجميد مؤقت.</p><button class="tbtn" data-act="pleave">لستم ${esc(S.teams[MYT].name)}؟ غيّروا الفريق</button></div>`;return out}
+  if(st==='wait'){el.innerHTML=`<div class="pcard"><span class="counter">STANDBY</span><h1 class="ptitle">بانتظار إشارة البدء</h1><p>عندما يطلق المقدم السباق، تظهر لكم المهمة الأولى هنا مباشرة.</p><p class="note">7 مهام · الوقت يظهر أعلى الشاشة · لا تُفتح المهمة التالية إلا بعد إنهاء الحالية · الإجابة الخاطئة تجمّد الجوال 5 ثوانٍ.</p><button class="tbtn" data-act="pleave">لستم ${esc(S.teams[MYT].name)}؟ غيّروا الفريق</button></div>`;return out}
   if(st==='ready'){const last=d.mission>0?d.results[d.mission-1]:null,m=P[d.mission];
     el.innerHTML=`${last?`<div class="pcard win"><span class="counter">${last.s==='timeout'?'TIME OUT':'MISSION COMPLETE'}</span><h2 class="ptitle">${last.s==='timeout'?'انتهى الوقت!':last.first?'الأسرع بين الفرق!':'أحسنتم!'}</h2><span class="big" ${last.pts<0?'style="color:var(--hot)"':''}>${last.pts<0?'−'+Math.abs(last.pts):'+'+last.pts}</span>${last.s==='timeout'?'<p class="note">خصم انتهاء الوقت</p>':''}${last.first?'<p class="note">شامل مكافأة السبق +30</p>':''}</div>`:''}
     <div class="pcard"><span class="counter">المهمة ${d.mission+1} من 7 · ${esc(m.kind)}</span><h1 class="ptitle">${esc(m.title)}</h1><p>${esc(m.intro)}</p>
@@ -1512,8 +1514,8 @@ function pMission(){
       <div class="twtarget"><span class="note">ابحثوا عن هذه الصورة بالضبط 👇</span>${twSVG(T.base)}</div>
       <div class="twgrid">${T.cards.map((c,i)=>`<button class="twc" data-act="ptw:${i}" id="tw${i}" aria-label="صورة ${i+1}">${twSVG(c)}</button>`).join('')}</div></div>`}
   if(m.type==='clues'){const L=CT.clues,n=L.length;
-    const slots=`<div class="cslots">${L.map((c,i)=>`<span class="${i<s.q||(i===s.q&&s.phase==='show')?'ok':i===s.q&&s.phase==='q'?'cur':''}">${i<s.q||(i===s.q&&s.phase==='show')?'✓':i+1}</span>`).join('')}</div>`;
-    if(s.phase==='code')return `<div class="pcard">${slots}<div class="lockc"><span class="lk-ico">🔐</span><b>أدخلوا رمز الخزنة</b><p class="lk-msg">اكتبوا الأرقام السبعة اللي جمعتوها بالترتيب من بطاقة الرمز.</p>${codePad(n,s.code,'pcl','pcld')}</div></div>`;
+    const slots=`<div class="cslots">${L.map((c,i)=>`<span class="${i<s.q||(i===s.q&&s.phase==='show')?'ok':i===s.q&&s.phase==='q'?'cur':''}">${i<s.q||(i===s.q&&s.phase==='show')?(s.peek?esc(c.d):'✓'):i+1}</span>`).join('')}</div>`;
+    if(s.phase==='code')return `<div class="pcard">${slots}<div class="lockc"><span class="lk-ico">🔐</span><b>أدخلوا رمز الخزنة</b><p class="lk-msg">اكتبوا الأرقام السبعة اللي جمعتوها بالترتيب من بطاقة الرمز.</p>${codePad(n,s.code,'pcl','pcld')}${s.peek?'':`<button class="b" data-act="pcl-peek" style="margin-top:8px">نسيتوا رقمًا؟ أرني الأرقام (−20 نقطة)</button>`}</div></div>`;
     const c=L[Math.min(s.q,n-1)];
     if(s.phase==='show')return `<div class="pcard">${slots}<div class="digitbox"><span class="counter">الدليل ${s.q+1} محلول ✓</span><span>الرقم المطلوب للخزنة</span><b class="num">${esc(c.d)}</b><p>✍️ اكتبوه في بطاقة الرمز، خانة رقم ${s.q+1}</p></div><button class="b pri" style="min-height:60px;font-size:20px" data-act="pcl-next">${s.q+1>=n?'إلى رمز الخزنة 🔐':'الدليل التالي 🔎'}</button></div>`;
     return `<div class="pcard">${slots}<span class="counter">🔎 الدليل ${s.q+1} من ${n}${c.t?' · '+esc(c.t):''}</span><h2 class="ptitle qtext">${esc(c.q)}</h2><div class="opts">${c.o.map((o,i)=>o===''?'':`<button class="opt q30o" data-act="pcl:${i}"><small>${'أبجد'[i]})</small> ${esc(o)}</button>`).join('')}</div></div>`}
@@ -1555,7 +1557,7 @@ function pMission(){
     const enc=encodeMsg(F.msg,ti),map=sheetFor(ti).map;
     return `<div class="pcard"><span class="counter">📜 الرسالة المشفّرة</span><div class="f7msg">${enc.map(w=>`<span class="f7w">${w.map(x=>`<b>${esc(x.s)}</b>`).join('')}</span>`).join('')}</div><p class="note">كل رمز يقابل حرفًا. استخدموا ورقة فك الشفرات تحت.</p></div>
       <div class="pcard"><span class="counter">🗝️ ورقة فك الشفرات</span><div class="f7sheet">${SHEET_LET.map(l=>`<span><b>${esc(map[l]+VS)}</b><i>${l}</i></span>`).join('')}</div></div>
-      <div class="pcard"><div class="lockc"><span class="lk-ico">🔐</span><b>أدخلوا الأرقام السبعة</b>${codePad(7,s.code,'pf7','pf7d')}<p class="note">إذا كان الرقم صحيحًا يظهر لكم الرمز النهائي.</p></div></div>`}
+      <div class="pcard"><div class="lockc"><span class="lk-ico">🔐</span><b>أدخلوا الأرقام السبعة</b>${codePad(7,s.code,'pf7','pf7d')}${F.hint?`<p class="lk-msg">💡 تلميح: ${esc(F.hint)}</p>`:''}<p class="note">إذا كان الرقم صحيحًا يظهر لكم الرمز النهائي.</p></div></div>`}
   if(m.type==='vault'){
     if(s.stage===0)return pHead('القفل الأول')+`<div class="pcard"><p style="font-size:18px">${esc(CT.vault.q1)}</p><div class="vdisp" id="pvd">${s.code||'·'.repeat(String(CT.vault.a1).length)}</div><div class="keypad">${[1,2,3,4,5,6,7,8,9].map(n=>`<button class="b" data-act="pv-key:${n}">${n}</button>`).join('')}<button class="b" data-act="pv-clr">مسح</button><button class="b" data-act="pv-key:0">0</button><button class="b pri" data-act="pv-ent">فتح</button></div></div>`;
     if(s.stage===1)return pHead('القفل الثاني')+`<div class="pcard"><p style="font-size:18px">${esc(CT.vault.q2)}</p><div class="pcode" style="text-align:center;font-size:56px">${esc(CT.vault.shown)}</div><div class="abc">${[...AB].map(x=>`<span>${x}</span>`).join('')}</div><input class="pin" id="pvw" placeholder="الكلمة الأصلية" autocomplete="off"><button class="b pri" data-act="pv-word">فتح الخزنة</button></div>`;
@@ -1573,8 +1575,9 @@ function pGood(){sPop();try{navigator.vibrate&&navigator.vibrate(40)}catch(e){}}
 function pComplete(bonus,autoNext){
   const i=MYT,d=TD[i],m=d.mission;if(!d.startedAt||m>=7)return;
   const remS=Math.floor(tRem(i)/1000);
-  let pts=Math.max(20,100+Math.floor(remS/3)-10*(d.curWrong||0));if(m===6)pts*=2;pts+=bonus||0;
-  const first=!TD.some((t,j)=>j!==i&&t.results[m]&&t.results[m].s==='done');if(first)pts+=30;
+  const FX=P[m]&&P[m].fixed;
+  let pts=FX?FX:Math.max(20,100+Math.floor(remS/3)-10*(d.curWrong||0));if(m===6)pts*=2;pts+=bonus||0;
+  const first=!TD.some((t,j)=>j!==i&&t.results[m]&&t.results[m].s==='done');if(first&&!FX)pts+=30;
   sFan();
   tcommit(i,n=>{if(n.mission!==m||!n.startedAt)return false;n.results[m]={s:'done',pts,sec:Math.round(durM(m)/1000)-remS,first,wrong:n.curWrong||0};n.score=(n.score||0)+pts;n.mission=m+1;n.startedAt=0;n.curWrong=0;n.last={id:rid(),mission:m,pts,first,s:'done'};
     if(autoNext&&m+1<7&&!(S.locks&&S.locks[m+1]&&S.locks[m+1].h&&!(n.unlocked&&n.unlocked[m+1]))){n.startedAt=Date.now();n.run=rid()}});
@@ -1610,6 +1613,7 @@ const PACT={
   p30:v=>{const s=PS.sub,L=CT.q30,q=L[s.q];if(!q)return;
     if(+v===q.a){pGood();s.q++;if(s.q>=L.length){pComplete(0);return}pSave();pRender()}else{pShake();sBuzz();try{navigator.vibrate&&navigator.vibrate(250)}catch(e){}lockTitle='إجابة خاطئة';lockMsg='انتظروا 5 ثوانٍ';lockUntil=Date.now()+5000}},
   pcl:v=>{const s=PS.sub,c=CT.clues[s.q];if(!c||s.phase!=='q')return;if(+v===c.a){pGood();s.phase='show';pSave();pRender()}else{pShake();sBuzz();try{navigator.vibrate&&navigator.vibrate(250)}catch(e){}lockTitle='إجابة خاطئة';lockMsg='انتظروا 5 ثوانٍ';lockUntil=Date.now()+5000}},
+  'pcl-peek':()=>{const s=PS.sub;if(s.peek||s.phase!=='code')return;s.peek=true;tcommit(MYT,n=>{n.score=(n.score||0)-20});sBuzz();pSave();pRender()},
   'pcl-next':()=>{const s=PS.sub;if(s.phase!=='show')return;s.q++;s.phase=s.q>=CT.clues.length?'code':'q';pSave();pRender()},
   'pcl-k':v=>{const s=PS.sub;const n=CT.clues.length;if(s.code.length<n)s.code+=v;const e=$('#pcld');if(e)e.textContent=s.code||'·'.repeat(n);beep(700,.05,'square',.06)},
   'pcl-del':()=>{const s=PS.sub;s.code=s.code.slice(0,-1);const e=$('#pcld');if(e)e.textContent=s.code||'·'.repeat(CT.clues.length)},
@@ -1623,8 +1627,8 @@ const PACT={
     if(lkIn.length!==7||hsh(lkIn)!==L.h){lkIn='';const e=$('#lkd');if(e){e.textContent='·······';e.classList.remove('shake');void e.offsetWidth;e.classList.add('shake')}sBuzz();try{navigator.vibrate&&navigator.vibrate(200)}catch(x){}lockTitle='شيفرة خاطئة';lockMsg='تأكدوا من الرقم · انتظروا';lockUntil=Date.now()+5000;return}
     lkIn='';sFan();try{navigator.vibrate&&navigator.vibrate([60,40,60])}catch(x){}
     tcommit(MYT,n=>{if(n.startedAt||n.mission!==m||!raceOK())return false;n.unlocked=n.unlocked||[0,0,0,0,0,0,0];n.unlocked[m]=1;n.startedAt=Date.now();n.run=rid();n.curWrong=0;n.last={id:rid(),mission:m,pts:0,first:false,s:'unlock'}})},
-  pleave:()=>{MYT=null;try{localStorage.removeItem(SK('t'))}catch(e){};PS.key='';$('#app').innerHTML='';after()},
-  pteam:v=>{MYT=+v;try{localStorage.setItem(SK('t'),v)}catch(e){};PS.key='';$('#app').innerHTML='';after()},
+  pleave:()=>{if(MYT!==null&&TRY===null&&TD[MYT].dev===DEV)tcommit(MYT,n=>{n.dev=''});MYT=null;try{localStorage.removeItem(SK('t'))}catch(e){};PS.key='';$('#app').innerHTML='';after()},
+  pteam:v=>{if(takenBy(+v)){after();return}MYT=+v;if(TRY===null)tcommit(+v,n=>{n.dev=DEV});try{localStorage.setItem(SK('t'),v)}catch(e){};PS.key='';$('#app').innerHTML='';after()},
   pstart:()=>{const m=TD[MYT].mission;if(lockPending(MYT))return;tcommit(MYT,n=>{if(n.startedAt||n.mission!==m||!raceOK())return false;n.startedAt=Date.now();n.run=rid();n.curWrong=0})},
   'pc-sus':v=>{if(+v===CASE_M.culprit){PS.sub.stage=1;pGood();pSave();pRender()}else{pShake();pFail(15)}},
   'pc-clue':v=>{const p=PS.sub.pick,k=+v;const j=p.indexOf(k);if(j>=0)p.splice(j,1);else if(p.length<2)p.push(k);pSave();pRender()},
@@ -1654,10 +1658,23 @@ const PACT={
 
 /* ================= HOST: TEST MODE + CONTENT EDITOR ================= */
 const tryURL=k=>location.pathname+'?r='+ROOMC+'&k='+HK+'&try='+k+'#play';
+
+/* ---- import settings from another room saved on this device ---- */
+function prevRooms(){const out=[];try{for(let k=0;k<localStorage.length;k++){const key=localStorage.key(k);const m=/^m7-ct-([A-Z0-9]+)$/.exec(key||'');if(m&&m[1]!==ROOMC&&localStorage.getItem('m7k-'+m[1]))out.push(m[1])}}catch(e){}return out}
+function importFrom(room){try{
+  const oldK=localStorage.getItem('m7k-'+room)||'';const ct=JSON.parse(localStorage.getItem('m7-ct-'+room)||'null');const st=JSON.parse(localStorage.getItem('m7-s-'+room)||'null');
+  const reKey=x=>{if(!x)return x;try{return btoa(xorc(xorc(atob(x),oldK),HK))}catch(e){return ''}};
+  if(validCT(ct)){const c=mergeCT(ct);if(c.f7&&c.f7.x)c.f7.x=reKey(c.f7.x);CT=c;saveCT()}
+  commit(n=>{if(st&&Array.isArray(st.locks))n.locks=st.locks.map(L=>L&&L.h?{...L,x:reKey(L.x)}:null);if(st&&Array.isArray(st.teams))st.teams.forEach((t,i)=>{if(n.teams[i]&&t&&t.name)n.teams[i].name=t.name})});
+  LKD=null;EDM.d=null;impMsg='✓ تم نسخ الإعدادات من غرفة '+room}catch(e){impMsg='تعذّر النسخ'}after()}
+let impMsg='';
+function importCtl(){const rooms=prevRooms();if(!rooms.length&&!impMsg)return '';
+  return `<div class="sec"><h3>📥 إعدادات من غرفة سابقة</h3><p class="note">كل غرفة لها إعداداتها (الأسئلة، رقم المهمة 7 ورموزها، الأقفال، أسماء الفرق). إذا جهّزتها في غرفة ثانية على هذا الجهاز، انسخها هنا.</p>
+   <div class="row">${rooms.map(r=>`<button class="b" data-act="impfrom:${r}">انسخ من ${r}</button>`).join('')}</div>${impMsg?`<p class="note" style="color:var(--t3)">${esc(impMsg)}</p>`:''}</div>`}
 let codesOpen=false;
 function codesCtl(){const F=CT.f7,ans=F.x?lockDec(F.x):'';
   return `<details class="sec" id="cdDet" ${codesOpen?'open':''}><summary style="cursor:pointer;font-weight:700">🗝️ المهمة 7 · الشيفرة الأخيرة ${F.h?'':'<span class="pill" style="background:var(--hot);color:#fff;border-color:var(--hot)">لم تُجهَّز بعد</span>'}</summary>
-  ${F.h?`<p class="note" style="margin-top:8px">الرسالة: <b style="color:var(--fg)">${esc(F.msg)}</b><br>الرقم المطلوب: <b class="num" style="color:var(--sig);font-size:18px">${esc(ans)}</b></p>
+  ${F.h?`<p class="note" style="margin-top:8px">الرسالة: <b style="color:var(--fg)">${esc(F.msg)}</b>${F.hint?`<br>التلميح: ${esc(F.hint)}`:'<br><span style="color:var(--sig)">بدون تلميح: تأكد أن رقم الجمعية ظاهر في المكان.</span>'}<br>الرقم المطلوب: <b class="num" style="color:var(--sig);font-size:18px">${esc(ans)}</b></p>
   ${S.teams.map((t,i)=>{const d=TD[i];const done=d.results[6]&&d.results[6].s==='done';return `<div class="f7hh" style="padding-block:6px;border-top:1px solid var(--line)"><b style="color:${TC[i]}">${esc(t.name)}</b><span class="num f7code">${esc(decB((F.cx||[])[i],ans))}</span>${done?'<span class="pill" style="background:var(--t3);color:var(--ink);border-color:var(--t3)">✓ أنهوا</span>':''}</div>`}).join('')}
   <p class="note">لكل فريق ورقة رموز مختلفة، والرسالة نفسها. تعدّلها من «تعديل محتوى المهام» ثم «المهمة 7».</p>`:`<p class="note" style="margin-top:8px;color:var(--hot)">ادخل «تعديل محتوى المهام» ثم تبويب «المهمة 7» واكتب الرقم المطلوب ورموز الفرق قبل بدء السباق.</p>`}</details>`}
 function tryCtl(){return `<div class="sec"><h3>🧪 جرّب المهام بنفسك · ما يأثر على الفرق</h3>
@@ -1665,7 +1682,7 @@ function tryCtl(){return `<div class="sec"><h3>🧪 جرّب المهام بنف
   <p class="note">يفتح المهمة على جهازك كأنك فريق: تقدر تجاوب وتجرّب الأقفال والشيفرات، ونتيجتك ما تُحسب ولا تظهر على الشاشة.</p></div>`}
 let EDM={tab:'q30',idx:null,d:null,msg:'',arm:''},edOpen=false;
 const ED_TABS=[['f7','المهمة 7 · الشيفرة الأخيرة'],['q30','المهمة 1 · الأسئلة'],['clues','المهمة 3 · الأدلة'],['code4','المهمة 4 · الشيفرة'],['c4','المهمة 6 · أربع تربح']];
-function f7Draft(){const F=CT.f7,ans=F.x?lockDec(F.x):'';const rc=()=>String(100000+(crypto.getRandomValues(new Uint32Array(1))[0]%900000));return {msg:F.msg,ans,codes:[0,1,2,3].map(i=>(F.cx&&F.cx[i]&&ans)?decB(F.cx[i],ans):rc())}}
+function f7Draft(){const F=CT.f7,ans=F.x?lockDec(F.x):'';const H=F.hint||'';const rc=()=>String(100000+(crypto.getRandomValues(new Uint32Array(1))[0]%900000));return {msg:F.msg,ans,hint:H,codes:[0,1,2,3].map(i=>(F.cx&&F.cx[i]&&ans)?decB(F.cx[i],ans):rc())}}
 function edStart(tab,idx){EDM.tab=tab;EDM.idx=idx;EDM.msg='';EDM.arm='';
   if(tab==='code4'||tab==='c4')EDM.d=structuredClone(CT[tab]);
   else if(tab==='f7')EDM.d=f7Draft();
@@ -1678,6 +1695,7 @@ function editorCtl(){
   if(tab==='f7'){if(!EDM.d)EDM.d=f7Draft();const d=EDM.d;
     body=`<label class="edl">الرسالة اللي تنشفّر بالرموز (يفكّونها بورقة الشفرات)<textarea id="ed-msg" rows="2" maxlength="120">${esc(d.msg)}</textarea></label>
       <label class="edl">🔑 الرقم المطلوب: آخر 7 أرقام من جوال الجمعية<input id="ed-ans" inputmode="numeric" maxlength="7" value="${esc(d.ans)}" placeholder="7 أرقام" style="direction:ltr;text-align:center;letter-spacing:.2em;font-size:22px"></label>
+      <label class="edl">💡 تلميح يظهر للفرق (اختياري)، مثل: الرقم مكتوب على البنر عند المدخل<input id="ed-f7hint" maxlength="120" value="${esc(d.hint||'')}"></label>
       <p class="note">الرمز النهائي اللي يظهر لكل فريق بعد الحل (تقدر تخليه مختلفًا لكل فريق):</p>
       ${S.teams.map((t,i)=>`<label class="edl" style="grid-template-columns:110px 1fr;align-items:center"><b style="color:${TC[i]}">${esc(t.name)}</b><input id="ed-rc${i}" maxlength="12" value="${esc(d.codes[i]||'')}" style="direction:ltr;text-align:center"></label>`).join('')}
       <div class="row"><button class="b pri" data-act="ed-save7">احفظ الشيفرة الأخيرة</button></div>`}
@@ -1708,11 +1726,12 @@ function editorCtl(){
 function saveCT(){CT=structuredClone(CT);try{localStorage.setItem(SK('ct'),JSON.stringify(CT))}catch(e){}pub('content',{v:1,ct:CT,writer:CID,sentAt:Date.now()},true);stageKey='';}
 function edArm(k){EDM.arm=k;after();setTimeout(()=>{if(EDM.arm===k){EDM.arm='';after()}},3500)}
 const EDACT={
+  impfrom:v=>importFrom(String(v).replace(/[^A-Z0-9]/g,'')),
   'ed-save7':()=>{const d=EDM.d;if(!d)return;const ans=toLat(d.ans);const msg=String(d.msg||'').trim();
     if(!msg){EDM.msg='اكتب الرسالة.';after();return}
     if(ans.length!==7){EDM.msg='الرقم المطلوب لازم يكون 7 أرقام بالضبط.';after();return}
     const codes=d.codes.map(c=>String(c||'').trim());if(codes.some(c=>!c)){EDM.msg='اكتب رمزًا لكل فريق.';after();return}
-    CT.f7={msg,h:hsh(ans),x:lockEnc(ans),cx:codes.map(c=>encB(c,ans))};saveCT();EDM.d=null;EDM.msg='✓ تم حفظ الشيفرة الأخيرة';after()},
+    CT.f7={msg,hint:String(d.hint||'').trim(),h:hsh(ans),x:lockEnc(ans),cx:codes.map(c=>encB(c,ans))};saveCT();EDM.d=null;EDM.msg='✓ تم حفظ الشيفرة الأخيرة';after()},
   tryopen:v=>{location.href=tryURL(+v)},
   'ed-tab':v=>edStart(v,null),
   'ed-pick':v=>edStart(EDM.tab,+v),
@@ -1739,11 +1758,12 @@ document.addEventListener('input',e=>{const id=e.target&&e.target.id||'';if(!id.
   if(id==='ed-q')d.q=v;else if(id==='ed-t')d.t=v;else if(id==='ed-d'){e.target.value=toLat(v).slice(0,1);d.d=e.target.value}
   else if(/^ed-o\d$/.test(id))d.o[+id[4]]=v;
   else if(id==='ed-code'){e.target.value=toLat(v);d.code=e.target.value}else if(id==='ed-hint')d.hint=v;
-  else if(id==='ed-msg')d.msg=v;else if(id==='ed-ans'){e.target.value=toLat(v).slice(0,7);d.ans=e.target.value}else if(/^ed-rc\d$/.test(id))d.codes[+id[5]]=v;
+  else if(id==='ed-f7hint')d.hint=v;else if(id==='ed-msg')d.msg=v;else if(id==='ed-ans'){e.target.value=toLat(v).slice(0,7);d.ans=e.target.value}else if(/^ed-rc\d$/.test(id))d.codes[+id[5]]=v;
   else if(id==='ed-a1'){e.target.value=toLat(v);d.a1=e.target.value}else if(id==='ed-q1')d.q1=v;else if(id==='ed-q2')d.q2=v;else if(id==='ed-shown')d.shown=v;else if(id==='ed-a2')d.a2=v});
 
 /* ================= ACTIONS ================= */
 const ACT={
+  unclaim:v=>{const i=+v;if(!TD[i].dev)return;tcommit(i,n=>{n.dev=''})},
   ext:v=>{const i=+v,t=TD[i];if(!t||!t.startedAt||t.mission>=7)return;commit(n=>{n.ext=n.ext||{};const e=n.ext[i];const ms=(e&&e.run===t.run?(e.ms||0):0)+60000;n.ext[i]={run:t.run,ms};
     n.flash={id:Math.random().toString(36).slice(2),at:Date.now(),team:i,big:false,text:`⏱ +1 دقيقة لـ ${n.teams[i].name}`,sub:''}})},
   lkrand:v=>{const D=lkDraft();const r=crypto.getRandomValues(new Uint32Array(1))[0];D[+v].c=String(1000000+r%9000000);const e=$('#lkc'+v);if(e)e.value=D[+v].c},
@@ -1757,7 +1777,7 @@ const ACT={
   joinhost:()=>joinHost(),
   newroomgate:()=>{location.href=location.pathname},
   lastroom:()=>{let c='';try{c=localStorage.getItem('m7-last')||''}catch(e){}if(c)location.href=location.pathname+'?r='+c},
-  copy:v=>{const m={p:linkFor('play',false),s:linkFor('screen',true),c:linkFor('control',true)};copyTxt(m[v],document.querySelector(`[data-act="copy:${v}"]`))},
+  copy:v=>{const m={p:linkFor('play',false),s:linkFor('screen',false),c:linkFor('control',true)};copyTxt(m[v],document.querySelector(`[data-act="copy:${v}"]`))},
   'race-on':()=>commit(n=>{n.raceOn=true;n.view='race'}),
   'race-off':()=>commit(n=>{n.raceOn=false}),
   'route':v=>setRoute(v),
@@ -1800,7 +1820,7 @@ document.addEventListener('click',e=>{
   }
   if(k==='newroom'||k==='lastroom'||k==='copy'||k==='joinhost'||k==='newroomgate'){ACT[k](v);return}
   if(!ROOMC)return;
-  if(IS_OWNER===false)return;
+  if(IS_OWNER===false&&!(ROUTE==='screen'&&(k==='snd'||k==='fs')))return;
   if(EDACT[k]){EDACT[k](v);return}
   if(k!=='route'&&k!=='snd'&&k!=='fs'&&k!=='drawer'&&k!=='amt'&&!canWrite)return;
   if(sound&&ROUTE==='control')sWhoosh();
