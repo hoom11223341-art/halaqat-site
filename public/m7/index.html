@@ -384,7 +384,7 @@ button:focus-visible,input:focus-visible{outline:3px solid var(--sig);outline-of
 .twtarget{display:grid;justify-items:center;gap:8px;text-align:center}
 .twtarget svg{width:min(150px,42vw);height:auto;border-radius:14px;box-shadow:0 0 0 3px var(--sig),0 10px 30px #0008}
 .twstage .twtarget svg{width:100%}
-.twgrid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:6px;width:100%}
+.twgrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;width:100%}
 .twgrid.big{gap:8px;width:min(100%,60vh);justify-self:center}
 .twstage{justify-content:center}
 .twc{position:relative;padding:0;border-radius:10px;border:2px solid transparent;background:none;line-height:0;cursor:pointer;transition:transform .1s}
@@ -641,16 +641,17 @@ function twMutate(r,b,lv){const p=structuredClone(b);const k=Math.floor(r()*3);c
     else if(lv===4&&r()<.4){const k2=(k+1+Math.floor(r()*2))%3;const t=p.sh[k];p.sh[k]=p.sh[k2];p.sh[k2]=t;if(twKey(p)===twKey(b))x.c=pick(r,TW_COL.filter(c=>c!==x.c))}
     else x.t=pick(r,TW_SH.filter(t=>t!==x.t))}
   return p}
+const TW_N=15,TW_ROUNDS=1,TW_LVMAP=[4];
 const TW_MEMO=new Map();
 function twinRound(seed,lv){const mk=seed+'|'+lv;if(TW_MEMO.has(mk))return TW_MEMO.get(mk);const out=twinRound0(seed,lv);if(TW_MEMO.size>40)TW_MEMO.clear();TW_MEMO.set(mk,out);return out}
 function twinRound0(seed,lv){const r=mulb(seed*7919+lv*104729+13);const base=twBase(r,lv);const bk=twKey(base);const seen=new Set([bk]);const cards=[];
   /* subtle levels have few single-change variants, so widen step by step (always bounded) */
   const plan=[[lv,1,300],[lv,2,300],[lv,3,300],[lv===3?1:2,1,200],[0,1,200],[lv,2,600]];
-  for(const [L,k,cap] of plan){let g=0;while(cards.length<24&&g++<cap){let d=base;for(let i=0;i<k;i++)d=twMutate(r,d,L);const key=twKey(d);if(!seen.has(key)){seen.add(key);cards.push(d)}}if(cards.length>=24)break}
-  let g=0;while(cards.length<24&&g++<5000){const d=structuredClone(base);d.bg=pick(r,TW_BG);d.sh.forEach(x=>{if(x.t==='e')x.e=pick(r,EMO_ALL);else x.c=pick(r,TW_COL)});const key=twKey(d);if(!seen.has(key)){seen.add(key);cards.push(d)}}
+  for(const [L,k,cap] of plan){let g=0;while(cards.length<TW_N-1&&g++<cap){let d=base;for(let i=0;i<k;i++)d=twMutate(r,d,L);const key=twKey(d);if(!seen.has(key)){seen.add(key);cards.push(d)}}if(cards.length>=24)break}
+  let g=0;while(cards.length<TW_N-1&&g++<5000){const d=structuredClone(base);d.bg=pick(r,TW_BG);d.sh.forEach(x=>{if(x.t==='e')x.e=pick(r,EMO_ALL);else x.c=pick(r,TW_COL)});const key=twKey(d);if(!seen.has(key)){seen.add(key);cards.push(d)}}
   /* order decoys randomly so harder variants are mixed in */
   for(let i=cards.length-1;i>0;i--){const j=Math.floor(r()*(i+1));[cards[i],cards[j]]=[cards[j],cards[i]]}
-  const ans=Math.floor(r()*25);cards.splice(ans,0,base);return {base,cards,ans}}
+  const ans=Math.floor(r()*TW_N);cards.splice(ans,0,base);return {base,cards,ans}}
 function twShape(x,cx,cy){const tf=`translate(${cx} ${cy}) rotate(${x.r}) scale(${x.z})`,f=`fill="${x.c}"`;
   if(x.t==='e')return `<text x="${cx}" y="${cy+1}" font-size="30" text-anchor="middle" dominant-baseline="central">${x.e}</text>`;
   switch(x.t){
@@ -681,10 +682,10 @@ const M=[
  keyText:s=>`الإجابة: ${'أبجد'[Q30[s].a]}) ${Q30[s].o[Q30[s].a]}`},
 {type:'twin',title:'توأم الصورة',kind:'دقة ملاحظة',
  goal:'صورة واحدة فقط من الخمس والعشرين نسخة مطابقة تمامًا للصورة الأصلية. الباقي فيه فرق صغير.',
- task:'خمس جولات، وكل جولة أصعب من اللي قبلها. الخطأ يوقف الفريق 5 ثوانٍ.',
+ task:'جولة واحدة: 15 صورة وأشكال، واحدة فقط مطابقة. الخطأ يوقف الفريق 5 ثوانٍ.',
  score:RANK_TXT,
- steps:5, stepName:i=>`الجولة ${i+1} من 5 · ${TW_LV[i]}`,
- keyText:s=>`المطابقة في المربع رقم ${twinRound(9000+S.mission*10,s).ans+1} (العدّ من اليمين، صفًا صفًا)`},
+ steps:1, stepName:()=>'15 صورة · صورة واحدة مطابقة',
+ keyText:s=>`المطابقة في المربع رقم ${twinRound(9000+S.mission*10,TW_LVMAP[0]).ans+1} (العدّ من اليمين، صفًا صفًا)`},
 {type:'memory',title:'ذاكرة العميل',kind:'لعبة ذاكرة',
  goal:'ستظهر حقيبة العميل 20 ثانية فقط. احفظوا كل ما فيها.',
  task:'بعد الاختفاء: اكتبوا أكبر عدد من الأغراض في ورقة. كل غرض صحيح = 5 نقاط، وكل غرض غير موجود = خصم 5.',
@@ -749,7 +750,7 @@ const M=[
 /* ================= PLAYER MISSIONS (in-app, auto-checked) ================= */
 const P=[
  {type:'mcq30',title:'سباق الثلاثين',kind:'أسئلة سريعة',intro:'أسئلة اختيار متتالية. الإجابة الخاطئة توقفكم 5 ثوانٍ قبل ما تقدرون تجاوبون مرة ثانية.'},
- {type:'twin',title:'توأم الصورة',kind:'دقة ملاحظة',intro:'خمس جولات من الصور والأشكال. في كل جولة 25 صورة، وواحدة فقط مطابقة تمامًا للأصل. الخطأ يوقفكم 5 ثوانٍ.'},
+ {type:'twin',title:'توأم الصورة',kind:'دقة ملاحظة',intro:'أمامكم 15 صورة وأشكال متشابهة، وواحدة فقط مطابقة تمامًا للصورة الأصلية. لاقوها! الخطأ يوقفكم 5 ثوانٍ.'},
  {type:'clues',title:'الأدلة السبعة',kind:'رمز الخزنة',dur:480000,intro:'تم إخفاء رمز الخزنة المكوّن من 7 أرقام. أمامكم 7 أدلة، كل دليل يعطيكم رقمًا واحدًا. اكتبوا الأرقام بالترتيب في بطاقة الرمز، وفي النهاية أدخلوا الرمز كاملًا. ⏱ 8 دقائق'},
  {type:'code',fixed:100,title:'الشيفرة',kind:'محطة الشيفرة',intro:'اعرفوا الشيفرة وأدخلوها. بمجرد إدخالها الصحيح تنتقلون مباشرة للمهمة الخامسة.'},
  {type:'sort',title:'ترتيب الأرقام الفردية',kind:'تحدي ترتيب',intro:'🚨 أمامكم 50 رقمًا فرديًا مبعثرة. اضغطوها بالترتيب من الأصغر إلى الأكبر. الضغطة الخاطئة توقفكم 5 ثوانٍ.'},
@@ -1169,9 +1170,9 @@ function stageHTML(prev){
      ${r?`<div><span class="ans"><small>الإجابة</small>${esc(c.o[c.a])} · الرقم ${esc(c.d)}</span></div>`:`<div class="optrow">${c.o.map((o,i)=>`<span class="card">${'أبجد'[i]}) ${esc(o)}</span>`).join('')}</div>`}</div>`;
   }
   if(m.type==='code'){return `<div class="panel">${head}<div class="lockc"><span class="lk-ico" style="font-size:90px">🔑</span><h2 class="big-q">${esc(m.goal)}</h2>${CT.code4.hint?`<p class="goal">${esc(CT.code4.hint)}</p>`:''}${r?`<span class="ans"><small>الشيفرة</small>${esc(CT.code4.code)}</span>`:''}</div></div>`}
-  if(m.type==='twin'){const T=twinRound(9000+S.mission*10,s);
+  if(m.type==='twin'){const T=twinRound(9000+S.mission*10,TW_LVMAP[0]);
     return `<div class="panel">${head}<p class="goal">${esc(m.goal)}</p>
-     <div class="twstage"><div class="twtarget"><span class="counter">الصورة الأصلية · ${esc(TW_LV[s])}</span>${twSVG(T.base)}</div>
+     <div class="twstage"><div class="twtarget"><span class="counter">الصورة الأصلية</span>${twSVG(T.base)}</div>
      <div class="twgrid big">${T.cards.map((c,i)=>`<div class="twc ${r&&i===T.ans?'hit':''} ${r&&i!==T.ans?'dim':''}">${twSVG(c)}<i>${i+1}</i></div>`).join('')}</div></div></div>`;
   }
   if(m.type==='cipher'){
@@ -1509,8 +1510,8 @@ function c4AIMove(){const s=PS.sub;if(!s||s.over||s.turn!=='a'||s.phase!=='play'
 function finaleWin(){const el=document.createElement('div');el.className='f7win';el.innerHTML='<div><span>🏆</span><b>تم إنجاز المهمة 7 بنجاح!</b><em>الخزنة انفتحت… ارفعوا رؤوسكم للشاشة 👀</em></div>';document.body.appendChild(el);sFan();setTimeout(sFan,700);try{navigator.vibrate&&navigator.vibrate([100,60,100,60,300])}catch(e){}confetti();setTimeout(()=>{el.remove();stopConfetti()},6000)}
 function pMission(){
   const d=TD[MYT],m=P[d.mission],s=PS.sub;
-  if(m.type==='twin'){const T=twinRound(s.seed,s.round);
-    return `<div class="pcard"><div class="q30h"><span class="counter">ROUND ${s.round+1} / 5</span><span class="counter">${esc(TW_LV[s.round])}</span></div><div class="q30bar"><i style="width:${s.round/5*100}%"></i></div>
+  if(m.type==='twin'){const T=twinRound(s.seed,TW_LVMAP[Math.min(s.round,TW_ROUNDS-1)]);
+    return `<div class="pcard"><div class="q30h"><span class="counter">15 صورة · واحدة مطابقة</span><span class="counter">ركّزوا 👀</span></div>
       <div class="twtarget"><span class="note">ابحثوا عن هذه الصورة بالضبط 👇</span>${twSVG(T.base)}</div>
       <div class="twgrid">${T.cards.map((c,i)=>`<button class="twc" data-act="ptw:${i}" id="tw${i}" aria-label="صورة ${i+1}">${twSVG(c)}</button>`).join('')}</div></div>`}
   if(m.type==='clues'){const L=CT.clues,n=L.length;
@@ -1585,8 +1586,8 @@ function pComplete(bonus,autoNext){
 const PACT={
   tryto:v=>{if(TRY===null)return;TD[0]=freshT();TD[0].mission=+v;PS.key='';lkIn='';lockUntil=0;$('#pmain')&&($('#pmain')._h='');after()},
   tryexit:()=>{location.href=location.pathname+'?r='+ROOMC+'&k='+HK+'#control'},
-  ptw:v=>{const s=PS.sub;const T=twinRound(s.seed,s.round);
-    if(+v===T.ans){pGood();const e=$('#tw'+v);if(e)e.classList.add('hit');s.round++;if(s.round>=5){setTimeout(()=>pComplete(0),350);return}pSave();setTimeout(pRender,350)}
+  ptw:v=>{const s=PS.sub;const T=twinRound(s.seed,TW_LVMAP[Math.min(s.round,TW_ROUNDS-1)]);
+    if(+v===T.ans){pGood();const e=$('#tw'+v);if(e)e.classList.add('hit');s.round++;if(s.round>=TW_ROUNDS){setTimeout(()=>pComplete(0),350);return}pSave();setTimeout(pRender,350)}
     else{const e=$('#tw'+v);if(e){e.classList.add('bad');setTimeout(()=>e.classList.remove('bad'),900)}pShake();sBuzz();try{navigator.vibrate&&navigator.vibrate(250)}catch(x){}lockTitle='ليست هي!';lockMsg='انتظروا 5 ثوانٍ وركّزوا أكثر';lockUntil=Date.now()+5000}},
   pc4:v=>{const s=PS.sub;if(s.phase!=='play'||s.over||s.turn!=='p')return;const c=+v;if(s.b[c])return;const r=c4Drop(s.b,c,'p');s.last=r*7+c;beep(520,.08,'triangle',.12);
     s.turn='a';c4After(s);pSave();pRender();if(!s.over)c4AIMove()},
