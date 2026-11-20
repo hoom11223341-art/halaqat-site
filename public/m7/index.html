@@ -559,6 +559,15 @@ body::after{content:"";position:fixed;inset:0;pointer-events:none;z-index:0;
 .f7sheet span{display:grid;justify-items:center;gap:2px;padding:6px 0;border-radius:10px;background:#03110a;border:1px solid #24502f}
 .f7sheet b{font-size:24px;line-height:1.2;font-weight:400;font-family:'Segoe UI Symbol','Noto Sans Symbols 2','DejaVu Sans',sans-serif}
 .f7sheet i{font-style:normal;font-family:var(--display);font-size:20px;color:var(--sig)}
+#finOv{position:fixed;inset:0;z-index:85;background:#03110a;display:grid;place-items:center;padding:max(12px,env(safe-area-inset-top,0px)) 12px max(12px,env(safe-area-inset-bottom,0px))}
+.finov-in{width:min(760px,100%);max-height:100%;display:grid;grid-template-rows:auto 1fr;gap:8px}
+.finov-h{display:flex;justify-content:space-between;align-items:center}
+.finov-h b{font-family:var(--display);font-weight:400;font-size:26px;color:var(--sig)}
+.finale.small{min-height:0;max-height:80vh;padding:12px}
+.finale.small .fl{font-size:20px}
+.finale.small .fl.f-intro,.finale.small .fl.f-rank,.finale.small .fl.f-vault{font-size:24px}
+.finale.small .fl.f-winner{font-size:54px}
+.finale.small .fl.f-sub{font-size:20px}
 </style>
 <script src="https://unpkg.com/mqtt@5.10.1/dist/mqtt.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
@@ -995,7 +1004,17 @@ const sPop=()=>{beep(660,.12,'triangle',.15);beep(990,.18,'triangle',.12,.08)};
 const sWhoosh=()=>{if(!AC)return;[200,300,450].forEach((f,i)=>beep(f,.25,'sine',.08,i*.05))};
 
 /* ================= RENDER ROOT ================= */
+let finSeenCtl='';
+function ctlFinale(){
+  if(ROUTE!=='control'&&!(ROUTE==='screen'&&false))return;
+  if(S.view!=='finale'||!S.finaleId){const o=$('#finOv');if(o){o.remove();finRun++}return}
+  if(finSeenCtl===S.finaleId)return;finSeenCtl=S.finaleId;
+  let o=$('#finOv');if(!o){o=document.createElement('div');o.id='finOv';o.dir='rtl';document.body.appendChild(o)}
+  o.innerHTML='<div class="finov-in"><div class="finov-h"><b>🎬 الختام</b><button class="tbtn" data-fin="close">إغلاق</button></div><div class="finale small" id="finaleOv"></div></div>';
+  runFinale('#finaleOv')}
+document.addEventListener('click',e=>{if(e.target.closest('[data-fin="close"]')){const o=$('#finOv');if(o)o.remove();finRun++}});
 function after(){
+  setTimeout(ctlFinale,0);
   hostLoginUI();
   if(IS_OWNER===false&&ROUTE!=='play'){ROUTE='play';drawer=false;stageKey='';$('#app').innerHTML='';try{history.replaceState(null,'','#play')}catch(e){}}
   checkFlash();checkTeamFlash();
@@ -1241,19 +1260,19 @@ function finaleLines(){
   L.push({t:`🏆 ${top.name} 🏆`,c:'f-winner',col:TC[top.i],winner:true});
   L.push({t:`${top.score} نقطة · أبطال المهمة السابعة`,c:'f-sub'});
   return L}
-function runFinale(){const my=++finRun;const box=$('#finale');if(!box)return;const lines=finaleLines();let li=0;
+function runFinale(sel){sel=sel||'#finale';const my=++finRun;const box=$(sel);if(!box)return;const lines=finaleLines();let li=0;
   const sleep=ms=>new Promise(r=>setTimeout(r,ms));
   (async()=>{await sleep(600);
-    for(const L of lines){if(my!==finRun||!$('#finale'))return;
+    for(const L of lines){if(my!==finRun||!$(sel))return;
       const p=document.createElement('p');p.className='fl '+(L.c||'');if(L.col)p.style.color=L.col;const span=document.createElement('span');const cur=document.createElement('i');cur.className='caret';p.append(span,cur);box.appendChild(p);
       if(L.winner){await sleep(400);}
-      const chars=[...L.t];const speed=L.winner?110:L.c==='f-rank'?55:42;
+      const chars=[...L.t];const speed=L.winner?90:L.c==='f-rank'?45:32;
       for(const ch of chars){if(my!==finRun)return;span.textContent+=ch;if(ch.trim()&&sound)beep(1800+Math.random()*500,.025,'square',.035);await sleep(speed+(ch==='…'?260:ch==='.'?180:0))}
       cur.remove();
       if(L.winner){sFan();setTimeout(sFan,600);confetti();p.classList.add('boom')}
       else if(L.c==='f-rank'&&sound)beep(220,.25,'triangle',.12);
       box.scrollTop=box.scrollHeight;
-      await sleep(L.pause||900)}
+      await sleep(L.pause||700)}
   })()}
 
 /* flash + toast */
@@ -1335,14 +1354,15 @@ function renderControl(root){
   root.innerHTML=`<div class="ctl ${root.id==='app'?'wrap':''}" style="${root.id==='app'?'':'padding-inline:16px'}">
    <div class="ctl-top">
      <span class="clk" id="cclk">${fmt(remaining())}</span>
-     <div class="meta"><span class="conn" id="connL">${connTxt}</span><b>${S.view==='mission'?`${S.mission+1}. ${esc(m.title)}`:{intro:'شاشة البداية',board:'الترتيب',winner:'إعلان البطل',race:'شاشة السباق'}[S.view]}</b></div>
+     <div class="meta"><span class="conn" id="connL">${connTxt}</span><b>${S.view==='mission'?`${S.mission+1}. ${esc(m.title)}`:({intro:'شاشة البداية',board:'الترتيب',winner:'إعلان البطل',race:'شاشة السباق',finale:'🎬 الختام يُعرض الآن'})[S.view]||''}</b></div>
      ${root.id==='app'?'<button class="tbtn" data-act="route:">خروج</button>':'<button class="tbtn" data-act="drawer">إغلاق</button>'}
    </div>
    ${!canWrite?'<div class="sec"><p class="note" style="color:var(--hot)">هذا الجهاز ليس جهاز المقدم. افتح رابط التحكم الذي فيه المفتاح.</p></div>':''}
    <div class="sec"><h3>المهمة</h3>
      <div class="mchips">${M.map((x,i)=>`<button class="b ${S.view==='mission'&&S.mission===i?'on':''}" data-act="mis:${i}" aria-label="${esc(x.title)}">${i+1}</button>`).join('')}</div>
      <div class="row"><button class="b ${S.view==='intro'?'on':''}" data-act="view:intro">البداية</button><button class="b ${S.view==='board'?'on':''}" data-act="view:board">الترتيب</button><button class="b ${S.view==='winner'?'on':''}" data-act="view:winner">البطل</button></div>
-     <button class="b pri" style="min-height:56px;font-size:18px" data-act="view:finale">🎬 الختام: إعلان الفائز والترتيب</button>
+     <button class="b pri" style="min-height:56px;font-size:18px" data-act="view:finale">🎬 ${S.view==='finale'?'أعد تشغيل الختام':'الختام: إعلان الفائز والترتيب'}</button>
+     ${S.view==='finale'?'<p class="note" style="color:var(--t3)">✓ الختام يُعرض الآن على شاشة العرض، وتشوفه هنا أيضًا. شغّل الصوت على الشاشة.</p>':'<p class="note">يُعرض على شاشة العرض (وعلى هذا الجهاز). افتح شاشة العرض قبل الضغط.</p>'}
    </div>
    <div class="sec"><h3>المؤقت · 5 دقائق</h3>
      <div class="row">
