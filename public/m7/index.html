@@ -501,6 +501,16 @@ button:focus-visible,input:focus-visible{outline:3px solid var(--sig);outline-of
 .trt{display:flex;align-items:center;gap:8px}
 .trt .b.ext{min-height:38px;padding:4px 10px;font-size:14px;background:var(--t3);color:var(--ink);border-color:var(--t3)}
 .f7card{gap:8px}
+.wscard{gap:10px}
+.wshd{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap}
+.wsg{display:grid;grid-template-columns:repeat(var(--n),1fr);gap:3px;direction:rtl;user-select:none;-webkit-user-select:none}
+.wsg.shake{animation:shake .35s}
+.wsc{aspect-ratio:1;min-width:0;padding:0;border-radius:8px;border:1px solid #24502f;background:#0a1a10;color:var(--fg);font-family:var(--body);font-weight:700;font-size:clamp(15px,4.6vw,24px);line-height:1;display:grid;place-items:center;cursor:pointer;touch-action:manipulation}
+.wsc.f{background:color-mix(in srgb,var(--c) 70%,#000);border-color:var(--c);color:#fff}
+.wsc.a{background:var(--sig);border-color:var(--sig);color:var(--ink);transform:scale(1.08)}
+.wsl{display:flex;flex-wrap:wrap;gap:6px;justify-content:center}
+.wsl span{padding:5px 12px;border-radius:99px;background:var(--ink2);border:1px solid var(--line);font-weight:700;font-size:15px}
+.wsl span.ok{background:color-mix(in srgb,var(--c) 30%,transparent);border-color:var(--c);color:var(--mute);text-decoration:line-through}
 .f7final{border-color:var(--sig);box-shadow:0 0 0 1px var(--sig),0 0 30px #ffb32133}
 .f7pulse{display:inline-block;animation:f7p 1.6s ease-in-out infinite}
 @keyframes f7p{50%{transform:scale(1.12)}}
@@ -801,7 +811,7 @@ const P=[
  {type:'mcq30',title:'سباق الثلاثين',kind:'أسئلة سريعة',intro:'أسئلة اختيار متتالية. الإجابة الخاطئة توقفكم 5 ثوانٍ قبل ما تقدرون تجاوبون مرة ثانية.'},
  {type:'twin',title:'توأم الصورة',kind:'دقة ملاحظة',intro:'أمامكم 15 صورة وأشكال متشابهة، وواحدة فقط مطابقة تمامًا للصورة الأصلية. لاقوها! الخطأ يوقفكم 5 ثوانٍ.'},
  {type:'clues',title:'الأدلة السبعة',kind:'رمز الخزنة',dur:480000,intro:'تم إخفاء رمز الخزنة المكوّن من 7 أرقام. أمامكم 7 أدلة، كل دليل يعطيكم رقمًا واحدًا. اكتبوا الأرقام بالترتيب في بطاقة الرمز، وفي النهاية أدخلوا الرمز كاملًا. ⏱ 8 دقائق'},
- {type:'code',fixed:100,title:'الشيفرة',kind:'محطة الشيفرة',intro:'اعرفوا الشيفرة وأدخلوها. بمجرد إدخالها الصحيح تنتقلون مباشرة للمهمة الخامسة.'},
+ {type:'ws',dur:360000,title:'الكلمات المتقاطعة',kind:'تحدي الكلمات',intro:'🔤 كلمات مخفية في شبكة الحروف: أفقية أو عمودية أو مائلة. اضغطوا أول حرف من الكلمة ثم آخر حرف. ⏱ 6 دقائق'},
  {type:'sort',title:'ترتيب الأرقام الفردية',kind:'تحدي ترتيب',intro:'🚨 أمامكم 30 رقمًا فرديًا مبعثرة. اضغطوها بالترتيب من الأصغر إلى الأكبر. الضغطة الخاطئة توقفكم 5 ثوانٍ.'},
  {type:'c4',title:'أربع تربح',kind:'تحدي ذكاء',dur:420000,intro:'العبوا «أربع تربح» ضد الكمبيوتر (مستوى متوسط). أول من يصفّ 4 أقراص متتالية أفقيًا أو عموديًا أو قطريًا يفوز بالجولة. اكسبوا جولتين من ثلاث، ويظهر لكم رمز الخزنة الأخيرة. ⏱ 7 دقائق'},
  {type:'final7',title:'الشيفرة الأخيرة',kind:'المهمة السابعة',dur:420000,intro:'🔐 أمامكم رسالة مشفّرة بالرموز وورقة فك الشفرات: كل رمز يقابل حرفًا. فكّوا الرسالة لتعرفوا المطلوب، ثم أدخلوا الرقم الصحيح ليظهر لكم الرمز النهائي. النقاط مضاعفة! ⏱ 7 دقائق'}];
@@ -875,6 +885,27 @@ function c4AI(b0){const b=b0.slice();const legal=C4ORD.filter(c=>!b[c]);
   if(sc.length>1&&Math.random()<.3&&sc[1].v>-5e5)return sc[1].c;
   return sc[0].c}
 /* ---- mission 5: 50 odd numbers, different set per team ---- */
+/* ---- mission 4: word search, same grid for every team ---- */
+const wsClean=w=>String(w||'').replace(/[\u064B-\u0652\u0640\s]/g,'').trim();
+const WS_FILL='ابتجحخدرزسشصضطعغفقكلمنهويةئآ';
+const WS_DIRS=[[0,1],[1,0],[1,1]];
+const _wsMemo={};
+function wsBuild(words){const W=words.map(wsClean).filter(Boolean);const key=W.join('|');if(key in _wsMemo)return _wsMemo[key];
+  const L=W.map(w=>[...w]);const N=Math.max(10,...L.map(x=>x.length));
+  for(let t=0;t<400;t++){const r=mulb(4040+t);const g=Array(N*N).fill('');const pl=[];let ok=true;
+    const order=L.map((x,i)=>i).sort((a,b)=>L[b].length-L[a].length);
+    for(const wi of order){const w=L[wi];let done=false;
+      for(let k=0;k<300&&!done;k++){const [dr,dc]=WS_DIRS[Math.floor(r()*3)];const r0=Math.floor(r()*N),c0=Math.floor(r()*N);
+        const r1=r0+dr*(w.length-1),c1=c0+dc*(w.length-1);if(r1>=N||c1>=N)continue;
+        let fit=true;for(let q=0;q<w.length;q++){const x=g[(r0+dr*q)*N+c0+dc*q];if(x&&x!==w[q]){fit=false;break}}if(!fit)continue;
+        const cells=[];for(let q=0;q<w.length;q++){const id=(r0+dr*q)*N+c0+dc*q;g[id]=w[q];cells.push(id)}pl[wi]=cells;done=true}
+      if(!done){ok=false;break}}
+    if(!ok)continue;
+    for(let q=0;q<g.length;q++)if(!g[q])g[q]=WS_FILL[Math.floor(r()*WS_FILL.length)];
+    const cnt=w=>{let n=0;for(let a=0;a<N;a++)for(let b=0;b<N;b++)for(let dr=-1;dr<=1;dr++)for(let dc=-1;dc<=1;dc++){if(!dr&&!dc)continue;let q=0;for(;q<w.length;q++){const y=a+dr*q,x=b+dc*q;if(y<0||x<0||y>=N||x>=N||g[y*N+x]!==w[q])break}if(q===w.length)n++}return n};
+    if(L.every(w=>cnt(w)===1))return(_wsMemo[key]={N,g,W,pl})}
+  return(_wsMemo[key]=null)}
+const wsGrid=()=>wsBuild(CT.ws||DEF_CT.ws);
 const F7_HINT='آخر سبعة أرقام من جوال الجمعية هي كلمة السر';
 const SORT_N=30;const SORT_MEMO=new Map();
 function sortSet(seed){if(SORT_MEMO.has(seed))return SORT_MEMO.get(seed);const r=mulb(77777);
@@ -905,6 +936,7 @@ const DEF_CT={
   {t:'المنطق',q:'لديك:\nكل القطط حيوانات.\nبعض الحيوانات سريعة.\nهل نستطيع الجزم أن كل القطط سريعة؟',o:['نعم','لا'],a:1,d:'2'},
   {t:'النهاية',q:'أنا رقم:\n• أكبر من 5\n• أصغر من 10\n• إذا ضربتني في نفسي يكون الناتج 49\nمن أنا؟',o:['6','7','8','9'],a:1,d:'7'}],
  code4:{code:'1357924',hint:'اطلبوا الشيفرة من المقدم.'},
+ ws:['الرياض','العلم','المعرفة','النجاح','المستقبل','القرآن','الرياضة','الصداقة','العائلة','الوطن'],
  rid:[
   Object.assign({q:RID[0].q},placeAt(RID[0].o,1)),
   Object.assign({q:RID[1].q},placeAt(['42','40','36','48'],3)),
@@ -930,7 +962,7 @@ M[2]={type:'clues',title:'الأدلة السبعة',kind:'رمز الخزنة',
  get steps(){return CT.clues.length},stepName:i=>`الدليل ${i+1}: ${CT.clues[i]?CT.clues[i].t:''}`,keyText:s=>{const c=CT.clues[s];return c?`الإجابة: ${c.o[c.a]} · رقم الخزنة: ${c.d} · الرمز الكامل: ${clueCode()}`:''}};
 M[5]={type:'c4',title:'أربع تربح',kind:'تحدي ذكاء',goal:'كل فريق يلعب «أربع تربح» ضد الكمبيوتر في جواله: أفضل جولتين من ثلاث.',task:'الفائز يحصل على رمز يفتح المهمة الأخيرة.',score:RANK_TXT,steps:1,stepName:()=>'المباراة',keyText:()=>`الرمز: ${CT.c4.code}`};
 M[4]={type:'sort',title:'ترتيب الأرقام الفردية',kind:'تحدي ترتيب',goal:'أمامكم 30 رقمًا فرديًا مبعثرة. رتّبوها من الأصغر إلى الأكبر.',task:'الضغطة الخاطئة توقف الفريق 5 ثوانٍ.',score:RANK_TXT,steps:1,stepName:()=>'الترتيب',keyText:()=>'الحل: '+sortSet(4242).sorted.join(' - ')};
-M[3]={type:'code',title:'الشيفرة',kind:'محطة الشيفرة',goal:'اعرفوا الشيفرة وأدخلوها في الجوال.',task:'بمجرد إدخالها الصحيح ينتقل الفريق للمهمة الخامسة.',score:RANK_TXT,steps:1,stepName:()=>'إدخال الشيفرة',keyText:()=>`الشيفرة: ${CT.code4.code}`};
+M[3]={type:'code',title:'الكلمات المتقاطعة',kind:'تحدي الكلمات',goal:'ابحثوا عن الكلمات المخفية في شبكة الحروف على الجوال.',task:'اضغطوا أول حرف ثم آخر حرف لكل كلمة.',score:RANK_TXT,steps:1,stepName:()=>'البحث عن الكلمات',keyText:()=>'الكلمات: '+(CT.ws||[]).join('، ')};
 Object.defineProperty(M[6],'qs',{get(){return [M6_STATIC[0],{t:'رقم الخزنة',q:CT.vault.q1,a:CT.vault.a1},{t:'الكلمة الأخيرة',q:CT.vault.q2+'  «'+CT.vault.shown+'»',a:CT.vault.a2},M6_STATIC[3]]}});
 const shuf=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.random()*(i+1)|0;[a[i],a[j]]=[a[j],a[i]]}return a};
 const norm=x=>String(x).replace(/[ً-ْـ]/g,'').replace(/[أإآ]/g,'ا').replace(/ة/g,'ه').replace(/ى/g,'ي').replace(/[٠-٩]/g,d=>'٠١٢٣٤٥٦٧٨٩'.indexOf(d)).replace(/[\s«»"'.,،]+/g,'');
@@ -1314,7 +1346,7 @@ function raceHTML(){
     <div class="track">${P.map((_,k)=>{const c=nodeCls(i,k);return `<span class="node ${c} ${S.view==='mission'&&k===S.mission&&!c?'cur':''}">${c==='to'?'✕':c?'✓':k+1}</span>`}).join('')}<span class="runner" style="--p:${p}%"></span></div>
     <span class="ts">${tot[i]}</span></div>`}).join('');
 }
-const MIC=['❓','🖼️','🔍','🔑','🔢','🔴','🔐'];
+const MIC=['❓','🖼️','🔍','🔤','🔢','🔴','🔐'];
 function raceViewHTML(){
   const tot=S.teams.map((_,i)=>total(i)),lead=Math.max(...tot);
   const order=[0,1,2,3].sort((a,b)=>tot[b]-tot[a]||TD[b].mission-TD[a].mission);const rank=[];order.forEach((i,k)=>rank[i]=k+1);
@@ -1543,6 +1575,7 @@ function initSub(type){switch(type){
   case 'mcq30':return{q:0};
   case 'clues':return{q:0,phase:'q',code:''};
   case 'code':return{code:''};
+  case 'ws':return{f:[],a:-1};
   case 'twin':return{round:0,seed:(Math.random()*1e9)|0};
   case 'cipher':return{ok:[0,0,0],val:['','','']};
   case 'memory':return{phase:'ready',showUntil:0,picks:[],order:shuf([...Array(24).keys()]),msg:''};
@@ -1616,6 +1649,11 @@ function pMission(){
     const c=L[Math.min(s.q,n-1)];
     if(s.phase==='show')return `<div class="pcard">${slots}<div class="digitbox"><span class="counter">الدليل ${s.q+1} محلول ✓</span><span>الرقم المطلوب للخزنة</span><b class="num">${esc(c.d)}</b><p>✍️ اكتبوه في بطاقة الرمز، خانة رقم ${s.q+1}</p></div><button class="b pri" style="min-height:60px;font-size:20px" data-act="pcl-next">${s.q+1>=n?'إلى رمز الخزنة 🔐':'الدليل التالي 🔎'}</button></div>`;
     return `<div class="pcard">${slots}<span class="counter">🔎 الدليل ${s.q+1} من ${n}${c.t?' · '+esc(c.t):''}</span><h2 class="ptitle qtext">${esc(c.q)}</h2><div class="opts">${c.o.map((o,i)=>o===''?'':`<button class="opt q30o" data-act="pcl:${i}"><small>${'أبجد'[i]})</small> ${esc(o)}</button>`).join('')}</div></div>`}
+  if(m.type==='ws'){const G=wsGrid();if(!G)return `<div class="pcard"><p>تعذّر بناء الشبكة. اطلبوا من المقدم مراجعة كلمات المهمة 4.</p></div>`;
+    const fc={};s.f.forEach(wi=>G.pl[wi].forEach(id=>fc[id]=1));
+    return `<div class="pcard wscard"><div class="wshd"><span class="counter">وجدتم ${s.f.length} من ${G.W.length}</span><span class="note">${s.a>=0?'اضغطوا آخر حرف من الكلمة':'اضغطوا أول حرف من الكلمة'}</span></div>
+      <div class="wsg" style="--n:${G.N}">${G.g.map((ch,id)=>`<button class="wsc ${fc[id]?'f':''} ${s.a===id?'a':''}" data-act="pws:${id}">${ch}</button>`).join('')}</div>
+      <div class="wsl">${G.W.map((w,i)=>`<span class="${s.f.includes(i)?'ok':''}">${s.f.includes(i)?'✓ ':''}${esc(w)}</span>`).join('')}</div></div>`}
   if(m.type==='code'){const C=CT.code4;
     return `<div class="pcard"><div class="lockc"><span class="lk-ico">🔑</span><b>أدخلوا الشيفرة</b>${C.hint?`<p class="lk-msg">${esc(C.hint)}</p>`:''}${codePad(String(C.code).length,s.code,'pcd','pcdd')}<p class="note">بمجرد إدخال الشيفرة الصحيحة تنتقلون للمهمة الخامسة.</p></div></div>`}
   if(m.type==='mcq30')return mcqHTML(CT.q30,s,'QUESTION','p30');
@@ -1712,6 +1750,16 @@ const PACT={
   'pcl-go':()=>{const s=PS.sub;if(s.code===clueCode()){pComplete(0);return}s.code='';const e=$('#pcld');if(e)e.textContent='·'.repeat(CT.clues.length);lockTitle='الرمز غير صحيح';lockMsg='راجعوا بطاقة الرمز · انتظروا 5 ثوانٍ';pShake('pcld');sBuzz();lockUntil=Date.now()+5000},
   'pcd-k':v=>{const s=PS.sub;const n=String(CT.code4.code).length;if(s.code.length<n)s.code+=v;const e=$('#pcdd');if(e)e.textContent=s.code||'·'.repeat(n);beep(700,.05,'square',.06)},
   'pcd-del':()=>{const s=PS.sub;s.code=s.code.slice(0,-1);const e=$('#pcdd');if(e)e.textContent=s.code||'·'.repeat(String(CT.code4.code).length)},
+  pws:v=>{const s=PS.sub,G=wsGrid();if(!G)return;const id=+v;
+    if(s.a<0||s.a===id){s.a=s.a===id?-1:id;pSave();pRender();return}
+    const N=G.N,r0=Math.floor(s.a/N),c0=s.a%N,r1=Math.floor(id/N),c1=id%N,dr=Math.sign(r1-r0),dc=Math.sign(c1-c0);
+    if(!(r0===r1||c0===c1||Math.abs(r1-r0)===Math.abs(c1-c0))){s.a=id;pSave();pRender();return}
+    const len=Math.max(Math.abs(r1-r0),Math.abs(c1-c0))+1;
+    let str='';for(let q=0;q<len;q++)str+=G.g[(r0+dr*q)*N+c0+dc*q];
+    const rev=[...str].reverse().join('');
+    const wi=G.W.findIndex((w,i)=>!s.f.includes(i)&&(w===str||w===rev));s.a=-1;
+    if(wi<0){sBuzz();pSave();pRender();const e=$('.wsg');if(e){e.classList.remove('shake');void e.offsetWidth;e.classList.add('shake')}return}
+    s.f.push(wi);pGood();pSave();pRender();if(s.f.length===G.W.length)setTimeout(()=>pComplete(0),500)},
   'pcd-go':()=>{const s=PS.sub;if(s.code===String(CT.code4.code)){pComplete(0,true);return}s.code='';const e=$('#pcdd');if(e)e.textContent='·'.repeat(String(CT.code4.code).length);lockTitle='شيفرة خاطئة';lockMsg='انتظروا 5 ثوانٍ';pShake('pcdd');sBuzz();lockUntil=Date.now()+5000},
   pk:v=>{if(lkIn.length<7)lkIn+=v;const e=$('#lkd');if(e)e.textContent=lkIn||'·······';beep(700,.05,'square',.06)},
   'pk-del':()=>{lkIn=lkIn.slice(0,-1);const e=$('#lkd');if(e)e.textContent=lkIn||'·······'},
@@ -1781,10 +1829,11 @@ function tryCtl(){return `<div class="sec"><h3>🧪 جرّب المهام بنف
   <div class="mchips">${P.map((x,k)=>`<button class="b" data-act="tryopen:${k+1}" title="${esc(x.title)}">${k+1}</button>`).join('')}</div>
   <p class="note">يفتح المهمة على جهازك كأنك فريق: تقدر تجاوب وتجرّب الأقفال والشيفرات، ونتيجتك ما تُحسب ولا تظهر على الشاشة.</p></div>`}
 let EDM={tab:'q30',idx:null,d:null,msg:'',arm:''},edOpen=false;
-const ED_TABS=[['f7','المهمة 7 · الشيفرة الأخيرة'],['q30','المهمة 1 · الأسئلة'],['clues','المهمة 3 · الأدلة'],['code4','المهمة 4 · الشيفرة'],['c4','المهمة 6 · أربع تربح']];
+const ED_TABS=[['q30','المهمة 1 · الأسئلة'],['clues','المهمة 3 · الأدلة'],['ws','المهمة 4 · الكلمات'],['c4','المهمة 6 · أربع تربح']];
 function f7Draft(){const F=CT.f7,ans=F.x?lockDec(F.x):'';const H=F.hint||'';const rc=()=>String(100000+(crypto.getRandomValues(new Uint32Array(1))[0]%900000));return {msg:F.msg,ans,hint:H,codes:[0,1,2,3].map(i=>(F.cx&&F.cx[i]&&ans)?decB(F.cx[i],ans):rc())}}
 function edStart(tab,idx){EDM.tab=tab;EDM.idx=idx;EDM.msg='';EDM.arm='';
   if(tab==='code4'||tab==='c4')EDM.d=structuredClone(CT[tab]);
+  else if(tab==='ws')EDM.d={words:(CT.ws||DEF_CT.ws).join('\n')};
   else if(tab==='f7')EDM.d=f7Draft();
   else if(tab==='vault')EDM.d=structuredClone(CT.vault);
   else if(idx===null)EDM.d=null;
@@ -1792,7 +1841,10 @@ function edStart(tab,idx){EDM.tab=tab;EDM.idx=idx;EDM.msg='';EDM.arm='';
   after()}
 function editorCtl(){
   const tab=EDM.tab;let body='';
-  if(tab==='f7'){if(!EDM.d)EDM.d=f7Draft();const d=EDM.d;
+  if(tab==='ws'){if(!EDM.d)EDM.d={words:(CT.ws||DEF_CT.ws).join('\n')};const d=EDM.d;
+    body=`<label class="edl">الكلمات المخفية · كلمة في كل سطر (من 4 إلى 14 كلمة، كل كلمة من 2 إلى 10 حروف)<textarea id="ed-words" rows="10" maxlength="400">${esc(d.words)}</textarea></label>
+      <div class="row"><button class="b pri" data-act="ed-savews">احفظ الكلمات</button></div>`}
+  else if(tab==='f7'){if(!EDM.d)EDM.d=f7Draft();const d=EDM.d;
     body=`<label class="edl">الرسالة اللي تنشفّر بالرموز (يفكّونها بورقة الشفرات)<textarea id="ed-msg" rows="2" maxlength="120">${esc(d.msg)}</textarea></label>
       <label class="edl">🔑 الرقم المطلوب: آخر 7 أرقام من جوال الجمعية<input id="ed-ans" inputmode="numeric" maxlength="7" value="${esc(d.ans)}" placeholder="7 أرقام" style="direction:ltr;text-align:center;letter-spacing:.2em;font-size:22px"></label>
       <label class="edl">💡 تلميح يظهر للفرق (اختياري)، مثل: الرقم مكتوب على البنر عند المدخل<input id="ed-f7hint" maxlength="120" value="${esc(d.hint||'')}"></label>
@@ -1829,6 +1881,12 @@ const EDACT={
   impfrom:v=>importFrom(String(v).replace(/[^A-Z0-9]/g,'')),
   f7save:()=>{const a=toLat(f7D&&f7D.a||'');if(a.length!==7){f7Msg='كلمة السر لازم تكون 7 أرقام بالضبط.';after();return}
     CT.f7={...CT.f7,hint:String(f7D.h||'').trim()||F7_HINT,h:hsh(a),x:lockEnc(a)};saveCT();f7D=null;f7Msg='✓ تم حفظ كلمة السر';after()},
+  'ed-savews':()=>{const d=EDM.d;if(!d)return;const W=String(d.words||'').split(/\n+/).map(wsClean).filter(Boolean);
+    if(W.length<4||W.length>14){EDM.msg='اكتب من 4 إلى 14 كلمة.';after();return}
+    if(W.some(w=>[...w].length<2||[...w].length>10)){EDM.msg='كل كلمة لازم تكون من 2 إلى 10 حروف.';after();return}
+    if(new Set(W).size!==W.length){EDM.msg='فيه كلمة مكررة.';after();return}
+    if(!wsBuild(W)){EDM.msg='ما قدرت أرتب هذي الكلمات في الشبكة، قلّل عددها أو طولها.';after();return}
+    CT.ws=W;saveCT();EDM.d={words:W.join('\n')};EDM.msg='✓ تم حفظ الكلمات';after()},
   'ed-save7':()=>{const d=EDM.d;if(!d)return;const ans=toLat(d.ans);const msg=String(d.msg||'').trim();
     if(!msg){EDM.msg='اكتب الرسالة.';after();return}
     if(ans.length!==7){EDM.msg='الرقم المطلوب لازم يكون 7 أرقام بالضبط.';after();return}
@@ -1861,7 +1919,7 @@ document.addEventListener('input',e=>{const id=e.target&&e.target.id||'';if(!id.
   if(id==='ed-q')d.q=v;else if(id==='ed-t')d.t=v;else if(id==='ed-d'){e.target.value=toLat(v).slice(0,1);d.d=e.target.value}
   else if(/^ed-o\d$/.test(id))d.o[+id[4]]=v;
   else if(id==='ed-code'){e.target.value=toLat(v);d.code=e.target.value}else if(id==='ed-hint')d.hint=v;
-  else if(id==='ed-f7hint')d.hint=v;else if(id==='ed-msg')d.msg=v;else if(id==='ed-ans'){e.target.value=toLat(v).slice(0,7);d.ans=e.target.value}else if(/^ed-rc\d$/.test(id))d.codes[+id[5]]=v;
+  else if(id==='ed-f7hint')d.hint=v;else if(id==='ed-words')d.words=v;else if(id==='ed-msg')d.msg=v;else if(id==='ed-ans'){e.target.value=toLat(v).slice(0,7);d.ans=e.target.value}else if(/^ed-rc\d$/.test(id))d.codes[+id[5]]=v;
   else if(id==='ed-a1'){e.target.value=toLat(v);d.a1=e.target.value}else if(id==='ed-q1')d.q1=v;else if(id==='ed-q2')d.q2=v;else if(id==='ed-shown')d.shown=v;else if(id==='ed-a2')d.a2=v});
 
 /* ================= ACTIONS ================= */
