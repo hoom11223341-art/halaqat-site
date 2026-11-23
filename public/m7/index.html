@@ -878,11 +878,11 @@ function c4Mini(b,d,al,be,max){if(c4Win(b,'a'))return 1e6+d;if(c4Win(b,'p'))retu
   let v=Infinity;for(const c of C4ORD){if(b[c])continue;const r=c4Drop(b,c,'p');v=Math.min(v,c4Mini(b,d-1,al,be,true));b[r*C4W+c]=0;be=Math.min(be,v);if(al>=be)break}return v}
 function c4AI(b0){const b=b0.slice();const legal=C4ORD.filter(c=>!b[c]);
   for(const c of legal){const r=c4Drop(b,c,'a');const w=c4Win(b,'a');b[r*C4W+c]=0;if(w)return c}
-  if(Math.random()<.65)for(const c of legal){const r=c4Drop(b,c,'p');const w=c4Win(b,'p');b[r*C4W+c]=0;if(w)return c}
-  const SH=Math.random()<.45;
+  if(Math.random()<.5)for(const c of legal){const r=c4Drop(b,c,'p');const w=c4Win(b,'p');b[r*C4W+c]=0;if(w)return c}
+  const SH=Math.random()<.6;
   const sc=legal.map(c=>{const r=c4Drop(b,c,'a');const v=SH?c4Score(b):c4Mini(b,1,-Infinity,Infinity,false);b[r*C4W+c]=0;return {c,v}}).sort((x,y)=>y.v-x.v);
   /* occasional slip keeps it beatable: pick the 2nd choice when it is not a losing move */
-  if(sc.length>1&&Math.random()<.3&&sc[1].v>-5e5)return sc[1].c;
+  if(sc.length>1&&Math.random()<.35&&sc[1].v>-5e5)return sc[1].c;
   return sc[0].c}
 /* ---- mission 5: 50 odd numbers, different set per team ---- */
 /* ---- mission 4: word search, same grid for every team ---- */
