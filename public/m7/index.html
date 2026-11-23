@@ -267,6 +267,49 @@ button:focus-visible,input:focus-visible{outline:3px solid var(--sig);outline-of
 .node.play{border-color:var(--c);color:var(--fg);box-shadow:0 0 0 3px color-mix(in srgb,var(--c) 45%,transparent)}
 @keyframes pulse{0%{box-shadow:0 0 0 0 var(--c)}100%{box-shadow:0 0 0 12px transparent}}
 .badge-fin{font-family:var(--display);color:var(--sig);font-size:26px}
+.psteps{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;margin-top:8px;position:relative}
+.psteps::before{content:"";position:absolute;inset-inline:7%;top:50%;height:3px;margin-top:-1.5px;background:#24502f;border-radius:3px}
+.psteps i{position:relative;justify-self:center;width:34px;height:34px;border-radius:50%;display:grid;place-items:center;font-style:normal;font-size:15px;background:#0a1a10;border:2px solid #2c5a37;opacity:.6;filter:grayscale(.6)}
+.psteps i.d{background:var(--c);border-color:var(--c);color:var(--ink);font-weight:700;opacity:1;filter:none}
+.psteps i.g{background:var(--sig);border-color:var(--sig);color:var(--ink);font-weight:700;opacity:1;filter:none}
+.psteps i.x{background:#2a0d0b;border-color:var(--hot);color:var(--hot);font-weight:700;opacity:1;filter:none}
+.psteps i.n{border-color:var(--c);opacity:1;filter:none;box-shadow:0 0 0 3px color-mix(in srgb,var(--c) 35%,transparent);transform:scale(1.12)}
+.pstep-l{font-size:13px;color:var(--mute);text-align:center;margin-top:4px}
+/* ---- race progress (screen) ---- */
+.rv2{display:grid;gap:12px;align-content:start}
+.rv2h{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:10px 18px;font-size:clamp(16px,1.6vw,24px);color:var(--mute)}
+.rv2h b{font-family:var(--display);font-weight:400;font-size:1.25em}
+.rv2b{font-family:var(--display);color:var(--fg);font-size:1.2em}
+.rv2c{background:var(--ink2);border:1px solid var(--line);border-radius:99px;padding:4px 14px}
+.rl{position:relative;display:grid;grid-template-columns:minmax(200px,300px) 1fr minmax(120px,190px);gap:clamp(14px,2.4vw,34px);align-items:center;background:linear-gradient(165deg,#112619,#0b1b12 70%);border:1px solid #24502f;border-radius:20px;padding:16px 20px;padding-inline-start:26px;overflow:hidden}
+.rl::before{content:"";position:absolute;inset-block:0;inset-inline-start:0;width:8px;background:var(--c)}
+.rl.lead{border-color:var(--sig);box-shadow:0 0 0 1px var(--sig),0 0 26px #ffb32133}
+.rl.fin{background:linear-gradient(165deg,#2a2006,#0b1b12 75%);border-color:var(--sig)}
+.rl-id{display:flex;align-items:center;gap:14px;min-width:0}
+.rl-rk{flex:none;width:48px;height:48px;border-radius:50%;display:grid;place-items:center;font-family:var(--num);font-weight:700;font-size:24px;background:var(--ink);border:2px solid var(--c);color:var(--c)}
+.rl.lead .rl-rk{background:var(--sig);border-color:var(--sig);font-size:24px}
+.rl-nm{font-family:var(--display);font-size:clamp(28px,3vw,50px);line-height:1.05;color:var(--c);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.rl-st{font-size:clamp(13px,1.1vw,16px);color:var(--mute);margin-top:2px}
+.rl-cur{font-family:var(--display);font-size:clamp(18px,1.7vw,26px);line-height:1.25;margin-top:2px}
+.rl-tr{position:relative;height:64px;margin-inline:28px}
+.rl-rail{position:absolute;inset-inline:0;top:50%;height:12px;margin-top:-6px;border-radius:99px;background:#06110b;border:1px solid #24502f;overflow:hidden}
+.rl-rail i{position:absolute;inset-block:0;inset-inline-start:0;border-radius:99px;background:linear-gradient(to left,color-mix(in srgb,var(--c) 55%,transparent),var(--c));box-shadow:0 0 14px var(--c);transition:width 1.1s cubic-bezier(.3,1.2,.5,1)}
+.rn{position:absolute;top:50%;width:46px;height:46px;margin-top:-23px;margin-inline-start:-23px;border-radius:50%;display:grid;place-items:center;background:#0a1a10;border:2px solid #2c5a37;font-size:20px;line-height:1;z-index:1;filter:grayscale(.6);opacity:.75}
+.rn b{font-weight:400}
+.rn.done{background:var(--c);border-color:var(--c);color:var(--ink);font-family:var(--num);font-weight:700;filter:none;opacity:1}
+.rn.gold{background:var(--sig);border-color:var(--sig);filter:none;opacity:1;box-shadow:0 0 14px #ffb32199}
+.rn.to{background:#2a0d0b;border-color:var(--hot);color:var(--hot);font-family:var(--num);font-weight:700;filter:none;opacity:1}
+.rn.next{border-color:var(--c);filter:none;opacity:1}
+.rn.play{width:60px;height:60px;margin-top:-30px;margin-inline-start:-30px;font-size:28px;border:3px solid var(--c);background:var(--ink);filter:none;opacity:1;box-shadow:0 0 0 5px color-mix(in srgb,var(--c) 30%,transparent),0 0 24px var(--c);z-index:2}
+.rn.play b{display:block;animation:rnb 1.4s ease-in-out infinite}
+@keyframes rnb{50%{transform:scale(1.18)}}
+.rl-meta{display:grid;justify-items:end;gap:2px}
+.rl-sc{font-family:var(--num);font-weight:700;font-size:clamp(40px,4.2vw,72px);line-height:1}
+.rl.lead .rl-sc{color:var(--sig)}
+.rl-t{font-family:var(--num);font-weight:700;font-size:clamp(20px,1.8vw,28px);direction:ltr;color:var(--mute)}
+.rl-t.live{color:var(--fg)}.rl-t.danger{color:var(--hot);animation:throb 1s infinite}
+.rl-fin{font-size:34px}
+@media (max-width:900px){.rl{grid-template-columns:1fr auto}.rl-tr{grid-column:1 / -1;grid-row:2}}
 
 /* ---------- player ---------- */
 .pl{max-width:560px;margin-inline:auto;display:grid;gap:14px;padding-block:0 70px}
@@ -825,8 +868,9 @@ function c4Mini(b,d,al,be,max){if(c4Win(b,'a'))return 1e6+d;if(c4Win(b,'p'))retu
   let v=Infinity;for(const c of C4ORD){if(b[c])continue;const r=c4Drop(b,c,'p');v=Math.min(v,c4Mini(b,d-1,al,be,true));b[r*C4W+c]=0;be=Math.min(be,v);if(al>=be)break}return v}
 function c4AI(b0){const b=b0.slice();const legal=C4ORD.filter(c=>!b[c]);
   for(const c of legal){const r=c4Drop(b,c,'a');const w=c4Win(b,'a');b[r*C4W+c]=0;if(w)return c}
-  if(Math.random()<.8)for(const c of legal){const r=c4Drop(b,c,'p');const w=c4Win(b,'p');b[r*C4W+c]=0;if(w)return c}
-  const sc=legal.map(c=>{const r=c4Drop(b,c,'a');const v=c4Mini(b,1,-Infinity,Infinity,false);b[r*C4W+c]=0;return {c,v}}).sort((x,y)=>y.v-x.v);
+  if(Math.random()<.65)for(const c of legal){const r=c4Drop(b,c,'p');const w=c4Win(b,'p');b[r*C4W+c]=0;if(w)return c}
+  const SH=Math.random()<.45;
+  const sc=legal.map(c=>{const r=c4Drop(b,c,'a');const v=SH?c4Score(b):c4Mini(b,1,-Infinity,Infinity,false);b[r*C4W+c]=0;return {c,v}}).sort((x,y)=>y.v-x.v);
   /* occasional slip keeps it beatable: pick the 2nd choice when it is not a losing move */
   if(sc.length>1&&Math.random()<.3&&sc[1].v>-5e5)return sc[1].c;
   return sc[0].c}
@@ -947,11 +991,12 @@ const total=i=>(typeof TRY!=='undefined'&&TRY!==null)?(TD[i].score||0):(S.teams[
 function tcommit(i,fn){
   const n=structuredClone(TD[i]);
   if(TD[i].writer&&TD[i].writer!==CID&&tskew[i]&&n.startedAt)n.startedAt-=tskew[i];
-  tskew[i]=0;if(fn(n)===false)return;n.sentAt=Date.now();n.writer=CID;TD[i]=n;after();
+  tskew[i]=0;if(fn(n)===false)return;n.rev=Math.max(n.rev||0,TD[i].rev||0)+1;n.sentAt=Date.now();n.writer=CID;TD[i]=n;after();
   if(typeof TRY!=='undefined'&&TRY!==null)return;
   try{localStorage.setItem(SK('teams'),JSON.stringify(TD))}catch(e){}
-  if(LIVE)pub('team'+i,n,true);else{tPend[i]=n;try{BC&&BC.postMessage({kind:'team',i,d:n})}catch(e){}}
+  if(LIVE){if(!pub('team'+i,n,true))tPend[i]=n}else{tPend[i]=n;try{BC&&BC.postMessage({kind:'team',i,d:n})}catch(e){}}
 }
+const ownTeam=i=>typeof MYT!=='undefined'&&MYT===i&&TRY===null&&TD[i].dev===DEV;
 
 const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const $=s=>document.querySelector(s);
@@ -971,7 +1016,7 @@ function commit(fn){
 const BROKERS=['wss://broker.emqx.io:8084/mqtt','wss://broker.hivemq.com:8884/mqtt'];
 const TOP=k=>'almohima7/v1/'+ROOMC+'/'+k;
 let MC=null,gotState=false;
-function pub(k,obj,retain){try{MC&&MC.connected&&MC.publish(TOP(k),JSON.stringify(obj),{qos:1,retain:!!retain})}catch(e){}}
+function pub(k,obj,retain){try{if(MC&&MC.connected){MC.publish(TOP(k),JSON.stringify(obj),{qos:1,retain:!!retain});return true}}catch(e){}return false}
 function initNet(bi){
   bi=bi||0;if(!ROOMC)return;
   if(!window.mqtt){conn='bad';paintConn();return}
@@ -982,7 +1027,9 @@ function initNet(bi){
   c.on('connect',()=>{ok=true;clearTimeout(fail);LIVE=true;conn='ok';paintConn();
     c.subscribe([TOP('content'),TOP('state'),TOP('team0'),TOP('team1'),TOP('team2'),TOP('team3')],{qos:1});
     if(pendingDoc&&IS_OWNER){pub('state',pendingDoc,true);pendingDoc=null}
-    for(let i=0;i<4;i++)if(tPend[i]){pub('team'+i,tPend[i],true);tPend[i]=null}
+    for(let i=0;i<4;i++){if(tPend[i]&&tPend[i]===TD[i]){pub('team'+i,TD[i],true)}tPend[i]=null}
+    /* after a drop-out the team phone re-sends its latest progress */
+    setTimeout(()=>{for(let i=0;i<4;i++)if(ownTeam(i)&&TD[i].sentAt)pub('team'+i,TD[i],true)},800);
     setTimeout(()=>{if(!gotState&&IS_OWNER){const n=structuredClone(S);if(!n.hh)n.hh=hsh(HK);n.sentAt=Date.now();n.writer=CID;S=n;pub('state',n,true);after()}},2500);
   });
   c.on('reconnect',()=>{conn='wait';paintConn()});
@@ -1002,6 +1049,10 @@ function initNet(bi){
     }else if(/^team[0-3]$/.test(k)){
       if(typeof TRY!=='undefined'&&TRY!==null)return;
       const i=+k[4];if(d.writer===CID)return;if(d.sentAt===TD[i].sentAt&&d.writer===TD[i].writer)return;
+      {const dr=d.rev||0,cr=TD[i].rev||0;
+       if(TD[i].sentAt&&(dr<cr||(dr===cr&&String(d.writer)<String(TD[i].writer)))){
+         /* older copy arrived: keep ours, and re-send it if we own it */
+         if(dr<cr&&(ownTeam(i)||IS_OWNER))setTimeout(()=>pub('team'+i,TD[i],true),400);return}}
       const init=!TD[i].sentAt;if(!init)tskew[i]=d.sentAt-Date.now();
       TD[i]=d;if(init)seenLast[i]=d.last&&d.last.id;
       try{localStorage.setItem(SK('teams'),JSON.stringify(TD))}catch(e){}afterSoon();
@@ -1263,14 +1314,22 @@ function raceHTML(){
     <div class="track">${P.map((_,k)=>{const c=nodeCls(i,k);return `<span class="node ${c} ${S.view==='mission'&&k===S.mission&&!c?'cur':''}">${c==='to'?'✕':c?'✓':k+1}</span>`}).join('')}<span class="runner" style="--p:${p}%"></span></div>
     <span class="ts">${tot[i]}</span></div>`}).join('');
 }
+const MIC=['❓','🖼️','🔍','🔑','🔢','🔴','🔐'];
 function raceViewHTML(){
   const tot=S.teams.map((_,i)=>total(i)),lead=Math.max(...tot);
-  return `<div class="rv">${S.teams.map((t,i)=>{const d=TD[i],m=d.mission,fin=m>=7,n=d.results.filter(Boolean).length,p=n===0?0:((n-.5)/7*100);
-    const status=fin?'أنهى المهمات السبع':d.startedAt?`يلعب الآن · المهمة ${m+1} من 7`:lockPending(i)?`🔎 يبحث عن شيفرة المهمة ${m+1}`:S.raceOn?`جاهز لفتح المهمة ${m+1}`:'بانتظار إشارة البدء';
-    return `<div class="rvl ${lead>0&&tot[i]===lead?'lead':''} ${fin?'fin':''}" style="--c:${TC[i]}">
-      <div style="min-width:0"><div class="nm">${esc(t.name)}</div><div class="st">${status}</div>${fin?'<div class="badge-fin">فتح الخزنة</div>':`<div class="cur">${esc(P[m].title)}</div>`}</div>
-      <div class="track">${P.map((_,k)=>{const r=d.results[k];const c=r?(r.s==='timeout'?'to':r.first?'gold':'done'):(k===m&&d.startedAt?'play':'');return `<span class="node ${c}">${r?(r.s==='timeout'?'✕':'✓'):k+1}</span>`}).join('')}<span class="runner" style="--p:${p}%"></span></div>
-      <div class="meta"><span class="score">${tot[i]}</span>${fin?'':`<span class="mt" data-rt="${i}">${fmt(tRem(i))}</span>`}</div></div>`}).join('')}</div>`;
+  const order=[0,1,2,3].sort((a,b)=>tot[b]-tot[a]||TD[b].mission-TD[a].mission);const rank=[];order.forEach((i,k)=>rank[i]=k+1);
+  const leaders=order.filter(i=>tot[i]===lead&&lead>0);
+  const done=TD.reduce((a,d)=>a+d.results.filter(Boolean).length,0);
+  return `<div class="rv2"><div class="rv2h"><span class="rv2b">🏁 السباق مباشر</span><span>${leaders.length===1?`👑 المتصدر: <b style="color:${TC[leaders[0]]}">${esc(S.teams[leaders[0]].name)}</b>`:leaders.length>1?'⚔️ تعادل في الصدارة!':'الكل على خط البداية'}</span><span class="rv2c">✅ ${done} من 28 مهمة منجزة</span></div>
+  ${S.teams.map((t,i)=>{const d=TD[i],m=Math.min(d.mission,7),fin=d.mission>=7,on=!!d.startedAt&&!fin;
+    const p=fin?100:m/6*100;const r=rank[i];
+    const status=fin?(d.results[6]&&d.results[6].s==='done'?'🔓 فتح الخزنة!':'أنهى المهام'):on?`يلعب الآن · المهمة ${m+1} من 7`:lockPending(i)?`🔎 يبحث عن شيفرة المهمة ${m+1}`:S.raceOn?`جاهز للمهمة ${m+1}`:'بانتظار إشارة البدء';
+    return `<div class="rl ${lead>0&&tot[i]===lead?'lead':''} ${fin?'fin':''}" style="--c:${TC[i]}">
+      <div class="rl-id"><span class="rl-rk">${lead>0&&tot[i]===lead?'👑':r}</span><div style="min-width:0"><div class="rl-nm">${esc(t.name)}</div><div class="rl-st">${status}</div>${fin?'':`<div class="rl-cur">${MIC[m]} ${esc(P[m].title)}</div>`}</div></div>
+      <div class="rl-tr"><div class="rl-rail"><i style="width:${p}%"></i></div>
+        ${P.map((_,k)=>{const x=d.results[k];const c=x?(x.s==='timeout'?'to':x.first?'gold':'done'):(k===m&&!fin?(on?'play':'next'):'');
+          return `<span class="rn ${c}" style="inset-inline-start:${k/6*100}%"><b>${x?(x.s==='timeout'?'✕':x.first?'⭐':'✓'):MIC[k]}</b></span>`}).join('')}</div>
+      <div class="rl-meta"><span class="rl-sc">${tot[i]}</span>${fin?'<span class="rl-fin">🏁</span>':`<span class="mt rl-t" data-rt="${i}">${fmt(tRem(i))}</span>`}</div></div>`}).join('')}</div>`;
 }
 
 /* ================= FINALE: typewriter story on the big screen ================= */
@@ -1473,7 +1532,11 @@ function lockCard(m){const L=lockOf(m);
    <p class="note">الشيفرة 7 أرقام. عدّاد المهمة يبدأ أول ما يُفتح القفل.</p></div>`}
 const raceOK=()=>S.raceOn||TRY!==null;
 function pState(){const d=TD[MYT];return d.mission>=7?'fin':d.startedAt?'play':raceOK()?'ready':'wait'}
-function pSave(){try{localStorage.setItem(SK('ps'),JSON.stringify({key:PS.key,sub:PS.sub}))}catch(e){}}
+let subT=0;
+function pSave(){try{localStorage.setItem(SK('ps'),JSON.stringify({key:PS.key,sub:PS.sub}))}catch(e){}
+  if(TRY!==null||MYT===null)return;clearTimeout(subT);
+  subT=setTimeout(()=>{if(!ownTeam(MYT)||!PS.sub||!PS.key)return;const k=PS.key,sb=structuredClone(PS.sub);tcommit(MYT,n=>{if(!n.startedAt)return false;n.sub={k,s:sb}})},1200)}
+const subFromDoc=k=>{const x=MYT!==null&&TD[MYT].sub;return x&&x.k===k?structuredClone(x.s):null};
 function pLoad(k){try{const o=JSON.parse(localStorage.getItem(SK('ps'))||'null');if(o&&o.key===k)return o.sub}catch(e){}return null}
 function initSub(type){switch(type){
   case 'case':return{stage:0,pick:[]};
@@ -1490,14 +1553,17 @@ function initSub(type){switch(type){
   case 'riddles':return{q:0};
   case 'vault':return{stage:0,code:''};
   case 'final7':return{code:'',phase:'enter',ans:''};}}
+let takeAsk=null;
 function renderPlay(){
   const app=$('#app');
-  if(MYT===null){app.innerHTML=`<div class="pl wrap" style="padding-block:24px"><div class="pcard"><span class="counter">PLAYERS</span><h1 class="ptitle">اختاروا فريقكم</h1><p class="note">جهاز واحد لكل فريق. لا يمكن تغيير الفريق بعد بدء السباق إلا من المقدم.</p><div class="tpick">${S.teams.map((t,i)=>takenBy(i)?`<button class="b taken" style="background:${TC[i]}" disabled>🔒 ${esc(t.name)}<small>مأخوذ من جوال آخر</small></button>`:`<button class="b" style="background:${TC[i]}" data-act="pteam:${i}">${esc(t.name)}</button>`).join('')}</div><p class="note">إذا كان فريقكم مقفلًا بالغلط، اطلبوا من المقدم «فك الحجز».</p></div><button class="tbtn" data-act="route:" ${IS_OWNER===false?"hidden":""}>رجوع</button></div>`;PS.key='';return}
+  if(MYT===null&&takeAsk!==null){const t=S.teams[takeAsk],d=TD[takeAsk];app.innerHTML=`<div class="pl wrap" style="padding-block:24px;--c:${TC[takeAsk]}"><div class="pcard"><span class="counter">RESUME</span><h1 class="ptitle">متابعة «${esc(t.name)}» على هذا الجوال؟</h1><p>${d.mission>=7?'أنهى الفريق المهام السبع.':`الفريق الآن في المهمة ${d.mission+1}: ${esc(P[d.mission].title)}`}</p><p class="note">استخدموها إذا خرجتم بالغلط أو انقطع النت أو تغيّر الجوال. تكمّلون من نفس المكان، والجوال الآخر يتوقف عن اللعب.</p><button class="b pri" style="width:100%" data-act="pteamf:${takeAsk}">نعم، هذا فريقنا · كمّلوا</button><button class="tbtn" data-act="ptakeno">رجوع</button></div></div>`;PS.key='';return}
+  if(MYT!==null&&TRY===null&&TD[MYT].dev&&TD[MYT].dev!==DEV){app.innerHTML=`<div class="pl wrap" style="padding-block:24px;--c:${TC[MYT]}"><div class="pcard"><span class="counter">MOVED</span><h1 class="ptitle">انتقل فريق «${esc(S.teams[MYT].name)}» إلى جوال آخر</h1><p class="note">إذا كان هذا بالغلط، استرجعوه لهذا الجوال وكمّلوا من نفس المكان.</p><button class="b pri" style="width:100%" data-act="pteamf:${MYT}">استرجاع الفريق لهذا الجوال</button><button class="tbtn" data-act="pother">اختيار فريق آخر</button></div></div>`;PS.key='';return}
+  if(MYT===null){app.innerHTML=`<div class="pl wrap" style="padding-block:24px"><div class="pcard"><span class="counter">PLAYERS</span><h1 class="ptitle">اختاروا فريقكم</h1><p class="note">جهاز واحد لكل فريق. إذا خرجتم بالغلط أو انقطع النت، اختاروا فريقكم وكمّلوا من نفس المكان.</p><div class="tpick">${S.teams.map((t,i)=>takenBy(i)?`<button class="b taken" style="background:${TC[i]}" data-act="ptake:${i}">↩️ ${esc(t.name)}<small>مفتوح على جوال آخر · اضغط إذا هذا فريقكم</small></button>`:`<button class="b" style="background:${TC[i]}" data-act="pteam:${i}">${esc(t.name)}</button>`).join('')}</div></div><button class="tbtn" data-act="route:" ${IS_OWNER===false?"hidden":""}>رجوع</button></div>`;PS.key='';return}
   if(!$('.pl.playing'))app.innerHTML=`<div class="pl playing wrap" style="--c:${TC[MYT]}"><div class="phead" id="phead"></div><div id="pmain" style="display:grid;gap:14px"></div></div><div id="plock"></div>`;
   const d=TD[MYT];
-  $('#phead').innerHTML=`${TRY!==null?`<div class="trybar"><b>🧪 وضع التجربة</b><span>جرّب أي مهمة، ولا يتأثر شيء في المسابقة</span><div class="trych">${P.map((x,k)=>`<button class="b ${d.mission===k?'on':''}" data-act="tryto:${k}" title="${esc(x.title)}">${k+1}</button>`).join('')}<button class="b" data-act="tryexit">رجوع للتحكم</button></div></div>`:''}<div class="r1"><span class="tm">${esc(TRY!==null?'تجربة المقدم':S.teams[MYT].name)}</span><span class="sc">${total(MYT)}</span><span class="pt" id="ptimer">${fmt(tRem(MYT))}</span></div><div class="dots">${P.map((_,k)=>{const r=d.results[k];return `<i class="${r?(r.s==='timeout'?'x':r.first?'g':'d'):k===d.mission?'n':''}"></i>`}).join('')}</div>`;
+  $('#phead').innerHTML=`${TRY!==null?`<div class="trybar"><b>🧪 وضع التجربة</b><span>جرّب أي مهمة، ولا يتأثر شيء في المسابقة</span><div class="trych">${P.map((x,k)=>`<button class="b ${d.mission===k?'on':''}" data-act="tryto:${k}" title="${esc(x.title)}">${k+1}</button>`).join('')}<button class="b" data-act="tryexit">رجوع للتحكم</button></div></div>`:''}<div class="r1"><span class="tm">${esc(TRY!==null?'تجربة المقدم':S.teams[MYT].name)}</span><span class="sc">${total(MYT)}</span><span class="pt" id="ptimer">${fmt(tRem(MYT))}</span></div><div class="psteps">${P.map((_,k)=>{const r=d.results[k];const c=r?(r.s==='timeout'?'x':r.first?'g':'d'):k===d.mission?'n':'';return `<i class="${c}">${r?(r.s==='timeout'?'✕':'✓'):MIC[k]}</i>`}).join('')}</div><div class="pstep-l">${d.mission>=7?'أنهيتم المهام السبع 🏁':`المهمة ${d.mission+1} من 7 · ${esc(P[d.mission].title)}`}</div>`;
   const st=pState(),k=[MYT,d.mission,d.run||'',st].join('|');
-  if(k!==PS.key){PS.key=k;PS.sub=st==='play'?(pLoad(k)||initSub(P[d.mission].type)):null;if(st==='play')pSave();pRender()}
+  if(k!==PS.key){PS.key=k;PS.sub=st==='play'?(pLoad(k)||subFromDoc(k)||initSub(P[d.mission].type)):null;if(st==='play')pSave();pRender()}
   else if(st==='fin'||st==='ready')pRender();
 }
 function pRender(){
@@ -1654,7 +1720,11 @@ const PACT={
     lkIn='';sFan();try{navigator.vibrate&&navigator.vibrate([60,40,60])}catch(x){}
     tcommit(MYT,n=>{if(n.startedAt||n.mission!==m||!raceOK())return false;n.unlocked=n.unlocked||[0,0,0,0,0,0,0];n.unlocked[m]=1;n.startedAt=Date.now();n.run=rid();n.curWrong=0;n.last={id:rid(),mission:m,pts:0,first:false,s:'unlock'}})},
   pleave:()=>{if(MYT!==null&&TRY===null&&TD[MYT].dev===DEV)tcommit(MYT,n=>{n.dev=''});MYT=null;try{localStorage.removeItem(SK('t'))}catch(e){};PS.key='';$('#app').innerHTML='';after()},
-  pteam:v=>{if(takenBy(+v)){after();return}MYT=+v;if(TRY===null)tcommit(+v,n=>{n.dev=DEV});try{localStorage.setItem(SK('t'),v)}catch(e){};PS.key='';$('#app').innerHTML='';after()},
+  ptake:v=>{takeAsk=+v;$('#app').innerHTML='';after()},
+  ptakeno:()=>{takeAsk=null;$('#app').innerHTML='';after()},
+  pother:()=>{MYT=null;takeAsk=null;try{localStorage.removeItem(SK('t'))}catch(e){};PS.key='';$('#app').innerHTML='';after()},
+  pteamf:v=>{takeAsk=null;MYT=+v;tcommit(+v,n=>{n.dev=DEV});try{localStorage.setItem(SK('t'),v)}catch(e){};PS.key='';$('#app').innerHTML='';after()},
+  pteam:v=>{if(takenBy(+v)){takeAsk=+v;$('#app').innerHTML='';after();return}MYT=+v;if(TRY===null)tcommit(+v,n=>{n.dev=DEV});try{localStorage.setItem(SK('t'),v)}catch(e){};PS.key='';$('#app').innerHTML='';after()},
   pstart:()=>{const m=TD[MYT].mission;if(lockPending(MYT))return;tcommit(MYT,n=>{if(n.startedAt||n.mission!==m||!raceOK())return false;n.startedAt=Date.now();n.run=rid();n.curWrong=0})},
   'pc-sus':v=>{if(+v===CASE_M.culprit){PS.sub.stage=1;pGood();pSave();pRender()}else{pShake();pFail(15)}},
   'pc-clue':v=>{const p=PS.sub.pick,k=+v;const j=p.indexOf(k);if(j>=0)p.splice(j,1);else if(p.length<2)p.push(k);pSave();pRender()},
@@ -1836,14 +1906,14 @@ const ACT={
   'cw-ok':()=>commit(n=>{const i=n.step;n.teams[i].score+=10;n.cw[i]++;n.word++;n.flash={id:Math.random().toString(36).slice(2),at:Date.now(),team:i,big:false,text:`صحيحة! ${n.teams[i].name} +10`,sub:'+10'}}),
   'cw-skip':()=>commit(n=>{n.word++}),
   'turn-start':()=>commit(n=>{n.turnEnds=Date.now()+75000}),
-  reset:()=>{if(!resetArm){resetArm=1;after();setTimeout(()=>{resetArm=0;after()},3500);return}resetArm=0;const names=S.teams.map(t=>t.name);commit(n=>{const f=fresh();Object.assign(n,f);n.teams.forEach((t,i)=>t.name=names[i])});for(let i=0;i<4;i++)tcommit(i,n=>{Object.assign(n,freshT())});try{localStorage.removeItem(SK('ps'))}catch(e){}}
+  reset:()=>{if(!resetArm){resetArm=1;after();setTimeout(()=>{resetArm=0;after()},3500);return}resetArm=0;const names=S.teams.map(t=>t.name);commit(n=>{const f=fresh();Object.assign(n,f);n.teams.forEach((t,i)=>t.name=names[i])});for(let i=0;i<4;i++)tcommit(i,n=>{const rv=(n.rev||0)+1000;Object.assign(n,freshT());n.rev=rv});try{localStorage.removeItem(SK('ps'))}catch(e){}}
 };
 document.addEventListener('click',e=>{
   const b=e.target.closest('[data-act]');if(!b||b.disabled)return;
   const [k,v]=b.dataset.act.split(':');
   if(ROUTE==='play'&&!AC){try{AC=new (window.AudioContext||window.webkitAudioContext)();AC.resume();sound=true}catch(err){}}
   if(PACT[k]){
-    if(k==='pleave'){PACT.pleave();return}
+    if(k==='pleave'||k==='ptake'||k==='ptakeno'||k==='pother'||k==='pteamf'){PACT[k](v);return}
     if(k!=='pteam'&&(MYT===null||Date.now()<lockUntil))return;
     if(k==='tryto'||k==='tryexit'){PACT[k](v);return}
     const LKA=k==='pk'||k==='pk-del'||k==='punlock';
