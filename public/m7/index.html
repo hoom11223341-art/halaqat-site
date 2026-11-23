@@ -1127,7 +1127,7 @@ function showGo(){const el=document.createElement('div');el.className='gocd';doc
   const step=()=>{if(k>0){el.innerHTML=`<b>${k}</b>`;beep(520,.18,'square',.12);k--;setTimeout(step,900)}else{el.innerHTML='<b class="gogo">انطلقوا!</b>';beep(880,.5,'square',.14);beep(1320,.5,'triangle',.1,.08);setTimeout(()=>el.remove(),1100)}};step()}
 function pToast(t){const el=document.createElement('div');el.className='ptoast';el.textContent=t;document.body.appendChild(el);setTimeout(()=>el.remove(),3200)}
 function after(){
-  setTimeout(ctlFinale,0);checkAutoFinale();checkGo();
+  setTimeout(ctlFinale,0);checkAutoFinale();checkGo();lkAutoInit();
   hostLoginUI();
   if(IS_OWNER===false&&ROUTE!=='play'&&ROUTE!=='screen'){ROUTE='play';drawer=false;stageKey='';$('#app').innerHTML='';try{history.replaceState(null,'','#play')}catch(e){}}
   checkFlash();checkTeamFlash();checkLead();
@@ -1532,17 +1532,45 @@ function missionCtl(m){
     <div class="key"><small>الإجابة · تظهر لك فقط</small>${esc(m.keyText(s))}</div>
   </div>`;
 }
-function lkDraft(){if(!LKD){LKD=[];for(let m=1;m<7;m++){const L=S.locks&&S.locks[m];LKD[m]={c:L&&L.x?lockDec(L.x):'',h:L&&L.hint||''}}}return LKD}
+/* base lock codes (host can change them) */
+const LK_BASE=[0,2630739,5833983,9054983,3603808,7390212,6139586].map((x,i)=>i?String(x^127715).padStart(7,'0'):'');
+const lkHint=m=>`🔎 ابحثوا عن بطاقة «قفل المهمة ${m+1}» المخبأة في المكان، واكتبوا الأرقام المكتوبة عليها.`;
+const lkDefaults=()=>{const o=[null];for(let m=1;m<7;m++){const c=LK_BASE[m];o[m]={h:hsh(c),x:lockEnc(c),hint:lkHint(m)}}return o};
+let lkAuto=false;
+function lkAutoInit(){if(lkAuto||!IS_OWNER||!canWrite||ROUTE!=='control'||S.locks!=null||!S.hh)return;lkAuto=true;commit(n=>{if(n.locks==null)n.locks=lkDefaults()});LKD=null}
+function lkDraft(){if(!LKD){LKD=[];for(let m=1;m<7;m++){const L=S.locks&&S.locks[m];LKD[m]=S.locks==null?{c:LK_BASE[m],h:lkHint(m)}:{c:L&&L.x?lockDec(L.x):'',h:L&&L.hint||''}}}return LKD}
+function lkPrint(list){const D=lkDraft();const items=list.filter(m=>toLat(D[m].c).length===7);
+  if(!items.length){const e=$('#lkmsg');if(e){e.style.color='var(--hot)';e.textContent='ما فيه شيفرة كاملة (7 أرقام) للطباعة.'}return}
+  const card=m=>{const c=toLat(D[m].c);return `<section class="card"><div class="top"><span class="brand">المهمة السابعة</span><span class="n">قفل المهمة ${m+1}</span></div>
+    <div class="t">🔒 شيفرة فتح المهمة ${m+1}</div><div class="s">${esc(P[m].title)}</div>
+    <div class="code">${[...c].map(d=>`<b>${d}</b>`).join('')}</div>
+    <div class="f">اكتبوا هذي الأرقام في الجوال لفتح المهمة التالية</div></section>`};
+  const html=`<!doctype html><html lang="ar" dir="rtl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>أقفال المهمة السابعة</title><style>
+    @page{size:A4;margin:12mm}*{box-sizing:border-box}body{margin:0;font-family:Tahoma,Arial,sans-serif;color:#06110b;background:#fff}
+    .bar{display:flex;gap:10px;justify-content:center;padding:14px;background:#06110b}.bar button{font:700 18px Tahoma,Arial;padding:12px 26px;border-radius:12px;border:0;background:#ffb321;color:#06110b;cursor:pointer}
+    .card{height:128mm;margin:0 auto 8mm;max-width:186mm;border:3px dashed #1d5a32;border-radius:8mm;padding:9mm 10mm;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4mm;text-align:center;break-inside:avoid;page-break-inside:avoid}
+    .card:nth-of-type(2n){break-after:page;page-break-after:always}
+    .top{width:100%;display:flex;justify-content:space-between;font-weight:700;font-size:14pt;color:#1d5a32}.n{background:#06110b;color:#4dff7c;padding:1mm 4mm;border-radius:3mm}
+    .t{font-size:24pt;font-weight:700}.s{font-size:15pt;color:#555}
+    .code{display:flex;gap:3mm;direction:ltr;margin:4mm 0}.code b{width:19mm;height:25mm;display:grid;place-items:center;border:2px solid #06110b;border-radius:3mm;font:700 34pt 'Courier New',monospace;background:#f3fbf5}
+    .f{font-size:12pt;color:#333}
+    @media print{.bar{display:none}}
+  </style></head><body><div class="bar"><button onclick="print()">🖨️ طباعة</button></div>${items.map(card).join('')}<scr\x69pt>setTimeout(function(){try{print()}catch(e){}},500)<\/scr\x69pt></body></html>`;
+  const w=window.open('','_blank');
+  if(w){w.document.open();w.document.write(html);w.document.close();return}
+  const f=document.createElement('iframe');f.style.cssText='position:fixed;width:0;height:0;border:0;left:-9999px';document.body.appendChild(f);
+  f.contentDocument.open();f.contentDocument.write(html.replace(/<scr.pt>[\s\S]*?<\/scr.pt>/,''));f.contentDocument.close();setTimeout(()=>{try{f.contentWindow.print()}catch(e){}setTimeout(()=>f.remove(),2000)},400)}
 function locksCtl(){const D=lkDraft();
   return `<details class="sec" id="lkDet" ${lkOpen?'open':''}><summary style="cursor:pointer;font-weight:700">🔒 أقفال المهام · شيفرة 7 أرقام بين كل مهمة والتالية</summary>
-   <p class="note" style="margin-top:8px">بعد ما يخلص الفريق المهمة، تُقفل التالية حتى يكتب الشيفرة. اكتب الرسالة اللي تدلّهم على مكانها. اترك الشيفرة فاضية إذا ما تبي قفلًا قبل المهمة.</p>
+   <p class="note" style="margin-top:8px">بعد ما يخلص الفريق المهمة، تُقفل التالية حتى يكتب الشيفرة. الأرقام الأساسية جاهزة: اطبع بطاقاتها وخبّها، أو غيّرها واحفظ. اترك الشيفرة فاضية إذا ما تبي قفلًا قبل المهمة.</p>
    ${[1,2,3,4,5,6].map(m=>{const opened=TD.map((t,i)=>t.unlocked&&t.unlocked[m]?S.teams[i].name:null).filter(Boolean);return `<div class="lkrow">
      <b>قبل المهمة ${m+1}: ${esc(P[m].title)}</b>
-     <div class="lkcode"><input id="lkc${m}" value="${esc(D[m].c)}" inputmode="numeric" maxlength="7" placeholder="7 أرقام" aria-label="شيفرة المهمة ${m+1}"><button class="b" data-act="lkrand:${m}">رقم عشوائي</button></div>
+     <div class="lkcode"><input id="lkc${m}" value="${esc(D[m].c)}" inputmode="numeric" maxlength="7" placeholder="7 أرقام" aria-label="شيفرة المهمة ${m+1}"><button class="b" data-act="lkprint:${m}" title="طباعة بطاقة الشيفرة">🖨️ طباعة</button><button class="b" data-act="lkrand:${m}">عشوائي</button></div>
      <textarea id="lkh${m}" maxlength="220" rows="2" placeholder="مثال: الشيفرة مكتوبة تحت الكرسي الأحمر في المجلس" aria-label="رسالة المهمة ${m+1}">${esc(D[m].h)}</textarea>
      ${opened.length?`<span class="note">🔓 فتحها: ${opened.map(esc).join('، ')}</span>`:''}</div>`}).join('')}
    <p class="note" id="lkmsg"></p>
-   <div class="row"><button class="b pri" data-act="lksave">احفظ الأقفال</button><button class="b" data-act="lkclear">إلغاء كل الأقفال</button></div>
+   <div class="row"><button class="b pri" data-act="lksave">احفظ الأقفال</button><button class="b" data-act="lkprint:all">🖨️ طباعة كل البطاقات</button></div>
+   <div class="row"><button class="b" data-act="lkdef">استعادة الأرقام الأساسية</button><button class="b" data-act="lkclear">إلغاء كل الأقفال</button></div>
   </details>`}
 function connLabel(){
   if(!LIVE)return conn==='bad'?'غير متصل… تحقق من الإنترنت':'جارٍ الاتصال…';
@@ -1928,12 +1956,14 @@ const ACT={
   ext:v=>{const i=+v,t=TD[i];if(!t||!t.startedAt||t.mission>=7)return;commit(n=>{n.ext=n.ext||{};const e=n.ext[i];const ms=(e&&e.run===t.run?(e.ms||0):0)+60000;n.ext[i]={run:t.run,ms};
     n.flash={id:Math.random().toString(36).slice(2),at:Date.now(),team:i,big:false,text:`⏱ +1 دقيقة لـ ${n.teams[i].name}`,sub:''}})},
   lkrand:v=>{const D=lkDraft();const r=crypto.getRandomValues(new Uint32Array(1))[0];D[+v].c=String(1000000+r%9000000);const e=$('#lkc'+v);if(e)e.value=D[+v].c},
+  lkprint:v=>lkPrint(v==='all'?[1,2,3,4,5,6]:[+v]),
+  lkdef:()=>{LKD=[];for(let m=1;m<7;m++)LKD[m]={c:LK_BASE[m],h:lkHint(m)};after();setTimeout(()=>{const e=$('#lkmsg');if(e){e.style.color='var(--sig)';e.textContent='رجعت الأرقام الأساسية في الخانات. اضغط «احفظ الأقفال» لتثبيتها.'}},50)},
   lksave:()=>{const D=lkDraft();const bad=[];const out=[null];
     for(let m=1;m<7;m++){const c=toLat(D[m].c);if(c&&c.length!==7)bad.push(m+1);out[m]=c.length===7?{h:hsh(c),x:lockEnc(c),hint:String(D[m].h||'').slice(0,220)}:null}
     const msg=$('#lkmsg');if(bad.length){if(msg){msg.style.color='var(--hot)';msg.textContent=`الشيفرة لازم تكون 7 أرقام بالضبط (المهمة ${bad.join('، ')}).`}return}
     commit(n=>{n.locks=out});LKD=null;setTimeout(()=>{const m2=$('#lkmsg');if(m2){m2.style.color='var(--t3)';m2.textContent='تم حفظ الأقفال ✓'}},50)},
   lkclear:()=>{if(resetArm!=='lk'){resetArm='lk';const e=document.querySelector('[data-act="lkclear"]');if(e){e.textContent='اضغط للتأكيد';e.classList.add('hot')}setTimeout(()=>{if(resetArm==='lk'){resetArm=0;after()}},3000);return}
-    resetArm=0;commit(n=>{n.locks=null});LKD=null},
+    resetArm=0;commit(n=>{n.locks=[null]});LKD=null},
   newroom:()=>newRoom(),
   joinhost:()=>joinHost(),
   newroomgate:()=>{location.href=location.pathname},
