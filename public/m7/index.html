@@ -502,6 +502,31 @@ button:focus-visible,input:focus-visible{outline:3px solid var(--sig);outline-of
 .trt .b.ext{min-height:38px;padding:4px 10px;font-size:14px;background:var(--t3);color:var(--ink);border-color:var(--t3)}
 .f7card{gap:8px}
 .wscard{gap:10px}
+.dh{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap}
+.doors{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:6px 0 4px}
+.door{position:relative;aspect-ratio:3/4.4;padding:0;border:0;background:#030806;border-radius:12px 12px 6px 6px;perspective:700px;cursor:pointer;box-shadow:inset 0 0 0 3px #3b2a12,0 8px 18px #0008;font:inherit;color:inherit}
+.door:disabled{cursor:default;opacity:1}
+.dback{position:absolute;inset:6px;border-radius:8px;display:grid;place-content:center;justify-items:center;background:radial-gradient(circle at 50% 40%,#ffb32155,#06110b 70%)}
+.dback b{font-family:var(--num);font-size:42px;line-height:1;color:var(--sig);text-shadow:0 0 18px #ffb321aa}
+.dback small{font-size:12px;color:var(--mute)}
+.leaf{position:absolute;inset:4px;border-radius:9px 9px 4px 4px;transform-origin:right center;transition:transform .9s cubic-bezier(.3,.9,.3,1.1);background:linear-gradient(90deg,#5a3a14,#7a5220 45%,#5a3a14);border:2px solid #2d1d08;box-shadow:inset 0 0 0 5px #6a4518,inset 0 0 0 7px #3b2710;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;backface-visibility:hidden}
+.door.open .leaf{transform:rotateY(-100deg)}
+.dno{position:absolute;top:8px;font-family:var(--num);font-weight:700;font-size:14px;color:#f3d9a8;background:#2d1d08;border-radius:99px;padding:0 9px}
+.dic{font-size:30px;line-height:1}
+.dct{font-weight:700;font-size:13px;color:#f3d9a8}
+.dlk{font-size:16px}
+.knob{position:absolute;left:10px;top:52%;width:9px;height:9px;border-radius:50%;background:var(--sig);box-shadow:0 0 6px #ffb321}
+.dsyms{display:flex;justify-content:center;gap:8px;margin-top:10px;direction:ltr}
+.dsyms span{width:38px;height:46px;border-radius:9px;display:grid;place-items:center;font-family:var(--num);font-weight:700;font-size:24px;background:var(--ink2);border:1px dashed var(--line);color:var(--mute)}
+.dsyms span.on{border:2px solid var(--sig);color:var(--sig);background:#2a1f06}
+.door7{margin-top:12px;padding:14px;border-radius:16px;border:2px solid var(--sig);background:radial-gradient(circle at 50% 0%,#ffb32133,#0a1a10 70%);box-shadow:0 0 26px #ffb32144;text-align:center;display:grid;gap:8px}
+.door7.off{border:1px dashed var(--line);box-shadow:none;background:var(--ink2);color:var(--mute);font-size:14px;display:block}
+.d7t{font-family:var(--display);font-size:28px;color:var(--sig)}
+.dq{gap:12px}.dqh{display:flex;gap:12px;align-items:center}.dqi{font-size:44px;flex:none}
+.dinp{width:100%;font:inherit;font-size:22px;font-weight:700;text-align:center;padding:14px;border-radius:14px;border:2px solid var(--line);background:var(--ink);color:var(--fg)}
+.dinp:focus{outline:none;border-color:var(--sig)}
+.dsort{display:grid;grid-template-columns:repeat(5,1fr);gap:8px}.dsort .b{font-family:var(--num);font-size:24px;padding:14px 0}.dsort .b.ok{opacity:.35}
+.d7in{text-align:center;align-items:center}
 .wshd{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap}
 .wsg{display:grid;grid-template-columns:repeat(var(--n),1fr);gap:3px;direction:rtl;user-select:none;-webkit-user-select:none}
 .wsg.shake{animation:shake .35s}
@@ -814,7 +839,7 @@ const P=[
  {type:'ws',dur:360000,title:'الكلمات المتقاطعة',kind:'تحدي الكلمات',intro:'🔤 كلمات مخفية في شبكة الحروف: أفقية أو عمودية أو مائلة. اضغطوا أول حرف من الكلمة ثم آخر حرف. ⏱ 6 دقائق'},
  {type:'sort',title:'ترتيب الأرقام الفردية',kind:'تحدي ترتيب',intro:'🚨 أمامكم 30 رقمًا فرديًا مبعثرة. اضغطوها بالترتيب من الأصغر إلى الأكبر. الضغطة الخاطئة توقفكم 5 ثوانٍ.'},
  {type:'c4',title:'أربع تربح',kind:'تحدي ذكاء',dur:420000,intro:'العبوا «أربع تربح» ضد الكمبيوتر (مستوى متوسط). أول من يصفّ 4 أقراص متتالية أفقيًا أو عموديًا أو قطريًا يفوز بالجولة. اكسبوا جولتين من ثلاث، ويظهر لكم رمز الخزنة الأخيرة. ⏱ 7 دقائق'},
- {type:'final7',title:'الشيفرة الأخيرة',kind:'المهمة السابعة',dur:420000,intro:'🔐 أمامكم رسالة مشفّرة بالرموز وورقة فك الشفرات: كل رمز يقابل حرفًا. فكّوا الرسالة لتعرفوا المطلوب، ثم أدخلوا الرقم الصحيح ليظهر لكم الرمز النهائي. النقاط مضاعفة! ⏱ 7 دقائق'}];
+ {type:'final7',title:'الأبواب السبعة',kind:'المهمة السابعة',dur:420000,intro:'🚪 هل تستطيع فتح الباب الأخير؟ أمامكم 6 أبواب، افتحوها بأي ترتيب: كل باب سؤال أو لغز، والإجابة الصحيحة تعطيكم رمزًا. الرموز الستة تفتح الباب السابع… وفيه مكان الشفرة الأخيرة. النقاط مضاعفة! ⏱ 7 دقائق'}];
 /* ---- mission 7 (sheet): symbol ↔ letter key, different per team; answer + reveal codes come from the host ---- */
 const VS='\uFE0E';
 const SHEET_SYMS=['★','◆','●','▲','■','♥','♣','☾','✿','⬟','✦','✚','◐','✉','☀','☁','⚑','✈','☂','♞','♜','⚓','✂','☯','♫','⌘','⚡','❄','⬢','♠','✪','☎','⌛','⚙','✎','➤'];
@@ -906,7 +931,18 @@ function wsBuild(words){const W=words.map(wsClean).filter(Boolean);const key=W.j
     if(L.every(w=>cnt(w)===1))return(_wsMemo[key]={N,g,W,pl})}
   return(_wsMemo[key]=null)}
 const wsGrid=()=>wsBuild(CT.ws||DEF_CT.ws);
-const F7_HINT='آخر سبعة أرقام من جوال الجمعية هي كلمة السر';
+const F7_OLD='آخر سبعة أرقام من جوال الجمعية هي كلمة السر';
+const F7_HINT='🔎 الشفرة النهائية ليست أمامكم… ابحثوا عنها في المكان الذي يجتمع فيه الفريق دائمًا.';
+const f7Hint=()=>{const h=CT.f7.hint;return !h||h===F7_OLD?F7_HINT:h};
+const f7Len=()=>CT.f7.n||7;
+/* ---- mission 7: the seven doors ---- */
+const DOORS=()=>CT.doors||DEF_CT.doors;
+const arNorm=x=>String(x||'').replace(/[٠-٩]/g,d=>'٠١٢٣٤٥٦٧٨٩'.indexOf(d)).replace(/[\u064B-\u0652\u0640]/g,'').replace(/[أإآ]/g,'ا').replace(/ة/g,'ه').replace(/ى/g,'ي').replace(/[^\u0621-\u064A0-9a-zA-Z]/g,'').replace(/^ال/,'').toLowerCase();
+const splitAns=a=>String(a||'').split(/[،,\n]+/).map(x=>x.trim()).filter(Boolean);
+const doorNums=D=>splitAns(D.a).map(x=>+toLat(x)).filter(x=>!isNaN(x));
+const doorOK=(D,v)=>{if(D.t==='num')return toLat(v)!==''&&toLat(v)===toLat(splitAns(D.a)[0]);const n=arNorm(v);return !!n&&splitAns(D.a).some(x=>{const y=arNorm(x);return y===n||y===n.replace(/^ال/,'')||('ال'+y)===n})};
+const doorsCode=()=>DOORS().map(D=>String(D.s||'')).join('');
+const sDoor=()=>{if(!AC)return;beep(110,.5,'sawtooth',.07);beep(90,.6,'sawtooth',.06,.15);beep(300,.08,'square',.08,.05);[523,784,1047].forEach((f,i)=>beep(f,.3,'triangle',.12,.45+i*.1))};
 const SORT_N=30;const SORT_MEMO=new Map();
 function sortSet(seed){if(SORT_MEMO.has(seed))return SORT_MEMO.get(seed);const r=mulb(77777);
   const odds=[];for(let v=1;v<60;v+=2)odds.push(v);
@@ -936,6 +972,13 @@ const DEF_CT={
   {t:'المنطق',q:'لديك:\nكل القطط حيوانات.\nبعض الحيوانات سريعة.\nهل نستطيع الجزم أن كل القطط سريعة؟',o:['نعم','لا'],a:1,d:'2'},
   {t:'النهاية',q:'أنا رقم:\n• أكبر من 5\n• أصغر من 10\n• إذا ضربتني في نفسي يكون الناتج 49\nمن أنا؟',o:['6','7','8','9'],a:1,d:'7'}],
  code4:{code:'1357924',hint:'اطلبوا الشيفرة من المقدم.'},
+ doors:[
+  {c:'الثقافة',i:'📚',t:'text',q:'ما هي عاصمة المملكة العربية السعودية؟',a:'الرياض',s:'3'},
+  {c:'الذكاء',i:'🧠',t:'text',q:'شيء إذا زاد نقص، وإذا نقص زاد؟',a:'العمر، عمر الإنسان، السن',s:'7'},
+  {c:'القرآن',i:'🌿',t:'num',q:'كم عدد سور القرآن الكريم؟',a:'114',s:'1'},
+  {c:'الملاحظة',i:'👁️',t:'num',q:'لديك 5 تفاحات، أخذتَ منها 2، كم تفاحة أصبحت معك؟',a:'2',s:'9'},
+  {c:'السرعة',i:'⚡',t:'sort',q:'رتّبوا الأرقام من الأصغر إلى الأكبر',a:'15، 3، 9، 1، 7',s:'5'},
+  {c:'التفكير',i:'🔍',t:'text',q:'ما هو الشيء الذي يمشي بلا أرجل ويبكي بلا عيون؟',a:'السحاب، السحابة، الغيم، الغيوم، الغيمة',s:'6'}],
  ws:['الرياض','العلم','المعرفة','النجاح','المستقبل','القرآن','الرياضة','الصداقة','العائلة','الوطن'],
  rid:[
   Object.assign({q:RID[0].q},placeAt(RID[0].o,1)),
@@ -1130,7 +1173,7 @@ function after(){
   setTimeout(ctlFinale,0);checkAutoFinale();checkGo();lkAutoInit();
   hostLoginUI();
   if(IS_OWNER===false&&ROUTE!=='play'&&ROUTE!=='screen'){ROUTE='play';drawer=false;stageKey='';$('#app').innerHTML='';try{history.replaceState(null,'','#play')}catch(e){}}
-  checkFlash();checkTeamFlash();checkLead();
+  checkFlash();checkTeamFlash();checkLead();checkDoors();
   if(ROUTE==='screen')renderScreen();
   else if(ROUTE==='control')renderControl($('#app'));
   else if(ROUTE==='play')renderPlay();
@@ -1346,7 +1389,7 @@ function raceHTML(){
     <div class="track">${P.map((_,k)=>{const c=nodeCls(i,k);return `<span class="node ${c} ${S.view==='mission'&&k===S.mission&&!c?'cur':''}">${c==='to'?'✕':c?'✓':k+1}</span>`}).join('')}<span class="runner" style="--p:${p}%"></span></div>
     <span class="ts">${tot[i]}</span></div>`}).join('');
 }
-const MIC=['❓','🖼️','🔍','🔤','🔢','🔴','🔐'];
+const MIC=['❓','🖼️','🔍','🔤','🔢','🔴','🚪'];
 function raceViewHTML(){
   const tot=S.teams.map((_,i)=>total(i)),lead=Math.max(...tot);
   const order=[0,1,2,3].sort((a,b)=>tot[b]-tot[a]||TD[b].mission-TD[a].mission);const rank=[];order.forEach((i,k)=>rank[i]=k+1);
@@ -1355,7 +1398,8 @@ function raceViewHTML(){
   return `<div class="rv2"><div class="rv2h"><span class="rv2b">🏁 السباق مباشر</span><span>${leaders.length===1?`👑 المتصدر: <b style="color:${TC[leaders[0]]}">${esc(S.teams[leaders[0]].name)}</b>`:leaders.length>1?'⚔️ تعادل في الصدارة!':'الكل على خط البداية'}</span><span class="rv2c">✅ ${done} من 28 مهمة منجزة</span></div>
   ${S.teams.map((t,i)=>{const d=TD[i],m=Math.min(d.mission,7),fin=d.mission>=7,on=!!d.startedAt&&!fin;
     const p=fin?100:m/6*100;const r=rank[i];
-    const status=fin?(d.results[6]&&d.results[6].s==='done'?'🔓 فتح الخزنة!':'أنهى المهام'):on?`يلعب الآن · المهمة ${m+1} من 7`:lockPending(i)?`🔎 يبحث عن شيفرة المهمة ${m+1}`:S.raceOn?`جاهز للمهمة ${m+1}`:'بانتظار إشارة البدء';
+    const ds=on&&m===6&&d.sub&&d.sub.s&&Array.isArray(d.sub.s.open)?d.sub.s:null;
+    const status=fin?(d.results[6]&&d.results[6].s==='done'?'🏆 فتح الباب الأخير!':'أنهى المهام'):ds?(ds.d7?'🗝️ فتح الباب السابع… يبحث عن الشفرة':`🚪 فتح ${ds.open.length} من 6 أبواب`):on?`يلعب الآن · المهمة ${m+1} من 7`:lockPending(i)?`🔎 يبحث عن شيفرة المهمة ${m+1}`:S.raceOn?`جاهز للمهمة ${m+1}`:'بانتظار إشارة البدء';
     return `<div class="rl ${lead>0&&tot[i]===lead?'lead':''} ${fin?'fin':''}" style="--c:${TC[i]}">
       <div class="rl-id"><span class="rl-rk">${lead>0&&tot[i]===lead?'👑':r}</span><div style="min-width:0"><div class="rl-nm">${esc(t.name)}</div><div class="rl-st">${status}</div>${fin?'':`<div class="rl-cur">${MIC[m]} ${esc(P[m].title)}</div>`}</div></div>
       <div class="rl-tr"><div class="rl-rail"><i style="width:${p}%"></i></div>
@@ -1413,12 +1457,17 @@ function checkFlash(){
   showFx(f.team,f.big,f.text,f.sub);
 }
 let lastLead=null;
+const doorSeen={};
+function checkDoors(){if(ROUTE!=='screen')return;TD.forEach((d,i)=>{if(d.mission!==6||!d.sub||!d.sub.s||!Array.isArray(d.sub.s.open))return;const n=d.sub.s.open.length,o=doorSeen[i];const d7=!!d.sub.s.d7;
+  if(o&&n>o.n)showFx(i,false,n>=6?`🚪 ${S.teams[i].name} فتحوا الأبواب الستة!`:`🚪 ${S.teams[i].name} فتحوا ${n} من 6 أبواب`,'');
+  if(o&&d7&&!o.d7)setTimeout(()=>showFx(i,false,`🗝️ ${S.teams[i].name} فتحوا الباب السابع… يبحثون عن الشفرة الأخيرة!`,''),300);
+  doorSeen[i]={n,d7}})}
 function checkLead(){if(ROUTE!=='screen')return;const st=sorted();const top=st[0];const lead=top&&top.score>0&&(!st[1]||st[1].score<top.score)?top.i:-1;
   if(lastLead!==null&&lead>=0&&lead!==lastLead)showFx(lead,false,`👑 ${S.teams[lead].name} يخطف الصدارة!`,'');lastLead=lead}
 function checkTeamFlash(){
   TD.forEach((t,i)=>{const L=t.last;if(!L||L.id===seenLast[i])return;seenLast[i]=L.id;
     const nm=S.teams[i].name,mt=P[L.mission].title;
-    if(ROUTE==='play'&&MYT!==null&&i!==MYT&&L.s==='done'&&L.at&&Date.now()-L.at<20000){pToast(L.mission===6?`🚨 ${nm} فتحوا الخزنة!`:`⚡ ${nm} أنهوا «${mt}»… أسرعوا!`);beep(330,.12,'square',.08);return}
+    if(ROUTE==='play'&&MYT!==null&&i!==MYT&&L.s==='done'&&L.at&&Date.now()-L.at<20000){pToast(L.mission===6?`🚨 ${nm} فتحوا الباب الأخير!`:`⚡ ${nm} أنهوا «${mt}»… أسرعوا!`);beep(330,.12,'square',.08);return}
     if(ROUTE!=='screen')return;
     if(L.s==='done'&&L.mission===5)setTimeout(()=>showFx(i,false,`🔐 ${nm} وصلوا للقفل الأخير!`,''),200);
     if(L.s==='unlock'){showFx(i,false,`🔓 ${nm} فتح قفل «${mt}»`,'');return}
@@ -1613,8 +1662,10 @@ function initSub(type){switch(type){
   case 'c4':return c4New(1,0,0);
   case 'riddles':return{q:0};
   case 'vault':return{stage:0,code:''};
-  case 'final7':return{code:'',phase:'enter',ans:''};}}
+  case 'final7':return{code:'',phase:'doors',open:[],cur:-1,inp:'',seq:[],c7:'',d7:false,ans:''};}}
 let takeAsk=null;
+document.addEventListener('keydown',e=>{if(e.key==='Enter'&&e.target&&e.target.id==='pdrin'){e.preventDefault();const v=e.target.value;if(String(v).trim()&&PS.sub&&Date.now()>=lockUntil)doorTry(v)}});
+document.addEventListener('input',e=>{if(e.target&&e.target.id==='pdrin'&&PS.sub)PS.sub.inp=e.target.value});
 function renderPlay(){
   const app=$('#app');
   if(MYT===null&&takeAsk!==null){const t=S.teams[takeAsk],d=TD[takeAsk];app.innerHTML=`<div class="pl wrap" style="padding-block:24px;--c:${TC[takeAsk]}"><div class="pcard"><span class="counter">RESUME</span><h1 class="ptitle">متابعة «${esc(t.name)}» على هذا الجوال؟</h1><p>${d.mission>=7?'أنهى الفريق المهام السبع.':`الفريق الآن في المهمة ${d.mission+1}: ${esc(P[d.mission].title)}`}</p><p class="note">استخدموها إذا خرجتم بالغلط أو انقطع النت أو تغيّر الجوال. تكمّلون من نفس المكان، والجوال الآخر يتوقف عن اللعب.</p><button class="b pri" style="width:100%" data-act="pteamf:${takeAsk}">نعم، هذا فريقنا · كمّلوا</button><button class="tbtn" data-act="ptakeno">رجوع</button></div></div>`;PS.key='';return}
@@ -1664,7 +1715,7 @@ function c4After(s){const w=c4Win(s.b,'p'),a=c4Win(s.b,'a');
   if(s.over&&s.over!=='d'){if(s.w>=2)setTimeout(()=>{s.phase='code';pSave();pRender()},1600);else if(s.l>=2)setTimeout(()=>{s.phase='lost';pSave();pRender()},1600)}}
 function c4AIMove(){const s=PS.sub;if(!s||s.over||s.turn!=='a'||s.phase!=='play')return;
   setTimeout(()=>{const s2=PS.sub;if(s2!==s||s.over||s.turn!=='a')return;const c=c4AI(s.b);const r=c4Drop(s.b,c,'a');s.last=r*7+c;beep(330,.1,'triangle',.12);s.turn='p';c4After(s);pSave();pRender()},550)}
-function finaleWin(){const el=document.createElement('div');el.className='f7win';el.innerHTML='<div><span>🔓</span><b>الخزنة انفتحت!</b><em>ارفعوا رؤوسكم للشاشة… إعلان الفائز الآن 👀</em></div>';document.body.appendChild(el);sFan();setTimeout(sFan,700);try{navigator.vibrate&&navigator.vibrate([100,60,100,60,300])}catch(e){}confetti();setTimeout(()=>{el.remove();stopConfetti()},6000)}
+function finaleWin(){const el=document.createElement('div');el.className='f7win';el.innerHTML='<div><span>🏆</span><b>تم إنجاز المهمة!</b><em>فتحتم الباب الأخير… ارفعوا رؤوسكم للشاشة، إعلان الفائز الآن 👀</em></div>';document.body.appendChild(el);sFan();setTimeout(sFan,700);try{navigator.vibrate&&navigator.vibrate([100,60,100,60,300])}catch(e){}confetti();setTimeout(()=>{el.remove();stopConfetti()},6000)}
 function pMission(){
   const d=TD[MYT],m=P[d.mission],s=PS.sub;
   if(m.type==='twin'){const T=twinRound(s.seed,TW_LVMAP[Math.min(s.round,TW_ROUNDS-1)]);
@@ -1713,8 +1764,19 @@ function pMission(){
   if(m.type==='riddles')return mcqHTML(CT.rid,s,'RIDDLE','pr');
   if(m.type==='riddles_old'){const r=RID[s.q];
     return `<div class="pcard"><span class="counter">RIDDLE ${s.q+1} / 5</span><h2 class="ptitle" style="font-size:28px;line-height:1.35">${esc(r.q)}</h2>${r.o?`<div class="opts">${s.ord[s.q].map(o=>`<button class="opt" data-act="pr:${o}">${esc(r.o[o])}</button>`).join('')}</div>`:`<input class="pin" id="pri" placeholder="${esc(r.ph)}" inputmode="numeric" autocomplete="off"><button class="b pri" data-act="pr-chk">تحقّق</button>`}</div>`;}
-  if(m.type==='final7'){const F=CT.f7,hint=F.hint||F7_HINT;
-    return `<div class="pcard f7final"><div class="lockc"><span class="lk-ico f7pulse">🔐</span><span class="counter">القفل الأخير · الخزنة</span><b>أدخلوا كلمة السر · 7 أرقام</b>${codePad(7,s.code,'pf7','pf7d')}<p class="lk-msg f7hint">💡 ${esc(hint)}</p><p class="note">أول فريق يفتح الخزنة… يُعلن الفائز على الشاشة فورًا! ⚡</p></div></div>`}
+  if(m.type==='final7'){const DS=DOORS();if(!s.open)Object.assign(s,{phase:'doors',open:[],cur:-1,inp:'',seq:[],c7:'',d7:false});
+    const syms=`<div class="dsyms">${DS.map((D,k)=>`<span class="${s.open.includes(k)?'on':''}">${s.open.includes(k)?esc(D.s):'?'}</span>`).join('')}</div>`;
+    if(s.cur>=0){const D=DS[s.cur];let body='';
+      if(D.t==='num')body=`${codePad(Math.max(1,String(toLat(splitAns(D.a)[0])).length),s.inp,'pdn','pdnd')}`;
+      else if(D.t==='sort'){const nums=doorNums(D),srt=nums.slice().sort((a,b)=>a-b);body=`<div class="dsort">${nums.map(v=>`<button class="b ${s.seq.includes(v)?'ok':''}" data-act="pds:${v}" ${s.seq.includes(v)?'disabled':''}>${v}</button>`).join('')}</div><p class="note">رتّبتم: <b class="num">${s.seq.join(' - ')||'…'}</b></p>`}
+      else body=`<input id="pdrin" class="dinp" autocomplete="off" placeholder="اكتبوا الإجابة هنا" value="${esc(s.inp||'')}"><button class="b pri" style="width:100%" data-act="pdr-go">تأكيد</button>`;
+      return `<div class="pcard dq"><div class="dqh"><span class="dqi">${D.i||'🚪'}</span><div><span class="counter">الباب ${s.cur+1} · ${esc(D.c||'')}</span><h2 class="ptitle">${esc(D.q)}</h2></div></div>${body}<button class="tbtn" data-act="pdback">↩ رجوع للأبواب</button></div>${syms}`}
+    if(s.phase==='code'){const L=f7Len();
+      return `<div class="pcard f7final d7in"><span class="lk-ico">🏆</span><span class="counter">الباب السابع مفتوح</span><h2 class="ptitle">🎉 أحسنتم…</h2><p>لقد فتحتم جميع الأبواب، ولكن بقي الاختبار الأخير.</p><p class="lk-msg f7hint">${esc(f7Hint())}</p><b>أدخلوا الشفرة النهائية · ${L} أرقام</b>${codePad(L,s.code,'pf7','pf7d')}<p class="note">أول فريق يفتح الباب الأخير… يُعلن الفائز على الشاشة فورًا! ⚡</p></div>${syms}`}
+    const all=s.open.length>=DS.length;
+    return `<div class="pcard"><div class="dh"><span class="counter">فتحتم ${s.open.length} من ${DS.length} أبواب</span><span class="note">اختاروا أي باب</span></div>
+      <div class="doors">${DS.map((D,k)=>{const o=s.open.includes(k);return `<button class="door ${o?'open':''}" data-act="pdoor:${k}" ${o?'disabled':''}><span class="dback"><b>${esc(D.s)}</b><small>الرمز</small></span><span class="leaf"><span class="dno">${k+1}</span><span class="dic">${D.i||'🚪'}</span><span class="dct">${esc(D.c||'')}</span><span class="dlk">${o?'':'🔒'}</span><i class="knob"></i></span></button>`}).join('')}</div>
+      ${all?`<div class="door7"><div class="d7t">🚪 الباب السابع ظهر!</div><p class="note">أدخلوا الرموز الستة اللي جمعتوها لفتحه</p>${codePad(DS.length,s.c7,'pd7','pd7d')}</div>`:`<div class="door7 off"><span>🚪</span> الباب السابع يظهر بعد فتح الأبواب الستة</div>`}</div>${syms}`}
   if(m.type==='vault'){
     if(s.stage===0)return pHead('القفل الأول')+`<div class="pcard"><p style="font-size:18px">${esc(CT.vault.q1)}</p><div class="vdisp" id="pvd">${s.code||'·'.repeat(String(CT.vault.a1).length)}</div><div class="keypad">${[1,2,3,4,5,6,7,8,9].map(n=>`<button class="b" data-act="pv-key:${n}">${n}</button>`).join('')}<button class="b" data-act="pv-clr">مسح</button><button class="b" data-act="pv-key:0">0</button><button class="b pri" data-act="pv-ent">فتح</button></div></div>`;
     if(s.stage===1)return pHead('القفل الثاني')+`<div class="pcard"><p style="font-size:18px">${esc(CT.vault.q2)}</p><div class="pcode" style="text-align:center;font-size:56px">${esc(CT.vault.shown)}</div><div class="abc">${[...AB].map(x=>`<span>${x}</span>`).join('')}</div><input class="pin" id="pvw" placeholder="الكلمة الأصلية" autocomplete="off"><button class="b pri" data-act="pv-word">فتح الخزنة</button></div>`;
@@ -1728,6 +1790,10 @@ function pFail(sec){
   lockUntil=Date.now()+sec*1000;sBuzz();try{navigator.vibrate&&navigator.vibrate(250)}catch(e){}
   const m=TD[MYT].mission;tcommit(MYT,n=>{if(n.mission!==m)return false;n.curWrong=(n.curWrong||0)+1});
 }
+function doorOpen(){const s=PS.sub;if(s.cur<0)return;const k=s.cur;if(!s.open.includes(k))s.open.push(k);s.cur=-1;s.inp='';s.seq=[];sDoor();try{navigator.vibrate&&navigator.vibrate([60,40,120])}catch(e){}pSave();pRender();
+  const el=document.querySelectorAll('.door')[k];if(el){el.classList.remove('open');void el.offsetWidth;el.classList.add('open','just')}
+  if(s.open.length===DOORS().length)setTimeout(()=>{pToast('🚪 الباب السابع ظهر! أدخلوا الرموز الستة');beep(880,.3,'triangle',.12);const d=$('.door7');if(d)try{d.scrollIntoView({behavior:'smooth',block:'center'})}catch(e){}},900)}
+function doorTry(v){const s=PS.sub,D=DOORS()[s.cur];if(!D)return;if(doorOK(D,v)){doorOpen();return}s.inp='';pSave();pRender();pFail(5)}
 function pGood(){sPop();try{navigator.vibrate&&navigator.vibrate(40)}catch(e){}}
 function pComplete(bonus,autoNext){
   const i=MYT,d=TD[i],m=d.mission;if(!d.startedAt||m>=7)return;
@@ -1753,12 +1819,26 @@ const PACT={
   'pc4c-k':v=>{const s=PS.sub;const n=String(CT.c4.code).length;if(s.code.length<n)s.code+=v;const e=$('#pc4d');if(e)e.textContent=s.code||'·'.repeat(n);beep(700,.05,'square',.06)},
   'pc4c-del':()=>{const s=PS.sub;s.code=s.code.slice(0,-1);const e=$('#pc4d');if(e)e.textContent=s.code||'·'.repeat(String(CT.c4.code).length)},
   'pc4c-go':()=>{const s=PS.sub;if(s.code===String(CT.c4.code)){pComplete(0,true);return}s.code='';const e=$('#pc4d');if(e)e.textContent='·'.repeat(String(CT.c4.code).length);lockTitle='الرمز غير صحيح';lockMsg='انتظروا 5 ثوانٍ';pShake('pc4d');sBuzz();lockUntil=Date.now()+5000},
-  'pf7-k':v=>{const s=PS.sub;if(s.code.length<7)s.code+=v;const e=$('#pf7d');if(e)e.textContent=s.code||'·······';beep(700,.05,'square',.06)},
-  'pf7-del':()=>{const s=PS.sub;s.code=s.code.slice(0,-1);const e=$('#pf7d');if(e)e.textContent=s.code||'·······'},
-  'pf7-go':()=>{const s=PS.sub,F=CT.f7;if(s.code.length!==7||s.phase==='done')return;
+  'pf7-k':v=>{const s=PS.sub;if(s.code.length<f7Len())s.code+=v;const e=$('#pf7d');if(e)e.textContent=s.code||'·'.repeat(f7Len());beep(700,.05,'square',.06)},
+  'pf7-del':()=>{const s=PS.sub;s.code=s.code.slice(0,-1);const e=$('#pf7d');if(e)e.textContent=s.code||'·'.repeat(f7Len())},
+  pdoor:v=>{const s=PS.sub,k=+v;if(s.open.includes(k))return;s.cur=k;s.inp='';s.seq=[];beep(420,.08,'square',.06);pSave();pRender();setTimeout(()=>{const e=$('#pdrin');if(e)e.focus()},50)},
+  pdback:()=>{const s=PS.sub;s.cur=-1;s.inp='';s.seq=[];pSave();pRender()},
+  'pdr-go':()=>{const s=PS.sub;const e=$('#pdrin');const v=e?e.value:'';if(!String(v).trim())return;doorTry(v)},
+  'pdn-k':v=>{const s=PS.sub,D=DOORS()[s.cur],L=Math.max(1,String(toLat(splitAns(D.a)[0])).length);if(s.inp.length<L)s.inp+=v;const e=$('#pdnd');if(e)e.textContent=s.inp||'·'.repeat(L);beep(700,.05,'square',.06)},
+  'pdn-del':()=>{const s=PS.sub,D=DOORS()[s.cur],L=Math.max(1,String(toLat(splitAns(D.a)[0])).length);s.inp=s.inp.slice(0,-1);const e=$('#pdnd');if(e)e.textContent=s.inp||'·'.repeat(L)},
+  'pdn-go':()=>{const s=PS.sub;if(!s.inp)return;doorTry(s.inp)},
+  pds:v=>{const s=PS.sub,D=DOORS()[s.cur];const srt=doorNums(D).slice().sort((a,b)=>a-b);const n=+v;
+    if(n===srt[s.seq.length]){s.seq.push(n);beep(600+s.seq.length*60,.08,'triangle',.1);pSave();pRender();if(s.seq.length===srt.length)setTimeout(()=>doorOpen(),250);return}
+    s.seq=[];pSave();pRender();pFail(5)},
+  'pd7-k':v=>{const s=PS.sub,L=DOORS().length;if(s.c7.length<L)s.c7+=v;const e=$('#pd7d');if(e)e.textContent=s.c7||'·'.repeat(L);beep(700,.05,'square',.06)},
+  'pd7-del':()=>{const s=PS.sub,L=DOORS().length;s.c7=s.c7.slice(0,-1);const e=$('#pd7d');if(e)e.textContent=s.c7||'·'.repeat(L)},
+  'pd7-go':()=>{const s=PS.sub;if(s.open.length<DOORS().length)return;
+    if(toLat(s.c7)===toLat(doorsCode())){s.phase='code';s.d7=true;s.code='';sDoor();try{navigator.vibrate&&navigator.vibrate([80,50,160])}catch(e){}pSave();pRender();try{window.scrollTo({top:0,behavior:'smooth'})}catch(e){}return}
+    s.c7='';pSave();pRender();pShake('pd7d');pFail(5)},
+  'pf7-go':()=>{const s=PS.sub,F=CT.f7;if(s.phase!=='code'||s.code.length!==f7Len())return;
     if(!F.h){pToast('⏳ المقدم ما حفظ كلمة السر بعد… نادوه!');sBuzz();return}
     if(hsh(s.code)===F.h){s.ans=s.code;s.phase='done';pGood();pSave();finaleWin();setTimeout(()=>pComplete(0),400);return}
-    s.code='';pSave();pRender();lockTitle='الرقم غير صحيح';lockMsg='فكّوا الرسالة مرة ثانية · انتظروا 5 ثوانٍ';pShake('pf7d');sBuzz();lockUntil=Date.now()+5000},
+    s.code='';pSave();pRender();lockTitle='الشفرة غير صحيحة';lockMsg='ابحثوا مرة ثانية · انتظروا 5 ثوانٍ';pShake('pf7d');sBuzz();lockUntil=Date.now()+5000},
   'pf7-done':()=>{const s=PS.sub;if(s.phase!=='code')return;s.phase='done';finaleWin();setTimeout(()=>pComplete(0),2600)},
   pso:v=>{const s=PS.sub,T=sortSet(s.seed),n=+v;if(T.sorted.slice(0,s.next).includes(n))return;
     if(n===T.sorted[s.next]){s.next++;beep(420+s.next*14,.07,'triangle',.1);try{navigator.vibrate&&navigator.vibrate(20)}catch(e){}
@@ -1845,23 +1925,24 @@ function importCtl(){const rooms=prevRooms();if(!rooms.length&&!impMsg)return ''
    <div class="row">${rooms.map(r=>`<button class="b" data-act="impfrom:${r}">انسخ من ${r}</button>`).join('')}</div>${impMsg?`<p class="note" style="color:var(--t3)">${esc(impMsg)}</p>`:''}</div>`}
 let codesOpen=false;
 let f7D=null,f7Msg='';
-function codesCtl(){const F=CT.f7,ans=F.x?lockDec(F.x):'';if(!f7D)f7D={a:ans,h:F.hint||F7_HINT};
+function codesCtl(){const F=CT.f7,ans=F.x?lockDec(F.x):'';if(!f7D)f7D={a:ans,h:f7Hint()};
   const win=TD.map((t,i)=>({i,r:t.results[6]})).filter(x=>x.r&&x.r.s==='done');
-  return `<div class="sec" style="${F.h?'':'border-color:var(--hot);box-shadow:0 0 0 2px #ff4b3e66'}"><h3>🔐 كلمة سر المهمة 7 (الخزنة) ${F.h?'<span class="pill" style="background:var(--t3);color:var(--ink);border-color:var(--t3)">✓ جاهزة</span>':'<span class="pill" style="background:var(--hot);color:#fff;border-color:var(--hot)">اكتبها قبل السباق</span>'}</h3>
-   <p class="note">آخر 7 أرقام من جوال الجمعية. الفرق يشوفون القفل والتلميح مباشرة، وأول فريق يفتحه يشتغل الختام وإعلان الفائز تلقائيًا.</p>
-   <div class="lkcode"><input id="f7a" value="${esc(f7D.a)}" inputmode="numeric" maxlength="7" placeholder="7 أرقام" aria-label="كلمة السر"><button class="b pri" data-act="f7save">حفظ</button></div>
-   <label class="note" style="display:block;margin-top:8px">التلميح اللي يظهر للفرق:</label><input id="f7h" value="${esc(f7D.h)}" maxlength="160" aria-label="التلميح" style="width:100%;margin-top:4px;background:var(--ink);border:1px solid var(--line);border-radius:12px;padding:12px;color:var(--fg);font:inherit;font-size:15px">
+  return `<div class="sec" style="${F.h?'':'border-color:var(--hot);box-shadow:0 0 0 2px #ff4b3e66'}"><h3>🚪 المهمة 7 · الشفرة النهائية ${F.h?'<span class="pill" style="background:var(--t3);color:var(--ink);border-color:var(--t3)">✓ جاهزة</span>':'<span class="pill" style="background:var(--hot);color:#fff;border-color:var(--hot)">اكتبها قبل السباق</span>'}</h3>
+   <p class="note">الأرقام اللي بتكتبها في المكان. بعد ما يفتح الفريق الأبواب الستة ويدخل رموزها (<b class="num">${esc(doorsCode())}</b>) ينفتح الباب السابع وتظهر لهم رسالتك، ثم يدخلون هذي الشفرة. أول فريق يفتحه يشتغل الختام تلقائيًا.</p>
+   <div class="lkcode"><input id="f7a" value="${esc(f7D.a)}" inputmode="numeric" maxlength="10" placeholder="من 3 إلى 10 أرقام" aria-label="الشفرة النهائية"><button class="b pri" data-act="f7save">حفظ</button></div>
+   <label class="note" style="display:block;margin-top:8px">رسالة الباب السابع (مكان الشفرة):</label><textarea id="f7h" maxlength="220" rows="2" aria-label="رسالة الباب السابع" style="width:100%;margin-top:4px;background:var(--ink);border:1px solid var(--line);border-radius:12px;padding:12px;color:var(--fg);font:inherit;font-size:15px">${esc(f7D.h)}</textarea>
    ${F.h?`<p class="note">المحفوظة الآن: <b class="num" style="color:var(--sig);font-size:18px">${esc(ans)}</b></p>`:''}${f7Msg?`<p class="note" style="color:var(--sig)">${esc(f7Msg)}</p>`:''}
-   ${win.length?`<p class="note" style="color:var(--t3)">🔓 فتح الخزنة: ${win.map(x=>esc(S.teams[x.i].name)).join('، ')}</p>`:''}</div>`}
+   ${win.length?`<p class="note" style="color:var(--t3)">🏆 فتح الباب الأخير: ${win.map(x=>esc(S.teams[x.i].name)).join('، ')}</p>`:''}</div>`}
 function tryCtl(){return `<div class="sec"><h3>🧪 جرّب المهام بنفسك · ما يأثر على الفرق</h3>
   <div class="mchips">${P.map((x,k)=>`<button class="b" data-act="tryopen:${k+1}" title="${esc(x.title)}">${k+1}</button>`).join('')}</div>
   <p class="note">يفتح المهمة على جهازك كأنك فريق: تقدر تجاوب وتجرّب الأقفال والشيفرات، ونتيجتك ما تُحسب ولا تظهر على الشاشة.</p></div>`}
 let EDM={tab:'q30',idx:null,d:null,msg:'',arm:''},edOpen=false;
-const ED_TABS=[['q30','المهمة 1 · الأسئلة'],['clues','المهمة 3 · الأدلة'],['ws','المهمة 4 · الكلمات'],['c4','المهمة 6 · أربع تربح']];
+const ED_TABS=[['q30','المهمة 1 · الأسئلة'],['clues','المهمة 3 · الأدلة'],['ws','المهمة 4 · الكلمات'],['c4','المهمة 6 · أربع تربح'],['doors','المهمة 7 · الأبواب']];
 function f7Draft(){const F=CT.f7,ans=F.x?lockDec(F.x):'';const H=F.hint||'';const rc=()=>String(100000+(crypto.getRandomValues(new Uint32Array(1))[0]%900000));return {msg:F.msg,ans,hint:H,codes:[0,1,2,3].map(i=>(F.cx&&F.cx[i]&&ans)?decB(F.cx[i],ans):rc())}}
 function edStart(tab,idx){EDM.tab=tab;EDM.idx=idx;EDM.msg='';EDM.arm='';
   if(tab==='code4'||tab==='c4')EDM.d=structuredClone(CT[tab]);
   else if(tab==='ws')EDM.d={words:(CT.ws||DEF_CT.ws).join('\n')};
+  else if(tab==='doors')EDM.d=structuredClone(DOORS());
   else if(tab==='f7')EDM.d=f7Draft();
   else if(tab==='vault')EDM.d=structuredClone(CT.vault);
   else if(idx===null)EDM.d=null;
@@ -1869,7 +1950,14 @@ function edStart(tab,idx){EDM.tab=tab;EDM.idx=idx;EDM.msg='';EDM.arm='';
   after()}
 function editorCtl(){
   const tab=EDM.tab;let body='';
-  if(tab==='ws'){if(!EDM.d)EDM.d={words:(CT.ws||DEF_CT.ws).join('\n')};const d=EDM.d;
+  if(tab==='doors'){if(!EDM.d)EDM.d=structuredClone(DOORS());const d=EDM.d;
+    body=`<p class="note">لكل باب: نوعه وسؤاله وإجابته ورمزه (رقم واحد). في الإجابة المكتوبة تقدر تكتب أكثر من إجابة مقبولة بينها فاصلة «،». في «ترتيب» اكتب الأرقام المبعثرة بينها فاصلة.</p>
+      ${d.map((D,k)=>`<div class="lkrow"><b>🚪 الباب ${k+1}</b>
+        <div class="row" style="gap:6px"><input id="ed-di${k}" value="${esc(D.i||'')}" maxlength="4" style="width:60px;text-align:center" aria-label="أيقونة"><input id="ed-dc${k}" value="${esc(D.c||'')}" maxlength="20" placeholder="التصنيف" style="flex:1"><select id="ed-dt${k}">${[['text','كتابة'],['num','رقم'],['sort','ترتيب']].map(([v,l])=>`<option value="${v}" ${D.t===v?'selected':''}>${l}</option>`).join('')}</select></div>
+        <textarea id="ed-dq${k}" rows="2" maxlength="300" placeholder="السؤال أو اللغز">${esc(D.q||'')}</textarea>
+        <div class="row" style="gap:6px"><input id="ed-da${k}" value="${esc(D.a||'')}" maxlength="200" placeholder="الإجابة" style="flex:1"><input id="ed-ds${k}" value="${esc(D.s||'')}" inputmode="numeric" maxlength="1" placeholder="الرمز" style="width:70px;text-align:center"></div></div>`).join('')}
+      <div class="row"><button class="b pri" data-act="ed-savedoors">احفظ الأبواب</button></div>`}
+  else if(tab==='ws'){if(!EDM.d)EDM.d={words:(CT.ws||DEF_CT.ws).join('\n')};const d=EDM.d;
     body=`<label class="edl">الكلمات المخفية · كلمة في كل سطر (من 4 إلى 14 كلمة، كل كلمة من 2 إلى 10 حروف)<textarea id="ed-words" rows="10" maxlength="400">${esc(d.words)}</textarea></label>
       <div class="row"><button class="b pri" data-act="ed-savews">احفظ الكلمات</button></div>`}
   else if(tab==='f7'){if(!EDM.d)EDM.d=f7Draft();const d=EDM.d;
@@ -1907,8 +1995,17 @@ function saveCT(){CT=structuredClone(CT);try{localStorage.setItem(SK('ct'),JSON.
 function edArm(k){EDM.arm=k;after();setTimeout(()=>{if(EDM.arm===k){EDM.arm='';after()}},3500)}
 const EDACT={
   impfrom:v=>importFrom(String(v).replace(/[^A-Z0-9]/g,'')),
-  f7save:()=>{const a=toLat(f7D&&f7D.a||'');if(a.length!==7){f7Msg='كلمة السر لازم تكون 7 أرقام بالضبط.';after();return}
-    CT.f7={...CT.f7,hint:String(f7D.h||'').trim()||F7_HINT,h:hsh(a),x:lockEnc(a)};saveCT();f7D=null;f7Msg='✓ تم حفظ كلمة السر';after()},
+  f7save:()=>{const a=toLat(f7D&&f7D.a||'');if(a.length<3||a.length>10){f7Msg='الشفرة النهائية لازم تكون من 3 إلى 10 أرقام.';after();return}
+    CT.f7={...CT.f7,hint:String(f7D.h||'').trim()||F7_HINT,h:hsh(a),x:lockEnc(a),n:a.length};saveCT();f7D=null;f7Msg='✓ تم حفظ الشفرة النهائية';after()},
+  'ed-savedoors':()=>{const d=EDM.d;if(!Array.isArray(d))return;
+    d.forEach((D,k)=>{const sel=$('#ed-dt'+k);if(sel)D.t=sel.value});
+    for(let k=0;k<d.length;k++){const D=d[k];
+      if(!String(D.q||'').trim()){EDM.msg=`اكتب سؤال الباب ${k+1}.`;after();return}
+      if(!/^\d$/.test(String(D.s||''))){EDM.msg=`رمز الباب ${k+1} لازم يكون رقم واحد.`;after();return}
+      if(D.t==='num'&&!toLat(splitAns(D.a)[0])){EDM.msg=`إجابة الباب ${k+1} لازم تكون رقم.`;after();return}
+      if(D.t==='sort'&&doorNums(D).length<3){EDM.msg=`اكتب 3 أرقام على الأقل للباب ${k+1}.`;after();return}
+      if(D.t==='text'&&!splitAns(D.a).length){EDM.msg=`اكتب إجابة الباب ${k+1}.`;after();return}}
+    CT.doors=structuredClone(d);saveCT();EDM.d=structuredClone(CT.doors);EDM.msg='✓ تم حفظ الأبواب · رموز الباب السابع: '+doorsCode();after()},
   'ed-savews':()=>{const d=EDM.d;if(!d)return;const W=String(d.words||'').split(/\n+/).map(wsClean).filter(Boolean);
     if(W.length<4||W.length>14){EDM.msg='اكتب من 4 إلى 14 كلمة.';after();return}
     if(W.some(w=>[...w].length<2||[...w].length>10)){EDM.msg='كل كلمة لازم تكون من 2 إلى 10 حروف.';after();return}
@@ -1942,12 +2039,12 @@ const EDACT={
     saveCT();EDM.d=null;EDM.msg='✓ تم الحفظ';after()},
   'ed-def':()=>{if(EDM.arm!=='def'){edArm('def');return}EDM.arm='';CT=structuredClone(DEF_CT);saveCT();edStart(EDM.tab,null);EDM.msg='✓ رجع المحتوى الأصلي';after()}
 };
-document.addEventListener('input',e=>{const id=e.target&&e.target.id||'';if((id==='f7a'||id==='f7h')&&f7D){if(id==='f7a'){e.target.value=toLat(e.target.value).slice(0,7);f7D.a=e.target.value}else f7D.h=e.target.value;return}});
+document.addEventListener('input',e=>{const id=e.target&&e.target.id||'';if((id==='f7a'||id==='f7h')&&f7D){if(id==='f7a'){e.target.value=toLat(e.target.value).slice(0,10);f7D.a=e.target.value}else f7D.h=e.target.value;return}});
 document.addEventListener('input',e=>{const id=e.target&&e.target.id||'';if(!id.startsWith('ed-')||!EDM.d)return;const v=e.target.value,d=EDM.d;
   if(id==='ed-q')d.q=v;else if(id==='ed-t')d.t=v;else if(id==='ed-d'){e.target.value=toLat(v).slice(0,1);d.d=e.target.value}
   else if(/^ed-o\d$/.test(id))d.o[+id[4]]=v;
   else if(id==='ed-code'){e.target.value=toLat(v);d.code=e.target.value}else if(id==='ed-hint')d.hint=v;
-  else if(id==='ed-f7hint')d.hint=v;else if(id==='ed-words')d.words=v;else if(id==='ed-msg')d.msg=v;else if(id==='ed-ans'){e.target.value=toLat(v).slice(0,7);d.ans=e.target.value}else if(/^ed-rc\d$/.test(id))d.codes[+id[5]]=v;
+  else if(id==='ed-f7hint')d.hint=v;else if(id==='ed-words')d.words=v;else if(/^ed-d[icqas]\d$/.test(id)&&Array.isArray(d)){const k=+id.slice(5),f=id[4];if(d[k]){if(f==='s'){e.target.value=toLat(v).slice(0,1);d[k].s=e.target.value}else d[k]={i:'i',c:'c',q:'q',a:'a'}[f]?Object.assign(d[k],{[f]:v}):d[k]}}else if(id==='ed-msg')d.msg=v;else if(id==='ed-ans'){e.target.value=toLat(v).slice(0,7);d.ans=e.target.value}else if(/^ed-rc\d$/.test(id))d.codes[+id[5]]=v;
   else if(id==='ed-a1'){e.target.value=toLat(v);d.a1=e.target.value}else if(id==='ed-q1')d.q1=v;else if(id==='ed-q2')d.q2=v;else if(id==='ed-shown')d.shown=v;else if(id==='ed-a2')d.a2=v});
 
 /* ================= ACTIONS ================= */
