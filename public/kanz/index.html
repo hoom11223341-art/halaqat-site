@@ -1,0 +1,647 @@
+<!doctype html>
+<html lang="ar" dir="rtl"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>رحلة الكنز · جزر المغامرة</title>
+<meta name="theme-color" content="#06324a">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lalezar&family=IBM+Plex+Sans+Arabic:wght@400;700&display=swap">
+<style>
+:root{--sea1:#04263a;--sea2:#0a4c6e;--sea3:#1584a8;--sand:#f6d98f;--sand2:#e8b95c;--gold:#ffcc33;--coral:#ff6b6b;--leaf:#34c26b;--ink:#062234;--card:#0c3a55;--line:#1f6a8c;--fg:#f3fbff;--mute:#9cc7da;
+ --t0:#ff5a5f;--t1:#2fb8ff;--t2:#ffc93c;--t3:#3ee08f}
+*{box-sizing:border-box}
+html,body{margin:0;min-height:100%;background:radial-gradient(120% 80% at 50% 0%,#0d5b82 0%,var(--sea1) 70%) fixed;color:var(--fg);font-family:'IBM Plex Sans Arabic',system-ui,sans-serif;-webkit-tap-highlight-color:transparent}
+button{font:inherit;color:inherit;cursor:pointer}
+input,textarea{font:inherit}
+.disp{font-family:Lalezar,'IBM Plex Sans Arabic',sans-serif;font-weight:400;letter-spacing:0}
+.num{font-variant-numeric:tabular-nums;direction:ltr;unicode-bidi:isolate}
+.wrap{max-width:720px;margin:0 auto;padding:14px}
+.b{background:#0f4566;border:2px solid #2c7ea3;border-radius:14px;padding:10px 16px;font-weight:700;font-size:16px;transition:transform .08s,background .15s}
+.b:active{transform:scale(.96)}
+.b.pri{background:linear-gradient(180deg,#ffd84d,#f2a91a);border-color:#ffe28a;color:#3a2200}
+.b.hot{background:#b8323a;border-color:#ff7b82}
+.b.ok{background:#1d8a52;border-color:#5fe39c}
+.b.sm{padding:6px 10px;font-size:14px;border-radius:10px}
+.b:disabled{opacity:.45;cursor:not-allowed}
+.card{background:linear-gradient(165deg,#0f4767,#0a3149);border:2px solid var(--line);border-radius:22px;padding:18px;box-shadow:0 12px 30px #0006,inset 0 1px 0 #ffffff14}
+.note{color:var(--mute);font-size:14px;margin:6px 0}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.hidden{display:none!important}
+/* ---------- landing ---------- */
+.land{min-height:100vh;display:grid;place-items:center;padding:20px}
+.land .card{max-width:560px;width:100%;text-align:center}
+.land h1{font-size:clamp(40px,9vw,72px);margin:4px 0;color:var(--gold);text-shadow:0 4px 0 #8a5200,0 10px 24px #0008}
+.land .sub{font-size:18px;color:#d7f0fb}
+.land .opts{display:grid;gap:14px;margin-top:18px}
+.land input{width:100%;background:var(--ink);border:2px solid var(--line);border-radius:14px;padding:14px;color:var(--fg);font-size:22px;text-align:center;direction:ltr;text-transform:uppercase;letter-spacing:.2em}
+.bigemoji{font-size:64px;line-height:1;filter:drop-shadow(0 6px 10px #0007)}
+/* ---------- map ---------- */
+.map{width:100%;height:auto;display:block;border-radius:24px;border:3px solid #2a89b0;box-shadow:0 16px 40px #0008;background:#0b5a80}
+.ship{transition:transform 2.2s cubic-bezier(.45,.05,.3,1)}
+.bob{animation:bob 2.6s ease-in-out infinite}
+@keyframes bob{0%,100%{transform:translateY(0) rotate(-2deg)}50%{transform:translateY(-5px) rotate(2deg)}}
+.wave{animation:wv 6s linear infinite}
+@keyframes wv{from{transform:translateX(0)}to{transform:translateX(-80px)}}
+.isl-cur .isl-ring{animation:ring 1.6s ease-out infinite;transform-box:fill-box;transform-origin:center}
+@keyframes ring{0%{opacity:.9;transform:scale(.8)}100%{opacity:0;transform:scale(1.5)}}
+/* ---------- host ---------- */
+.host{padding:16px;display:grid;gap:14px;max-width:1600px;margin:0 auto}
+.hbar{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.hbar h1{margin:0;font-size:clamp(28px,3.2vw,48px);color:var(--gold);text-shadow:0 3px 0 #8a5200}
+.chip{background:#0a3a55;border:2px solid var(--line);border-radius:999px;padding:6px 14px;font-weight:700}
+.conn::before{content:'●';margin-inline-end:6px;color:#f5b041}
+.conn.ok::before{color:#4ce38a}.conn.bad::before{color:#ff5a5f}
+.hgrid{display:grid;grid-template-columns:minmax(0,1fr) 360px;gap:16px;align-items:start}
+@media(max-width:1000px){.hgrid{grid-template-columns:1fr}}
+.side{display:grid;gap:12px}
+.tcard{display:grid;grid-template-columns:52px 1fr auto;gap:10px;align-items:center;padding:12px 14px;border-radius:18px;background:#0b3550;border:2px solid var(--line);position:relative;overflow:hidden}
+.tcard::before{content:'';position:absolute;inset:0 auto 0 0;width:6px;background:var(--c)}
+.tcard .em{font-size:34px;text-align:center}
+.tcard .nm{font-weight:700;font-size:19px}
+.tcard .st{color:var(--mute);font-size:13px}
+.tcard .sc{font-family:Lalezar;font-size:34px;color:var(--gold)}
+.tcard .rk{position:absolute;top:6px;left:10px;font-size:12px;color:var(--mute)}
+.tcard .tm{font-size:13px;color:#ffe08a}
+.qrbox{display:grid;place-items:center;gap:8px;text-align:center}
+.qrbox #qr{background:#fff;padding:10px;border-radius:14px}
+.drawer{position:fixed;inset:0 auto 0 0;width:min(460px,100vw);background:#072a3f;border-inline-start:2px solid var(--line);z-index:50;overflow:auto;padding:16px;box-shadow:0 0 40px #000a;transform:translateX(-105%);transition:transform .25s}
+.drawer.on{transform:none}
+.sec{background:#0b3550;border:2px solid var(--line);border-radius:16px;padding:14px;margin-bottom:12px}
+.sec h3{margin:0 0 10px;font-size:17px}
+.sec input,.sec textarea{background:var(--ink);border:2px solid var(--line);border-radius:10px;padding:8px 10px;color:var(--fg);width:100%}
+.names{display:grid;gap:8px}
+.names label{display:grid;grid-template-columns:34px 1fr;align-items:center;gap:8px}
+.lk{display:grid;grid-template-columns:40px 110px 1fr;gap:6px;align-items:center;margin-bottom:6px}
+.lk input.c{direction:ltr;text-align:center;letter-spacing:.15em}
+.adj{display:grid;grid-template-columns:1fr auto auto;gap:6px;align-items:center;margin-bottom:6px}
+.linkbox{direction:ltr;font-size:12px;background:var(--ink);border:1px dashed var(--line);border-radius:8px;padding:6px;word-break:break-all;margin:6px 0}
+/* finale */
+.fin{position:fixed;inset:0;z-index:40;background:radial-gradient(circle at 50% 30%,#1a6f94ee,#031b2aee);display:grid;place-items:center;padding:20px;text-align:center}
+.fin h2{font-size:clamp(34px,4.6vw,68px);line-height:1.3;margin:0;color:var(--gold);text-shadow:0 5px 0 #8a5200}
+.podium{display:flex;align-items:flex-end;justify-content:center;gap:16px;margin-top:20px;flex-wrap:wrap}
+.pod{width:min(220px,40vw);border-radius:20px 20px 8px 8px;padding:14px;background:#0c3a55;border:3px solid var(--c);display:grid;gap:6px;justify-items:center}
+.pod .em{font-size:54px}.pod .nm{font-size:22px;font-weight:700}.pod .sc{font-family:Lalezar;font-size:44px;color:var(--gold)}
+.pod.p1{transform:translateY(-30px);box-shadow:0 0 50px #ffcc3388}
+.chest{font-size:110px;animation:pulse 1.4s ease-in-out infinite}
+@keyframes pulse{50%{transform:scale(1.08) rotate(-3deg)}}
+#confetti{position:fixed;inset:0;pointer-events:none;z-index:60}
+/* ---------- team ---------- */
+.phead{position:sticky;top:0;z-index:10;background:linear-gradient(180deg,#05293dee,#05293dcc);backdrop-filter:blur(6px);padding:10px 14px;border-bottom:2px solid var(--line)}
+.phead .r1{display:flex;align-items:center;gap:10px;justify-content:space-between}
+.phead .tn{font-weight:700;font-size:18px;display:flex;align-items:center;gap:6px}
+.phead .pts{font-family:Lalezar;font-size:26px;color:var(--gold)}
+.phead .clk{font-family:Lalezar;font-size:26px;background:#0a3a55;border-radius:12px;padding:0 12px;border:2px solid var(--line)}
+.phead .clk.low{color:#ff7b82;border-color:#ff7b82;animation:pulse .8s infinite}
+.steps{display:flex;gap:6px;margin-top:8px;justify-content:center}
+.steps i{font-style:normal;width:36px;height:36px;border-radius:50%;display:grid;place-items:center;background:#0a3a55;border:2px solid var(--line);font-size:17px}
+.steps i.d{background:#1d8a52;border-color:#5fe39c}.steps i.x{background:#6b2a30;border-color:#ff7b82}.steps i.n{border-color:var(--gold);box-shadow:0 0 0 3px #ffcc3344}
+.pmain{display:grid;gap:14px;padding:14px;max-width:720px;margin:0 auto}
+.ititle{display:flex;align-items:center;gap:12px}
+.ititle .ic{font-size:48px}
+.ititle h2{margin:0;font-size:32px;color:var(--gold)}
+.ititle small{color:var(--mute);display:block}
+.intro{font-size:18px;line-height:1.7}
+.bigbtn{width:100%;font-size:24px;padding:16px;border-radius:18px}
+.sailing{text-align:center;padding:30px 10px}
+.sailing .bigemoji{font-size:90px;animation:sail 1.2s ease-in-out infinite}
+@keyframes sail{0%,100%{transform:translateX(10px) rotate(-4deg)}50%{transform:translateX(-10px) rotate(4deg)}}
+.opts2{display:grid;gap:10px;grid-template-columns:1fr 1fr}
+.opt{background:#0f4566;border:2px solid #2c7ea3;border-radius:16px;padding:16px 10px;font-size:20px;font-weight:700;min-height:64px}
+.opt.bad{background:#7a2a31;border-color:#ff7b82}
+.qtxt{font-size:24px;font-weight:700;line-height:1.5;margin:8px 0 14px;text-align:center}
+.prog{height:12px;border-radius:999px;background:#0a3a55;overflow:hidden;border:1px solid var(--line)}
+.prog i{display:block;height:100%;background:linear-gradient(90deg,var(--gold),#ff9d2e);transition:width .3s}
+.ctr{display:flex;justify-content:space-between;color:var(--mute);font-size:14px;margin-bottom:6px}
+/* memory */
+.mem{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.mc{aspect-ratio:1;border-radius:14px;border:2px solid #2c7ea3;background:repeating-linear-gradient(45deg,#0f4c6e 0 10px,#0d4362 10px 20px);font-size:clamp(28px,9vw,44px);display:grid;place-items:center;transition:transform .2s}
+.mc span{opacity:0;transition:opacity .15s}
+.mc.up{background:#f6e7bf;border-color:var(--sand2);transform:rotateY(0)}
+.mc.up span{opacity:1}
+.mc.ok{background:#bdf3d2;border-color:#3ee08f}
+/* twin */
+.tw-orig{display:flex;justify-content:center;gap:16px;align-items:center}
+.twc{aspect-ratio:1;border-radius:14px;border:3px solid transparent;position:relative;padding:0;overflow:hidden}
+.twc .e{position:absolute;font-size:var(--fs,26px);transform:translate(50%,-50%);line-height:1}
+.twg{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.twc.bad{border-color:#ff5a5f}
+/* tap */
+.tapg{display:grid;grid-template-columns:repeat(5,1fr);gap:8px}
+.tap{aspect-ratio:1;border-radius:50%;background:radial-gradient(circle at 35% 30%,#fff7d6,#f2c75c 60%,#c48a1f);border:3px solid #ffe7a1;color:#4a2b00;font-family:Lalezar;font-size:clamp(22px,7vw,34px);display:grid;place-items:center}
+.tap.hit{visibility:hidden}
+.tap.bad{background:#ff7b82}
+/* word search */
+.wsg{display:grid;gap:4px;direction:rtl}
+.wsc{aspect-ratio:1;border-radius:10px;background:#f6e7bf;color:#3b2a10;font-weight:700;font-size:clamp(20px,6vw,30px);border:2px solid #d8b46a;display:grid;place-items:center;padding:0}
+.wsc.sel{background:var(--gold);border-color:#fff}
+.wsc.f{background:#8ee6b3;border-color:#2fbf6f}
+.wsw{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-bottom:10px}
+.wsw span{padding:6px 12px;border-radius:999px;background:#0a3a55;border:2px solid var(--line);font-weight:700}
+.wsw span.f{background:#1d8a52;border-color:#5fe39c;text-decoration:line-through}
+/* keypad */
+.disp7{font-family:Lalezar;font-size:44px;text-align:center;letter-spacing:.3em;background:var(--ink);border:3px solid var(--sand2);border-radius:16px;padding:8px;direction:ltr;min-height:76px}
+.keypad{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;direction:ltr}
+.keypad .b{font-size:26px;padding:14px}
+.reward{text-align:center}
+.reward .coin{font-family:Lalezar;font-size:64px;color:var(--gold);text-shadow:0 4px 0 #8a5200}
+.mappiece{margin:14px auto;max-width:320px;background:linear-gradient(135deg,#f6e2b3,#e2bd78);color:#4a2b00;border-radius:12px;padding:16px;border:3px dashed #8a5a1e;transform:rotate(-2deg);box-shadow:0 10px 24px #0007}
+.mappiece b{font-family:Lalezar;font-size:72px;display:block;line-height:1}
+.frz{position:fixed;inset:0;z-index:30;background:#3a0b10cc;display:grid;place-items:center;text-align:center;font-size:22px}
+.frz b{font-family:Lalezar;font-size:110px;display:block;color:#ffb3b8}
+.hintmap{display:flex;gap:6px;justify-content:center;direction:ltr;margin-top:8px}
+.hintmap span{width:40px;height:48px;border-radius:8px;background:#f6e2b3;color:#4a2b00;font-family:Lalezar;font-size:30px;display:grid;place-items:center}
+.pick{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.pick button{border-radius:20px;padding:18px 8px;border:3px solid var(--c);background:#0b3550;display:grid;gap:4px;justify-items:center}
+.pick .em{font-size:48px}
+.pick .nm{font-size:20px;font-weight:700}
+.pick button.taken{opacity:.5}
+.trybar{background:#5a3d00;border-bottom:2px solid var(--gold);padding:8px 12px;display:flex;flex-wrap:wrap;gap:6px;align-items:center;justify-content:center}
+.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:#062234;border:2px solid var(--gold);padding:10px 18px;border-radius:14px;z-index:70;font-weight:700}
+@media print{body *{visibility:hidden}}
+</style>
+<script src="https://unpkg.com/mqtt@5.10.1/dist/mqtt.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+</head><body>
+<div id="app"></div>
+<canvas id="confetti" hidden></canvas>
+<script>
+/* ======================= CONTENT ======================= */
+const TEAMS=[{n:'القرش',e:'🦈'},{n:'الدلفين',e:'🐬'},{n:'الأخطبوط',e:'🐙'},{n:'السلحفاة',e:'🐢'}];
+const TC=['var(--t0)','var(--t1)','var(--t2)','var(--t3)'];
+const TCH=['#ff5a5f','#2fb8ff','#ffc93c','#3ee08f'];
+const RANK_PTS=[100,70,50,30];
+const ISL=[
+ {k:'quiz',  n:'جزيرة الأسئلة', ic:'❓',dur:240,intro:'أجيبوا عن 8 أسئلة سهلة واحدًا بعد الآخر. الإجابة الخاطئة توقف سفينتكم 3 ثوانٍ!'},
+ {k:'memory',n:'جزيرة الذاكرة', ic:'🃏',dur:240,intro:'اقلبوا البطاقات بطاقتين بطاقتين، وطابقوا كل صورتين متشابهتين حتى تكتشفوا الأزواج الثمانية.'},
+ {k:'twin',  n:'جزيرة العين الذكية',ic:'🔍',dur:240,intro:'في كل جولة صورة أصلية، ابحثوا عن نسختها المطابقة تمامًا بين 9 صور. 3 جولات، والخطأ يوقفكم 3 ثوانٍ.'},
+ {k:'tap',   n:'جزيرة الأرقام', ic:'🔢',dur:180,intro:'اضغطوا العملات الذهبية بالترتيب من 1 إلى 20 بأسرع ما تقدرون!'},
+ {k:'words', n:'جزيرة الكلمات', ic:'🔤',dur:300,intro:'5 كلمات بحرية مخبأة بين الحروف (أفقية أو عمودية). اضغطوا أول حرف في الكلمة ثم آخر حرف.'},
+ {k:'riddle',n:'جزيرة الألغاز', ic:'🧩',dur:240,intro:'5 ألغاز ممتعة! فكروا جيدًا واختاروا الإجابة الصحيحة.'},
+ {k:'chest', n:'جزيرة الكنز',   ic:'💰',dur:240,intro:'وصلتم إلى جزيرة الكنز! أدخلوا الأرقام الستة التي جمعتموها من الجزر بالترتيب لفتح الصندوق. النقاط هنا مضاعفة!'}];
+const QUIZ=[
+ {q:'كم رِجلًا للعنكبوت؟',o:['4','6','8','10'],a:2},
+ {q:'كم عدد أيام الأسبوع؟',o:['5','6','7','8'],a:2},
+ {q:'أي هذه الحيوانات يعيش في البحر؟',o:['الجمل','الحوت','الأسد','الحصان'],a:1},
+ {q:'كم يساوي 5 + 3 ؟',o:['7','8','9','10'],a:1},
+ {q:'ما عاصمة المملكة العربية السعودية؟',o:['جدة','الدمام','الرياض','مكة'],a:2},
+ {q:'كم عدد أركان الإسلام؟',o:['3','4','5','6'],a:2},
+ {q:'ما الكوكب الذي نعيش عليه؟',o:['المريخ','الأرض','القمر','زحل'],a:1},
+ {q:'كم شهرًا في السنة؟',o:['10','11','12','13'],a:2},
+ {q:'كم يساوي 10 − 4 ؟',o:['5','6','7','4'],a:1},
+ {q:'أي حيوان يُلقّب بسفينة الصحراء؟',o:['الفيل','الحصان','الجمل','الزرافة'],a:2},
+ {q:'ماذا تصنع النحلة؟',o:['الحليب','العسل','الحرير','الخبز'],a:1},
+ {q:'كم ضلعًا للمثلث؟',o:['3','4','5','6'],a:0},
+ {q:'كم يساوي 3 × 4 ؟',o:['7','10','12','14'],a:2},
+ {q:'ما لون العلم السعودي؟',o:['أحمر','أزرق','أخضر','أصفر'],a:2},
+ {q:'في أي فصل يكون الجو أشد حرارة؟',o:['الشتاء','الصيف','الربيع','الخريف'],a:1},
+ {q:'ما الذي يحتاجه النبات لينمو؟',o:['الماء والشمس','الحلوى','الرمل فقط','الظلام'],a:0},
+ {q:'كم عدد ألوان قوس المطر تقريبًا؟',o:['3','5','7','10'],a:2},
+ {q:'ما صغير القطة؟',o:['جرو','هريرة','مهر','شبل'],a:1}];
+const RIDDLES=[
+ {q:'له أسنان كثيرة لكنه لا يعضّ. ما هو؟',o:['المشط','التمساح','المنشار الكهربائي','الكلب'],a:0},
+ {q:'له عين واحدة لكنه لا يرى. ما هو؟',o:['القرصان','الإبرة','الكاميرا','الحوت'],a:1},
+ {q:'يمشي بلا أرجل ويبكي بلا عيون. ما هو؟',o:['الماء','السحاب','الريح','الدودة'],a:1},
+ {q:'بيت ليس له أبواب ولا نوافذ. ما هو؟',o:['الخيمة','الكهف','البيضة','الصندوق'],a:2},
+ {q:'يكتب ولا يقرأ أبدًا. ما هو؟',o:['القلم','المعلم','الدفتر','الحاسوب'],a:0},
+ {q:'حيوان يحمل بيته على ظهره أينما ذهب. ما هو؟',o:['الجمل','السلحفاة','الأرنب','القرد'],a:1},
+ {q:'كلما أخذتَ منه كَبُر. ما هو؟',o:['الحفرة','الكعكة','البالون','الشجرة'],a:0},
+ {q:'شيء تراه في الماء ولا يبتل أبدًا. ما هو؟',o:['السمكة','الصخرة','ظلّك / صورتك','المظلة'],a:2}];
+const MEM_E=['🐠','🐙','🦀','🐬','🐳','🐚','⚓','🏝️'];
+const TW_E=['🐠','🐙','🦀','🐬','🐳','🐚','⭐','🌴','⚓','💎','🦜','🍉'];
+const TW_BG=['#2b8fbd','#e9b44c','#53b77a','#c86fd6','#ef7d6b'];
+const WS_WORDS=['كنز','بحر','سفينة','جزيرة','شراع'];
+const WS_FILL='ابتثجحخدذرزسشصضطظعغفقكلمنهوي';
+const WS_N=7;
+
+/* ======================= UTIL ======================= */
+const $=s=>document.querySelector(s);
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const hsh=x=>{let h=5381;for(const c of String(x))h=((h<<5)+h+c.charCodeAt(0))|0;return (h>>>0)};
+function mulb(a){return function(){a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
+const shufR=(r,a)=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(r()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
+const rid=()=>Math.random().toString(36).slice(2,10);
+const fmt=ms=>{const s=Math.max(0,Math.ceil(ms/1000));return String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0')};
+const toLat=x=>String(x||'').replace(/[٠-٩]/g,d=>'٠١٢٣٤٥٦٧٨٩'.indexOf(d)).replace(/\D/g,'');
+function toast(t){const d=document.createElement('div');d.className='toast';d.textContent=t;document.body.appendChild(d);setTimeout(()=>d.remove(),2200)}
+const LS={get(k,d){try{const v=localStorage.getItem(k);return v==null?d:JSON.parse(v)}catch(e){return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}},del(k){try{localStorage.removeItem(k)}catch(e){}}};
+
+/* ======================= ROUTING ======================= */
+const QS=new URLSearchParams(location.search);
+const ROOM=(QS.get('r')||'').toUpperCase().replace(/[^A-Z0-9]/g,'').slice(0,8);
+let HK=(QS.get('k')||'').replace(/[^A-Za-z0-9]/g,'');
+if(ROOM&&!HK&&QS.get('host')==='1')HK=LS.get('kz-hk-'+ROOM,'');
+const TRY=!!ROOM&&QS.get('try')==='1';
+let IS_HOST=!!ROOM&&!!HK&&!TRY;
+if(IS_HOST)LS.set('kz-hk-'+ROOM,HK);
+const CID=rid();
+let DEV=LS.get('kz-dev','');if(!DEV){DEV='d'+rid();LS.set('kz-dev',DEV)}
+const SK=k=>'kz-'+k+'-'+ROOM;
+
+/* ======================= STATE ======================= */
+const freshG=()=>({v:1,raceOn:false,names:TEAMS.map(t=>t.n),bonus:[0,0,0,0],locks:ISL.map(()=>({c:'',h:''})),view:'map',run:rid(),hk:0,sentAt:0});
+const freshT=run=>({v:1,dev:'',run:run||'',isl:0,st:0,sr:'',res:[null,null,null,null,null,null,null],unl:[0,0,0,0,0,0,0],rev:0,sentAt:0});
+let G=LS.get(SK('g'),null)||freshG();
+let TD=LS.get(SK('t'),null)||[0,1,2,3].map(()=>freshT(G.run));
+let gotG=!!LS.get(SK('g'),null);
+let conn='wait';
+let MYT=TRY?0:LS.get(SK('myt'),null);
+
+const teamName=i=>(G.names&&G.names[i])||TEAMS[i].n;
+const total=i=>TD[i].res.reduce((s,r)=>s+(r?r.pts:0),0)+((G.bonus&&G.bonus[i])||0);
+const durOf=k=>ISL[Math.min(k,6)].dur*1000;
+const remOf=i=>{const t=TD[i];if(!t.st)return durOf(t.isl);return Math.max(0,t.st+durOf(t.isl)-Date.now())};
+const doneAll=i=>TD[i].isl>=7;
+const digitsFor=i=>{const r=mulb(hsh(ROOM+'|digits|'+i+'|'+G.run));return [0,1,2,3,4,5].map(()=>1+Math.floor(r()*9))};
+
+/* ======================= NETWORK ======================= */
+const BROKERS=['wss://broker.emqx.io:8084/mqtt','wss://broker.hivemq.com:8884/mqtt'];
+const TOP=k=>'kanz-islands/v1/'+ROOM+'/'+k;
+let MC=null;
+function pub(k,obj){try{if(MC&&MC.connected){MC.publish(TOP(k),JSON.stringify(obj),{qos:1,retain:true});return true}}catch(e){}return false}
+let BC=null;try{BC=new BroadcastChannel('kz-'+ROOM)}catch(e){}
+if(BC)BC.onmessage=e=>onMsg(e.data.k,e.data.d,true);
+function send(k,d){if(TRY)return;pub(k,d);try{BC&&BC.postMessage({k,d})}catch(e){}}
+function saveLocal(){if(TRY)return;LS.set(SK('g'),G);LS.set(SK('t'),TD)}
+function onMsg(k,d,local){
+  if(!d||d.v!==1)return;
+  if(k==='g'){
+    if(IS_HOST&&d.hk&&d.hk!==hsh(HK)){IS_HOST=false;toast('رابط المقدم غير صحيح لهذه الغرفة');}
+    if(d.sentAt<=G.sentAt&&gotG)return;
+    G=d;gotG=true;
+    TD=TD.map(t=>t.run===G.run?t:freshT(G.run));
+  }else if(/^t[0-3]$/.test(k)){
+    if(TRY)return;
+    const i=+k[1],cur=TD[i];
+    if((d.rev||0)<(cur.rev||0)||((d.rev||0)===(cur.rev||0)&&d.sentAt<=cur.sentAt)){
+      if((d.rev||0)<(cur.rev||0)&&(mine(i)||IS_HOST)&&!local)setTimeout(()=>pub('t'+i,TD[i]),300);
+      return}
+    TD[i]=d;
+  }
+  saveLocal();soon();
+}
+function initNet(bi){
+  bi=bi||0;if(!ROOM||TRY)return;
+  if(!window.mqtt){conn='bad';paintConn();return}
+  conn='wait';paintConn();let ok=false,c;
+  try{c=mqtt.connect(BROKERS[bi],{clientId:'kz_'+CID+'_'+bi,clean:true,keepalive:30,reconnectPeriod:2500,connectTimeout:8000})}catch(e){if(bi+1<BROKERS.length)initNet(bi+1);return}
+  MC=c;
+  const fail=setTimeout(()=>{if(!ok&&bi+1<BROKERS.length){try{c.end(true)}catch(e){}initNet(bi+1)}},9000);
+  c.on('connect',()=>{ok=true;clearTimeout(fail);conn='ok';paintConn();
+    c.subscribe([TOP('g'),TOP('t0'),TOP('t1'),TOP('t2'),TOP('t3')],{qos:1});
+    setTimeout(()=>{
+      if(IS_HOST&&!G.sentAt){commitG(n=>n)}
+      if(MYT!=null&&mine(MYT)&&TD[MYT].sentAt)pub('t'+MYT,TD[MYT]);
+    },1500)});
+  c.on('reconnect',()=>{conn='wait';paintConn()});
+  c.on('offline',()=>{conn='bad';paintConn()});
+  c.on('message',(topic,buf)=>{let d;try{d=JSON.parse(String(buf))}catch(e){return}onMsg(topic.slice(topic.lastIndexOf('/')+1),d)});
+}
+function paintConn(){document.querySelectorAll('.conn').forEach(el=>{el.className='conn chip '+(conn==='ok'?'ok':conn==='bad'?'bad':'');el.textContent=conn==='ok'?'متصل':conn==='bad'?'غير متصل':'جارٍ الاتصال…'})}
+function commitG(fn){if(!IS_HOST)return;const n=structuredClone(G);if(fn(n)===false)return;n.hk=hsh(HK);n.sentAt=Date.now();G=n;gotG=true;saveLocal();send('g',G);soon()}
+function commitT(i,fn){const n=structuredClone(TD[i]);if(fn(n)===false)return;n.rev=(n.rev||0)+1;n.sentAt=Date.now();TD[i]=n;saveLocal();send('t'+i,n);soon()}
+const mine=i=>TRY?i===0:(TD[i]&&TD[i].dev===DEV);
+
+/* ======================= SOUND ======================= */
+let AC=null;
+function initAudio(){if(AC)return;try{AC=new (window.AudioContext||window.webkitAudioContext)()}catch(e){}}
+function beep(f,d,type,vol,when){if(!AC)return;const t=AC.currentTime+(when||0);const o=AC.createOscillator(),g=AC.createGain();o.type=type||'sine';o.frequency.setValueAtTime(f,t);g.gain.setValueAtTime(vol||.12,t);g.gain.exponentialRampToValueAtTime(.0001,t+d);o.connect(g);g.connect(AC.destination);o.start(t);o.stop(t+d+.02)}
+const sOk=()=>{beep(660,.12,'triangle',.15);beep(990,.18,'triangle',.12,.08)};
+const sBad=()=>{beep(180,.35,'sawtooth',.12)};
+const sWin=()=>[523,659,784,1047,1319].forEach((f,i)=>beep(f,.35,'triangle',.16,i*.1));
+const sSail=()=>[300,380,460].forEach((f,i)=>beep(f,.3,'sine',.08,i*.08));
+const sTick=()=>beep(1046,.07,'square',.05);
+
+/* ======================= MAP ======================= */
+const NODES=[[880,548],[745,465],[575,505],[405,440],[225,470],[110,320],[300,240],[575,150]];
+function pathD(){const p=NODES;let d=`M${p[0][0]} ${p[0][1]}`;for(let i=0;i<p.length-1;i++){const a=p[Math.max(0,i-1)],b=p[i],c=p[i+1],e=p[Math.min(p.length-1,i+2)];const c1=[b[0]+(c[0]-a[0])/6,b[1]+(c[1]-a[1])/6],c2=[c[0]-(e[0]-b[0])/6,c[1]-(e[1]-b[1])/6];d+=` C${c1[0].toFixed(1)} ${c1[1].toFixed(1)} ${c2[0].toFixed(1)} ${c2[1].toFixed(1)} ${c[0]} ${c[1]}`}return d}
+function islandSVG(k){const [x,y]=NODES[k+1];const big=k===6;const s=big?1.35:1;
+  return `<g class="isl" id="isl${k}" transform="translate(${x} ${y}) scale(${s})">
+   <ellipse class="isl-ring" cx="0" cy="6" rx="62" ry="24" fill="none" stroke="#ffcc33" stroke-width="4" opacity="0"/>
+   <ellipse cx="0" cy="10" rx="64" ry="24" fill="#7fd3ea" opacity=".55"/>
+   <ellipse cx="0" cy="4" rx="54" ry="20" fill="#f6d98f" stroke="#d9ae55" stroke-width="2"/>
+   <path d="M-36 2 C-30 -20 -6 -26 10 -18 C26 -24 40 -10 36 4 C20 10 -20 12 -36 2Z" fill="#46b872"/>
+   <text x="-14" y="-10" font-size="34" text-anchor="middle">🌴</text>
+   ${big?'<text x="22" y="2" font-size="22" text-anchor="middle" fill="#d22" font-weight="900">✖</text><text x="24" y="-18" font-size="26" text-anchor="middle">💰</text>':`<text x="22" y="-6" font-size="22" text-anchor="middle">${ISL[k].ic}</text>`}
+   <g transform="translate(0 44)"><rect x="-70" y="-15" width="140" height="28" rx="14" fill="#062234" opacity=".82"/><text x="0" y="5" font-size="15" fill="#fff" text-anchor="middle" font-weight="700" font-family="IBM Plex Sans Arabic">${k+1}. ${esc(ISL[k].n)}</text></g>
+  </g>`}
+function shipSVG(i){return `<g class="ship" id="ship${i}" style="transform:translate(${NODES[0][0]}px,${NODES[0][1]}px)"><g class="bob" style="animation-delay:${-i*.6}s">
+  <path d="M-26 -2 L26 -2 L17 13 L-17 13Z" fill="${TCH[i]}" stroke="#2b1a0a" stroke-width="2"/>
+  <rect x="-1.5" y="-44" width="3" height="42" fill="#6b4320"/>
+  <path d="M2 -42 L24 -8 L2 -8Z" fill="#fff" stroke="#c9c2b0"/>
+  <path d="M-2 -36 L-20 -8 L-2 -8Z" fill="#f2ede0" stroke="#c9c2b0"/>
+  <path d="M1 -44 L15 -40 L1 -36Z" fill="${TCH[i]}"/>
+  <text x="0" y="32" font-size="18" text-anchor="middle">${TEAMS[i].e}</text></g></g>`}
+function mapSVG(id){
+  let waves='';const r=mulb(7);for(let k=0;k<26;k++){const x=Math.floor(r()*1000),y=Math.floor(r()*600);waves+=`<path class="wave" style="animation-delay:${-r()*6}s" d="M${x} ${y} q10 -8 20 0 q10 8 20 0" stroke="#bfefff" stroke-width="2.5" fill="none" opacity=".35"/>`}
+  return `<svg class="map" id="${id}" viewBox="0 0 1000 600" xmlns="http://www.w3.org/2000/svg">
+  <defs><radialGradient id="sea${id}" cx="50%" cy="40%" r="75%"><stop offset="0" stop-color="#1fa3c9"/><stop offset=".6" stop-color="#0c6d96"/><stop offset="1" stop-color="#064866"/></radialGradient></defs>
+  <rect width="1000" height="600" fill="url(#sea${id})"/>${waves}
+  <path d="${pathD()}" fill="none" stroke="#fff6d5" stroke-width="5" stroke-dasharray="4 14" stroke-linecap="round" opacity=".85"/>
+  <g transform="translate(${NODES[0][0]} ${NODES[0][1]})"><rect x="-40" y="10" width="80" height="14" fill="#8a5a2b" rx="3"/><rect x="-36" y="22" width="6" height="22" fill="#6b4320"/><rect x="30" y="22" width="6" height="22" fill="#6b4320"/><g transform="translate(0 38)"><rect x="-44" y="-14" width="88" height="26" rx="13" fill="#062234" opacity=".82"/><text y="5" font-size="15" fill="#fff" text-anchor="middle" font-weight="700" font-family="IBM Plex Sans Arabic">⚓ الميناء</text></g></g>
+  <g transform="translate(70 70)"><circle r="44" fill="#f6e2b3" stroke="#8a5a1e" stroke-width="3"/><path d="M0 -36 L8 0 L0 36 L-8 0Z" fill="#c0392b"/><path d="M-36 0 L0 -6 L36 0 L0 6Z" fill="#2c3e50"/><text y="-48" font-size="16" text-anchor="middle" fill="#fff" font-weight="700">ش</text></g>
+  ${ISL.map((_,k)=>islandSVG(k)).join('')}
+  ${[0,1,2,3].map(shipSVG).join('')}
+  </svg>`}
+const OFF=[[-26,-14],[26,-14],[-26,22],[26,22]];
+function nodeOf(i){const t=TD[i];if(t.isl>=7)return 7;return t.isl+(t.st?1:0)}
+function placeShips(svg){if(!svg)return;const cur=new Set();
+  for(let i=0;i<4;i++){const g=svg.querySelector('#ship'+i);if(!g)continue;const n=nodeOf(i);const [x,y]=NODES[n];const o=OFF[i];const dx=n===0?[-38,6,50,94][i]:o[0]*1.6,dy=n===0?-22:o[1]-38;
+    const tr=`translate(${x+dx}px,${y+dy}px)`;if(g.style.transform!==tr)g.style.transform=tr;
+    g.style.opacity=TRY?(i===0?'1':'0'):TD[i].dev?'1':(IS_HOST?'.3':'0');
+    if(TD[i].st&&TD[i].isl<7)cur.add(TD[i].isl)}
+  ISL.forEach((_,k)=>{const el=svg.querySelector('#isl'+k);if(el)el.classList.toggle('isl-cur',cur.has(k))})}
+
+/* ======================= RENDER ROOT ======================= */
+let _q=0;function soon(){if(_q)return;_q=requestAnimationFrame(()=>{_q=0;render()})}
+let lastKey='';
+function render(){
+  const app=$('#app');
+  if(!ROOM){if(lastKey!=='land'){lastKey='land';app.innerHTML=landHTML()}return}
+  if(IS_HOST){renderHost();return}
+  renderTeam();
+}
+
+/* ---------------- landing ---------------- */
+function landHTML(){return `<div class="land"><div class="card">
+  <div class="bigemoji">🏝️⛵💰</div>
+  <h1 class="disp">رحلة الكنز</h1>
+  <p class="sub">مغامرة بحرية بين 7 جزر! كل فريق سفينة، وكل جزيرة مهمة… والفائز من يصل أولًا إلى صندوق الكنز.</p>
+  <div class="opts">
+   <button class="b pri bigbtn disp" data-act="newroom">🧭 أنا القبطان (المقدم): ابدأ مغامرة جديدة</button>
+   <div class="sec" style="text-align:right"><h3>⛵ أنا فريق</h3><input id="jcode" placeholder="رمز الغرفة" maxlength="8" autocomplete="off"><div style="height:10px"></div><button class="b ok" style="width:100%" data-act="joinroom">دخول</button></div>
+   <p class="note">مناسبة للأعمار من 8 إلى 12 سنة · من فريق إلى 4 فرق · كل فريق يلعب من جوال أو جهاز لوحي.</p>
+  </div></div></div>`}
+
+/* ======================= HOST ======================= */
+let drawer=false,resetArm=0,hostBuilt=false;
+const teamLink=()=>location.origin+location.pathname+'?r='+ROOM;
+const hostLink=()=>location.origin+location.pathname+'?r='+ROOM+'&k='+HK;
+function ranking(){return [0,1,2,3].filter(i=>TD[i].dev||total(i)).sort((a,b)=>total(b)-total(a)||TD[b].isl-TD[a].isl)}
+function statusOf(i){const t=TD[i];if(!t.dev)return 'لم ينضم بعد';if(t.isl>=7)return '🏆 فتح صندوق الكنز!';if(t.st)return `يلعب في ${ISL[t.isl].n}`;if(t.isl===0)return G.raceOn?'في الميناء، يستعد للإبحار':'في الميناء ينتظر الإشارة';return `أنهى ${ISL[t.isl-1].n}`}
+function renderHost(){
+  const app=$('#app');
+  if(!hostBuilt){hostBuilt=true;lastKey='host';
+    app.innerHTML=`<div class="host">
+     <div class="hbar"><h1 class="disp">🏝️ رحلة الكنز</h1>
+      <div class="row"><span class="chip">الغرفة: <b class="num" style="color:var(--gold)">${ROOM}</b></span><span class="conn chip"></span>
+       <button class="b sm" data-act="snd" id="sndBtn">🔇 تفعيل الصوت</button>
+       <button class="b sm pri" data-act="drawer">⚙️ لوحة التحكم</button></div></div>
+     <div class="hgrid"><div>${mapSVG('hmap')}</div><div class="side" id="side"></div></div>
+    </div><aside class="drawer" id="drawer"></aside><div id="finHost"></div>`;
+    paintConn();}
+  placeShips($('#hmap'));
+  const side=$('#side');const sk=JSON.stringify([G.raceOn,G.names,G.bonus,TD.map(t=>[t.dev,t.isl,t.st,t.res])]);
+  if(side._k!==sk){side._k=sk;
+    const order=[0,1,2,3].sort((a,b)=>total(b)-total(a)||TD[b].isl-TD[a].isl);
+    side.innerHTML=`${!G.raceOn?`<div class="card qrbox"><b class="disp" style="font-size:26px">امسحوا وانضموا للمغامرة!</b><div id="qr"></div><span class="note">أو ادخلوا الرمز <b class="num" style="color:var(--gold);font-size:22px">${ROOM}</b></span></div>`:''}
+     ${order.map((i,ri)=>`<div class="tcard" style="--c:${TC[i]}"><span class="rk">#${ri+1}</span><span class="em">${TEAMS[i].e}</span><div><div class="nm">${esc(teamName(i))}</div><div class="st">${statusOf(i)}</div>${TD[i].st&&TD[i].isl<7?`<div class="tm num" data-tm="${i}">⏱ ${fmt(remOf(i))}</div>`:''}</div><span class="sc">${total(i)}</span></div>`).join('')}
+     <div class="card" style="text-align:center">${G.raceOn?'<b style="color:#5fe39c">⛵ السباق جارٍ!</b>':'<b>⏳ بانتظار بدء السباق</b><p class="note">افتح لوحة التحكم واضغط «ابدأ السباق» بعد ما تنضم الفرق.</p>'}</div>`;
+    const q=$('#qr');if(q&&!window.QRCode)q.remove();if(q&&window.QRCode){q.innerHTML='';new QRCode(q,{text:teamLink(),width:200,height:200,correctLevel:QRCode.CorrectLevel.M})}}
+  renderDrawer();renderFinale();
+}
+function renderDrawer(){const d=$('#drawer');d.classList.toggle('on',drawer);if(!drawer){d._k='';return}
+  const k=JSON.stringify([G,resetArm,TD.map(t=>t.dev)]);if(d._k===k)return;
+  if(d.contains(document.activeElement)&&document.activeElement.tagName.match(/INPUT|TEXTAREA/))return;
+  d._k=k;
+  d.innerHTML=`<div class="row" style="justify-content:space-between;margin-bottom:12px"><b class="disp" style="font-size:26px">⚙️ لوحة التحكم</b><button class="b sm" data-act="drawer">✕ إغلاق</button></div>
+  <div class="sec"><h3>🚦 السباق</h3><div class="row">${G.raceOn?'<button class="b hot" data-act="race-off">⏸ إيقاف الإبحار</button>':'<button class="b pri" data-act="race-on">⛵ ابدأ السباق</button>'}
+   <button class="b ${G.view==='fin'?'ok':''}" data-act="fin">${G.view==='fin'?'إخفاء إعلان الفائز':'🏆 إعلان الفائز'}</button></div>
+   <p class="note">إيقاف الإبحار يمنع الفرق من بدء جزيرة جديدة، والجزيرة الجارية تكمل.</p></div>
+  <div class="sec"><h3>📲 روابط الدخول</h3><p class="note">رابط الفرق (يُعرض كـ QR على الشاشة):</p><div class="linkbox">${esc(teamLink())}</div>
+   <div class="row"><button class="b sm" data-act="copy:team">نسخ رابط الفرق</button><button class="b sm" data-act="try">🧪 جرّب المهام بنفسك</button></div>
+   <p class="note">رابط المقدم (لا تشاركه مع الفرق، به تفتح التحكم من جهاز آخر):</p><button class="b sm" data-act="copy:host">نسخ رابط المقدم</button></div>
+  <div class="sec"><h3>🚩 أسماء الفرق</h3><div class="names">${[0,1,2,3].map(i=>`<label><span style="font-size:24px">${TEAMS[i].e}</span><input id="tn${i}" maxlength="16" value="${esc(teamName(i))}"></label>`).join('')}</div>
+   <div style="height:8px"></div><button class="b sm ok" data-act="names">حفظ الأسماء</button></div>
+  <div class="sec"><h3>🪙 نقاط إضافية (سلوك، تعاون…)</h3>${[0,1,2,3].map(i=>`<div class="adj"><span>${TEAMS[i].e} ${esc(teamName(i))} · <b class="num">${total(i)}</b></span><button class="b sm" data-act="bon:${i}:-10">−10</button><button class="b sm ok" data-act="bon:${i}:10">+10</button></div>`).join('')}</div>
+  <div class="sec"><h3>🗝️ رموز الجزر المخبأة (اختياري)</h3>
+   <p class="note">لتحويلها لبحث كنز حقيقي: اكتب رمزًا لأي جزيرة واخبئ ورقته في المكان. الفريق لازم يلاقي الورقة ويدخل الرمز قبل الإبحار للجزيرة. اترك الخانة فارغة لإلغاء القفل.</p>
+   ${ISL.map((x,k)=>`<div class="lk"><span style="font-size:22px;text-align:center">${x.ic}</span><input class="c" id="lc${k}" maxlength="6" inputmode="numeric" placeholder="الرمز" value="${esc(G.locks[k].c)}"><input id="lh${k}" maxlength="120" placeholder="تلميح: مثلًا تحت الكرسي الأزرق" value="${esc(G.locks[k].h)}"></div>`).join('')}
+   <div class="row"><button class="b sm ok" data-act="locks">حفظ الرموز</button><button class="b sm" data-act="lockrand">رموز عشوائية</button><button class="b sm" data-act="lockprint">🖨️ طباعة بطاقات الرموز</button></div></div>
+  <div class="sec"><h3>🔄 مغامرة جديدة</h3><p class="note">يمسح تقدّم كل الفرق ونقاطها ويرجع السفن للميناء.</p><button class="b hot" data-act="reset">${resetArm>Date.now()?'متأكد؟ اضغط مرة ثانية':'إعادة ضبط كل شيء'}</button></div>`}
+let finShown='';
+function renderFinale(){const host=$('#finHost');if(!host)return;
+  if(G.view!=='fin'){if(finShown){host.innerHTML='';finShown='';stopConfetti()}return}
+  const k=JSON.stringify(TD.map((t,i)=>total(i)))+G.names;if(finShown===k)return;finShown=k;
+  const r=ranking();const top=r.slice(0,3);const ord=top.length>=3?[top[1],top[0],top[2]]:top.length===2?[top[1],top[0]]:top;
+  host.innerHTML=`<div class="fin"><div><div class="chest">💰</div><h2 class="disp">${r.length?'الفائز بالكنز: '+esc(teamName(r[0])):'لا يوجد فرق بعد'}</h2>
+   <div class="podium">${ord.map(i=>`<div class="pod ${i===r[0]?'p1':''}" style="--c:${TCH[i]}"><span>${['🥇','🥈','🥉'][r.indexOf(i)]}</span><span class="em">${TEAMS[i].e}</span><span class="nm">${esc(teamName(i))}</span><span class="sc">${total(i)}</span></div>`).join('')}</div>
+   ${r[3]!=null?`<p class="note" style="font-size:18px">4. ${TEAMS[r[3]].e} ${esc(teamName(r[3]))} · ${total(r[3])}</p>`:''}
+   <div style="height:16px"></div><button class="b" data-act="fin">رجوع للخريطة</button></div></div>`;
+  startConfetti();sWin()}
+function printLocks(){const cards=ISL.map((x,k)=>({x,k,c:G.locks[k].c})).filter(o=>o.c);if(!cards.length){toast('اكتب رمزًا لجزيرة واحدة على الأقل');return}
+  const w=window.open('','_blank');if(!w){toast('اسمح بالنوافذ المنبثقة للطباعة');return}
+  w.document.write(`<!doctype html><html dir="rtl" lang="ar"><head><meta charset="utf-8"><title>بطاقات رموز الجزر</title><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lalezar&family=IBM+Plex+Sans+Arabic:wght@400;700&display=swap"><style>body{font-family:'IBM Plex Sans Arabic';margin:0;padding:10mm;display:grid;grid-template-columns:1fr 1fr;gap:8mm}.c{border:3px dashed #8a5a1e;border-radius:12px;padding:8mm;text-align:center;background:#fbf0d6;break-inside:avoid}.c h2{font-family:Lalezar;font-size:28px;margin:0}.c b{font-family:Lalezar;font-size:64px;letter-spacing:.2em;direction:ltr;display:block}.e{font-size:48px}@media print{body{-webkit-print-color-adjust:exact;print-color-adjust:exact}}</style></head><body>${cards.map(o=>`<div class="c"><div class="e">🗝️${o.x.ic}</div><h2>رمز ${esc(o.x.n)}</h2><b>${esc(o.c)}</b><p>أدخلوا هذا الرمز في جهازكم لتبحروا إلى الجزيرة ${o.k+1}</p></div>`).join('')}<script>setTimeout(()=>print(),700)<\/script></body></html>`);w.document.close()}
+
+/* ======================= TEAM ======================= */
+let MS=null;        // mission state (local)
+let view=null;      // local overlay: {t:'sail'|'reward', ...}
+let lockIn='';
+function loadMS(){if(MYT==null)return null;const s=LS.get(SK('ms'+MYT)+(TRY?'-try':''),null);const t=TD[MYT];if(s&&s.sr===t.sr&&s.k===t.isl)return s;return null}
+function saveMS(){if(MS)LS.set(SK('ms'+MYT)+(TRY?'-try':''),MS)}
+function pState(){if(MYT==null)return 'pick';const t=TD[MYT];if(!TRY&&!mine(MYT))return 'pick';if(t.isl>=7)return 'fin';if(t.st)return 'play';if(TRY||G.raceOn)return 'ready';return 'wait'}
+function renderTeam(){
+  const app=$('#app');
+  if(!TRY&&!gotG){if(lastKey!=='conn'){lastKey='conn';app.innerHTML=`<div class="land"><div class="card"><div class="bigemoji">⛵</div><h2 class="disp">جارٍ الاتصال بالغرفة ${esc(ROOM)}…</h2><span class="conn chip"></span><p class="note">تأكدوا من اتصال الإنترنت ومن رمز الغرفة.</p><a class="b sm" href="${location.pathname}" style="text-decoration:none">رجوع</a></div></div>`;paintConn()}return}
+  if(!TRY&&MYT!=null&&!mine(MYT)&&TD[MYT].dev!==DEV){MYT=null;LS.del(SK('myt'))}
+  const ps=pState();
+  if(ps==='pick'){const k='pick'+JSON.stringify(TD.map(t=>t.dev))+G.names;if(lastKey!==k){lastKey=k;app.innerHTML=pickHTML()}return}
+  if(!$('#phead')||lastKey.indexOf('team')!==0){lastKey='team';app.innerHTML=`${TRY?trybarHTML():''}<div class="phead" id="phead"></div><div class="pmain" id="pmain"></div><div id="frz"></div>`}
+  paintHead();
+  const t=TD[MYT];
+  let key;
+  if(view&&view.t==='reward')key='rw'+view.k;
+  else if(view&&view.t==='sail')key='sail'+t.isl;
+  else key=ps+'|'+t.isl+'|'+t.sr+'|'+(ps==='ready'?(needLock()?'L':'')+G.raceOn:'')+(ps==='wait'?G.raceOn:'')+(ps==='fin'?total(MYT):'');
+  const main=$('#pmain');
+  if(main._k!==key||main._dirty){main._k=key;main._dirty=false;
+    if(view&&view.t==='reward')main.innerHTML=rewardHTML();
+    else if(view&&view.t==='sail')main.innerHTML=`<div class="card sailing"><div class="bigemoji">⛵</div><h2 class="disp" style="font-size:34px">نُبحر إلى ${esc(ISL[t.isl].n)}…</h2><p class="note">تمسكوا جيدًا! 🌊</p></div>`;
+    else if(ps==='wait')main.innerHTML=`${miniMap()}<div class="card" style="text-align:center"><div class="bigemoji">⚓</div><h2 class="disp" style="font-size:32px">أنتم في الميناء!</h2><p class="intro">انتظروا إشارة القبطان (المقدم) لبدء السباق…</p></div>`;
+    else if(ps==='ready')main.innerHTML=readyHTML();
+    else if(ps==='fin')main.innerHTML=`${miniMap()}<div class="card reward"><div class="chest" style="font-size:90px">💰</div><h2 class="disp" style="font-size:38px;color:var(--gold)">فتحتم صندوق الكنز!</h2><div class="coin">${total(MYT)} 🪙</div><p class="intro">أحسنتم يا ${esc(teamName(MYT))}! انتظروا إعلان الفائز على الشاشة الكبيرة.</p></div>`;
+    else if(ps==='play'){if(!MS||MS.sr!==t.sr||MS.k!==t.isl)MS=loadMS();if(!MS){MS=initMission(t.isl);saveMS()}main.innerHTML=missionHTML()}
+    placeShips($('#mmap'));
+  }else placeShips($('#mmap'));
+  paintFreeze();
+}
+function trybarHTML(){return `<div class="trybar"><b>🧪 وضع التجربة</b><span class="note" style="margin:0">لا يؤثر على المسابقة</span>${ISL.map((x,k)=>`<button class="b sm" data-act="tryto:${k}">${x.ic}</button>`).join('')}<button class="b sm" data-act="tryreset">من البداية</button></div>`}
+function pickHTML(){return `<div class="wrap"><div class="card" style="text-align:center"><div class="bigemoji">🏴</div><h2 class="disp" style="font-size:34px;margin:6px 0">اختاروا سفينتكم</h2><p class="note">جهاز واحد لكل فريق · الغرفة <b class="num">${esc(ROOM)}</b></p>
+  <div class="pick">${[0,1,2,3].map(i=>{const tk=TD[i].dev&&TD[i].dev!==DEV;return `<button class="${tk?'taken':''}" style="--c:${TCH[i]}" data-act="pick:${i}"><span class="em">${TEAMS[i].e}</span><span class="nm">${esc(teamName(i))}</span><span class="note">${tk?'🔒 مأخوذة (اضغط للاستلام)':'متاحة'}</span></button>`}).join('')}</div></div></div>`}
+function paintHead(){const h=$('#phead');if(!h)return;const t=TD[MYT];
+  const k=JSON.stringify([t.res,t.isl,t.st,G.names,G.bonus]);
+  if(h._k!==k){h._k=k;
+  h.innerHTML=`<div class="r1"><span class="tn"><span style="font-size:26px">${TEAMS[MYT].e}</span>${esc(TRY?'تجربة المقدم':teamName(MYT))}</span><span class="pts">${total(MYT)} 🪙</span><span class="clk num ${t.st?'':'hidden'}" id="pclk">${fmt(remOf(MYT))}</span></div>
+   <div class="steps">${ISL.map((x,k)=>{const r=t.res[k];const c=r?(r.s==='timeout'?'x':'d'):k===t.isl?'n':'';return `<i class="${c}" title="${esc(x.n)}">${r?(r.s==='timeout'?'⌛':'✓'):x.ic}</i>`}).join('')}</div>`}
+}
+function miniMap(){return `<div style="max-width:560px;width:100%;margin:0 auto">${mapSVG('mmap')}</div>`}
+const needLock=()=>{const t=TD[MYT];const L=G.locks&&G.locks[t.isl];return !TRY&&L&&L.c&&!t.unl[t.isl]};
+function readyHTML(){const t=TD[MYT],x=ISL[t.isl];
+  if(needLock()){const L=G.locks[t.isl];return `${miniMap()}<div class="card"><div class="ititle"><span class="ic">🗝️</span><div><small>قبل الإبحار إلى الجزيرة ${t.isl+1}</small><h2 class="disp">ابحثوا عن رمز الجزيرة!</h2></div></div>
+   <p class="intro">${L.h?esc(L.h):'الرمز مكتوب في ورقة مخبأة في المكان. ابحثوا عنها!'}</p>
+   <div class="disp7" id="lkd">${lockIn||'·'.repeat(L.c.length)}</div><div style="height:10px"></div>${keypad('lk')}</div>`}
+  return `${miniMap()}<div class="card"><div class="ititle"><span class="ic">${x.ic}</span><div><small>الجزيرة ${t.isl+1} من 7 · ⏱ ${Math.round(x.dur/60)} دقائق</small><h2 class="disp">${esc(x.n)}</h2></div></div>
+   <p class="intro">${esc(x.intro)}</p>
+   <p class="note">🏁 أول فريق يُنهي الجزيرة يأخذ 100 · الثاني 70 · الثالث 50 · الرابع 30${t.isl===6?' (×2 هنا!)':''}</p>
+   <button class="b pri bigbtn disp" data-act="sail">⛵ أبحروا!</button></div>`}
+function keypad(p){return `<div class="keypad">${[1,2,3,4,5,6,7,8,9].map(n=>`<button class="b" data-act="${p}-k:${n}">${n}</button>`).join('')}<button class="b" data-act="${p}-clr">مسح</button><button class="b" data-act="${p}-k:0">0</button><button class="b pri" data-act="${p}-ok">فتح</button></div>`}
+function rewardHTML(){const r=view.r,k=view.k;const dg=k<6?digitsFor(MYT)[k]:null;
+  return `<div class="card reward">${r.s==='timeout'?`<div class="bigemoji">⌛</div><h2 class="disp" style="font-size:34px">انتهى الوقت!</h2><p class="intro">لا بأس، الرحلة مستمرة!</p>`:`<div class="bigemoji">🎉</div><h2 class="disp" style="font-size:34px">أنجزتم ${esc(ISL[k].n)}!</h2><div class="coin">+${r.pts} 🪙</div><p class="note">${r.rank===0?'🥇 أول فريق ينهي هذه الجزيرة!':`المركز ${r.rank+1} في هذه الجزيرة`}</p>`}
+   ${dg!=null?`<div class="mappiece"><span>🗺️ قطعة الخريطة رقم ${k+1}</span><b class="num">${dg}</b><span>اكتبوا هذا الرقم في ورقتكم! تحتاجونه لفتح صندوق الكنز.</span></div>`:''}
+   <button class="b pri bigbtn disp" data-act="next">${k<6?'تابعوا الإبحار ⛵':'🏆 النهاية'}</button></div>`}
+
+/* ---------------- missions ---------------- */
+function rngFor(k){const t=TD[MYT];return mulb(hsh(ROOM+'|'+MYT+'|'+k+'|'+t.sr))}
+function initMission(k){const r=rngFor(k);const t=TD[MYT];const b={k,sr:t.sr,frz:0};
+  switch(ISL[k].k){
+   case 'quiz':{const qs=shufR(r,QUIZ.map((_,i)=>i)).slice(0,8);return {...b,qs,i:0,ord:qs.map(()=>shufR(r,[0,1,2,3]))}}
+   case 'memory':return {...b,cards:shufR(r,[...MEM_E,...MEM_E]),open:[],ok:[],moves:0};
+   case 'twin':return {...b,round:0,seed:Math.floor(r()*1e9)};
+   case 'tap':return {...b,order:shufR(r,Array.from({length:20},(_,i)=>i+1)),next:1};
+   case 'words':return {...b,...wsBuild(r),found:[],sel:null};
+   case 'riddle':{const qs=shufR(r,RIDDLES.map((_,i)=>i)).slice(0,5);return {...b,qs,i:0,ord:qs.map(()=>shufR(r,[0,1,2,3]))}}
+   case 'chest':return {...b,inp:'',wrong:0};
+  }}
+function missionHTML(){const k=MS.k,x=ISL[k];const head=sub=>`<div class="ititle"><span class="ic">${x.ic}</span><div><small>الجزيرة ${k+1} من 7</small><h2 class="disp">${esc(x.n)}</h2></div></div>${sub||''}`;
+  switch(x.k){
+   case 'quiz':case 'riddle':{const bank=x.k==='quiz'?QUIZ:RIDDLES;const n=MS.qs.length;const q=bank[MS.qs[MS.i]];
+     return `<div class="card">${head()}<div class="ctr"><span>${x.k==='quiz'?'سؤال':'لغز'} ${MS.i+1} من ${n}</span></div><div class="prog"><i style="width:${MS.i/n*100}%"></i></div>
+      <p class="qtxt">${esc(q.q)}</p><div class="opts2">${MS.ord[MS.i].map(o=>`<button class="opt" data-act="ans:${o}">${esc(q.o[o])}</button>`).join('')}</div></div>`}
+   case 'memory':return `<div class="card">${head()}<div class="ctr"><span>الأزواج: ${MS.ok.length/2} من 8</span><span>محاولات: ${MS.moves}</span></div>
+      <div class="mem">${MS.cards.map((e,i)=>{const up=MS.open.includes(i)||MS.ok.includes(i);return `<button class="mc ${up?'up':''} ${MS.ok.includes(i)?'ok':''}" data-act="mem:${i}"><span>${e}</span></button>`}).join('')}</div></div>`;
+   case 'twin':{const R=twinRound(MS.seed,MS.round);
+     return `<div class="card">${head()}<div class="ctr"><span>الجولة ${MS.round+1} من 3</span></div><div class="prog"><i style="width:${MS.round/3*100}%"></i></div>
+      <div class="tw-orig" style="margin:12px 0"><b style="font-size:18px">الصورة الأصلية ⬅</b><div style="width:130px">${twCard(R.base,'',46)}</div></div>
+      <p class="note" style="text-align:center">أي صورة تطابقها تمامًا؟</p>
+      <div class="twg">${R.cards.map((c,i)=>twCard(c,`data-act="tw:${i}" id="tw${i}"`,30)).join('')}</div></div>`}
+   case 'tap':return `<div class="card">${head()}<div class="ctr"><span>التالي: <b class="disp" style="font-size:24px;color:var(--gold)" id="tapn">${MS.next}</b></span><span>${MS.next-1} / 20</span></div>
+      <div class="tapg">${MS.order.map(v=>`<button class="tap ${v<MS.next?'hit':''}" id="tp${v}" data-act="tap:${v}">${v}</button>`).join('')}</div></div>`;
+   case 'words':return `<div class="card">${head()}<div class="wsw">${WS_WORDS.map(w=>`<span class="${MS.found.includes(w)?'f':''}">${w}</span>`).join('')}</div>
+      <div class="wsg" style="grid-template-columns:repeat(${WS_N},1fr)">${MS.grid.map((ch,i)=>`<button class="wsc ${MS.sel===i?'sel':''} ${foundCells().has(i)?'f':''}" data-act="ws:${i}">${ch}</button>`).join('')}</div>
+      <p class="note" style="text-align:center">${MS.sel!=null?'الآن اضغطوا آخر حرف في الكلمة':'اضغطوا أول حرف من الكلمة'}</p></div>`;
+   case 'chest':{const n=6;return `<div class="card">${head()}<div style="text-align:center"><div class="chest" style="font-size:80px">🧰</div><p class="intro">أدخلوا أرقام قطع الخريطة الستة بالترتيب (من الجزيرة 1 إلى 6)</p></div>
+      <div class="disp7" id="chd">${MS.inp||'·'.repeat(n)}</div><div style="height:10px"></div>${keypad('ch')}
+      ${MS.wrong>=2?`<p class="note" style="text-align:center">🦜 الببغاء يساعدكم! هذه قطع خريطتكم:</p><div class="hintmap">${digitsFor(MYT).map(d=>`<span>${d}</span>`).join('')}</div>`:''}</div>`}
+  }}
+function twinRound(seed,round){const r=mulb(seed+round*7919);const pickE=()=>{const s=shufR(r,TW_E);return s.slice(0,3)};
+  const base={bg:TW_BG[Math.floor(r()*TW_BG.length)],e:pickE()};const key=p=>p.bg+p.e.join('');const seen=new Set([key(base)]);const cards=[];let g=0;
+  while(cards.length<8&&g++<500){const p={bg:base.bg,e:base.e.slice()};const m=r();
+    if(m<.55){const j=Math.floor(r()*3);const pool=TW_E.filter(e=>!p.e.includes(e));p.e[j]=pool[Math.floor(r()*pool.length)]}
+    else if(m<.85){const a=Math.floor(r()*3),b=(a+1+Math.floor(r()*2))%3;[p.e[a],p.e[b]]=[p.e[b],p.e[a]]}
+    else{p.bg=TW_BG.filter(c=>c!==base.bg)[Math.floor(r()*(TW_BG.length-1))]}
+    if(!seen.has(key(p))){seen.add(key(p));cards.push(p)}}
+  const ans=Math.floor(r()*9);cards.splice(ans,0,base);return {base,cards,ans}}
+const TW_POS=[[30,30],[72,36],[48,74]];
+function twCard(p,attr,fs){return `<button class="twc" ${attr} style="background:${p.bg};width:100%;--fs:${fs}px">${p.e.map((e,i)=>`<span class="e" style="right:${TW_POS[i][0]}%;top:${TW_POS[i][1]}%">${e}</span>`).join('')}</button>`}
+function wsBuild(r){for(let tries=0;tries<200;tries++){const g=Array(WS_N*WS_N).fill('');const pl=[];let ok=true;
+  for(const w of WS_WORDS){const L=[...w];let placed=false;
+    for(let a=0;a<200&&!placed;a++){const dir=r()<.55?[0,1]:[1,0];const rr=Math.floor(r()*(WS_N-(dir[0]?L.length-1:0))),cc=Math.floor(r()*(WS_N-(dir[1]?L.length-1:0)));
+      let fit=true;const cells=[];for(let j=0;j<L.length;j++){const idx=(rr+dir[0]*j)*WS_N+cc+dir[1]*j;if(g[idx]&&g[idx]!==L[j]){fit=false;break}cells.push(idx)}
+      if(fit){cells.forEach((idx,j)=>g[idx]=L[j]);pl.push({w,cells});placed=true}}
+    if(!placed){ok=false;break}}
+  if(ok){for(let i=0;i<g.length;i++)if(!g[i])g[i]=WS_FILL[Math.floor(r()*WS_FILL.length)];return {grid:g,pl}}}}
+function foundCells(){const s=new Set();MS.pl.forEach(p=>{if(MS.found.includes(p.w))p.cells.forEach(c=>s.add(c))});return s}
+
+/* ---------------- freeze ---------------- */
+function freeze(sec){MS.frz=Date.now()+sec*1000;saveMS();sBad();paintFreeze()}
+function frozen(){return MS&&MS.frz>Date.now()}
+function paintFreeze(){const f=$('#frz');if(!f)return;const on=pState()==='play'&&!view&&frozen();
+  if(!on){if(f.innerHTML)f.innerHTML='';return}
+  const n=Math.ceil((MS.frz-Date.now())/1000);
+  if(!f.firstChild)f.innerHTML=`<div class="frz"><div>🌊 موجة عالية! السفينة متوقفة<b id="frzn">${n}</b>جرّبوا مرة أخرى بعدها</div></div>`;
+  else{const e=$('#frzn');if(e&&e.textContent!==String(n))e.textContent=n}}
+
+/* ---------------- finish ---------------- */
+function finishIsland(s){const k=TD[MYT].isl;const now=Date.now();
+  let rank=0;if(!TRY)for(let j=0;j<4;j++)if(j!==MYT&&TD[j].res[k]&&TD[j].res[k].s==='done'&&TD[j].res[k].at<now)rank++;
+  const pts=s==='done'?RANK_PTS[Math.min(rank,3)]*(k===6?2:1):0;
+  const r={s,at:now,pts,rank};
+  commitT(MYT,n=>{if(n.isl!==k||!n.st)return false;n.res[k]=r;n.isl=k+1;n.st=0;n.sr=''});
+  LS.del(SK('ms'+MYT)+(TRY?'-try':''));MS=null;
+  view={t:'reward',k,r};s==='done'?sWin():sBad();
+  if(s==='done'&&k===6)startConfetti(4000);
+  soon()}
+
+/* ======================= ACTIONS ======================= */
+function dirty(){const m=$('#pmain');if(m)m._dirty=true;soon()}
+const A={
+  newroom:()=>{const c=Array.from({length:6},()=>'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'[Math.floor(Math.random()*32)]).join('');const k=rid()+rid();
+    LS.set('kz-hk-'+c,k);location.href=location.pathname+'?r='+c+'&k='+k},
+  joinroom:()=>{const c=($('#jcode').value||'').toUpperCase().replace(/[^A-Z0-9]/g,'');if(c.length<4){toast('اكتبوا رمز الغرفة');return}location.href=location.pathname+'?r='+c},
+  snd:()=>{initAudio();sOk();const b=$('#sndBtn');if(b)b.textContent='🔊 الصوت مفعّل'},
+  drawer:()=>{drawer=!drawer;renderDrawer()},
+  'race-on':()=>commitG(n=>{n.raceOn=true}),
+  'race-off':()=>commitG(n=>{n.raceOn=false}),
+  fin:()=>{drawer=false;commitG(n=>{n.view=n.view==='fin'?'map':'fin'})},
+  names:()=>{commitG(n=>{n.names=[0,1,2,3].map(i=>($('#tn'+i).value||'').trim()||TEAMS[i].n)});toast('تم حفظ الأسماء ✓')},
+  locks:()=>{commitG(n=>{n.locks=ISL.map((_,k)=>({c:toLat($('#lc'+k).value).slice(0,6),h:($('#lh'+k).value||'').trim()}))});toast('تم حفظ الرموز ✓')},
+  lockrand:()=>{ISL.forEach((_,k)=>{$('#lc'+k).value=String(100+Math.floor(Math.random()*900))})},
+  lockprint:()=>{A.locks();setTimeout(printLocks,50)},
+  reset:()=>{if(resetArm>Date.now()){resetArm=0;const run=rid();commitG(n=>{n.run=run;n.raceOn=false;n.view='map';n.bonus=[0,0,0,0]});TD=[0,1,2,3].map(()=>{const t=freshT(run);t.rev=Date.now();t.sentAt=Date.now();return t});TD.forEach((t,i)=>send('t'+i,t));saveLocal();toast('بدأت مغامرة جديدة');soon()}else{resetArm=Date.now()+4000;renderDrawer();setTimeout(renderDrawer,4100)}},
+  try:()=>window.open(location.pathname+'?r='+ROOM+'&try=1','_blank'),
+  pick:i=>{i=+i;const tk=TD[i].dev&&TD[i].dev!==DEV;if(tk&&!confirm('هذه السفينة مستخدمة في جهاز آخر. تستلمها في هذا الجهاز؟'))return;
+    initAudio();MYT=i;LS.set(SK('myt'),i);commitT(i,n=>{n.dev=DEV;n.run=G.run});lastKey=''},
+  sail:()=>{initAudio();const t=TD[MYT];if(t.st||(!TRY&&!G.raceOn)||needLock())return;view={t:'sail'};sSail();soon();
+    setTimeout(()=>{view=null;commitT(MYT,n=>{if(n.st)return false;n.st=Date.now();n.sr=rid()})},2200)},
+  next:()=>{view=null;dirty();window.scrollTo(0,0)},
+  'lk-k':d=>{const L=G.locks[TD[MYT].isl];if(lockIn.length<L.c.length)lockIn+=d;$('#lkd').textContent=lockIn;sTick()},
+  'lk-clr':()=>{lockIn='';$('#lkd').textContent='·'.repeat(G.locks[TD[MYT].isl].c.length)},
+  'lk-ok':()=>{const k=TD[MYT].isl,L=G.locks[k];if(lockIn===L.c){lockIn='';sOk();commitT(MYT,n=>{n.unl[k]=1});toast('🗝️ فُتح الطريق!')}else{lockIn='';sBad();$('#lkd').textContent='✗';toast('الرمز غير صحيح')}},
+  ans:o=>{if(frozen())return;const bank=ISL[MS.k].k==='quiz'?QUIZ:RIDDLES;const q=bank[MS.qs[MS.i]];
+    if(+o===q.a){sOk();MS.i++;saveMS();if(MS.i>=MS.qs.length)return finishIsland('done');dirty()}
+    else{document.querySelector(`[data-act="ans:${o}"]`).classList.add('bad');freeze(3)}},
+  mem:i=>{i=+i;if(MS.ok.includes(i)||MS.open.includes(i)||MS.lock)return;MS.open.push(i);sTick();
+    if(MS.open.length===2){MS.moves++;const [a,b]=MS.open;
+      if(MS.cards[a]===MS.cards[b]){MS.ok.push(a,b);MS.open=[];sOk();saveMS();if(MS.ok.length===16)return setTimeout(()=>finishIsland('done'),500)}
+      else{MS.lock=1;setTimeout(()=>{MS.open=[];MS.lock=0;saveMS();dirty()},900)}}
+    saveMS();dirty()},
+  tw:i=>{if(frozen())return;const R=twinRound(MS.seed,MS.round);
+    if(+i===R.ans){sOk();MS.round++;saveMS();if(MS.round>=3)return finishIsland('done');dirty()}
+    else{$('#tw'+i).classList.add('bad');freeze(3)}},
+  tap:v=>{if(frozen())return;v=+v;if(v===MS.next){MS.next++;saveMS();sTick();const b=$('#tp'+v);b&&b.classList.add('hit');const n=$('#tapn');if(n)n.textContent=MS.next;if(MS.next>20)finishIsland('done')}
+    else{const b=$('#tp'+v);b&&b.classList.add('bad');setTimeout(()=>b&&b.classList.remove('bad'),400);freeze(2)}},
+  ws:i=>{i=+i;if(MS.sel==null){MS.sel=i;sTick();saveMS();return dirty()}
+    const a=MS.sel;MS.sel=null;if(a===i)return dirty();
+    const ar=Math.floor(a/WS_N),ac=a%WS_N,br=Math.floor(i/WS_N),bc=i%WS_N;let cells=[];
+    if(ar===br){const s=Math.sign(bc-ac);for(let c=ac;c!==bc+s;c+=s)cells.push(ar*WS_N+c)}
+    else if(ac===bc){const s=Math.sign(br-ar);for(let r=ar;r!==br+s;r+=s)cells.push(r*WS_N+ac)}
+    const str=cells.map(c=>MS.grid[c]).join(''),rev=[...str].reverse().join('');
+    const w=WS_WORDS.find(w=>!MS.found.includes(w)&&(w===str||w===rev)&&MS.pl.find(p=>p.w===w&&p.cells.length===cells.length&&p.cells.every(c=>cells.includes(c))));
+    if(w){MS.found.push(w);sOk();saveMS();if(MS.found.length===WS_WORDS.length)return finishIsland('done')}else{sBad();toast('ليست كلمة من القائمة، حاولوا مجددًا')}
+    saveMS();dirty()},
+  'ch-k':d=>{if(frozen())return;if(MS.inp.length<6)MS.inp+=d;$('#chd').textContent=MS.inp;sTick()},
+  'ch-clr':()=>{MS.inp='';$('#chd').textContent='······'},
+  'ch-ok':()=>{if(frozen())return;if(MS.inp===digitsFor(MYT).join('')){finishIsland('done')}else{MS.wrong++;MS.inp='';saveMS();dirty();freeze(5)}},
+  tryto:k=>{k=+k;view=null;LS.del(SK('ms0')+'-try');MS=null;commitT(0,n=>{n.isl=k;n.st=0;n.sr='';for(let j=k;j<7;j++)n.res[j]=null});dirty()},
+  tryreset:()=>{view=null;LS.del(SK('ms0')+'-try');MS=null;TD[0]=freshT(G.run);TD[0].dev=DEV;dirty()},
+  copy:w=>{const t=w==='host'?hostLink():teamLink();(navigator.clipboard?navigator.clipboard.writeText(t):Promise.reject()).then(()=>toast('تم النسخ ✓'),()=>prompt('انسخ الرابط:',t))}
+};
+document.addEventListener('click',e=>{const el=e.target.closest('[data-act]');if(!el)return;const [a,...rest]=el.dataset.act.split(':');const f=A[a];if(f)f(...rest)});
+document.addEventListener('keydown',e=>{if(e.key==='Enter'&&e.target.id==='jcode')A.joinroom()});
+
+/* ======================= TICK ======================= */
+let lastSec=-1;
+setInterval(()=>{
+  if(!ROOM)return;
+  if(IS_HOST){document.querySelectorAll('[data-tm]').forEach(el=>{const i=+el.dataset.tm;el.textContent='⏱ '+fmt(remOf(i))});return}
+  if(MYT==null||pState()!=='play')return;
+  const rem=remOf(MYT);const c=$('#pclk');if(c){c.textContent=fmt(rem);c.classList.toggle('low',rem<30000)}
+  const s=Math.ceil(rem/1000);if(s!==lastSec){lastSec=s;if(s<=10&&s>0)sTick()}
+  paintFreeze();
+  if(rem<=0&&!view)finishIsland('timeout');
+},250);
+
+/* ======================= CONFETTI ======================= */
+let cfRun=0;
+function startConfetti(ms){const cv=$('#confetti');cv.hidden=false;const x=cv.getContext('2d');cv.width=innerWidth;cv.height=innerHeight;
+  const P=Array.from({length:160},()=>({x:Math.random()*cv.width,y:-Math.random()*cv.height,s:4+Math.random()*7,v:2+Math.random()*4,a:Math.random()*6,c:['#ffcc33','#ff5a5f','#2fb8ff','#3ee08f','#fff'][Math.floor(Math.random()*5)]}));
+  const id=++cfRun;const end=ms?Date.now()+ms:0;
+  (function f(){if(id!==cfRun)return;x.clearRect(0,0,cv.width,cv.height);P.forEach(p=>{p.y+=p.v;p.a+=.08;p.x+=Math.sin(p.a)*1.5;if(p.y>cv.height){p.y=-10;p.x=Math.random()*cv.width}x.fillStyle=p.c;x.fillRect(p.x,p.y,p.s,p.s*.6)});
+    if(end&&Date.now()>end){stopConfetti();return}requestAnimationFrame(f)})()}
+function stopConfetti(){cfRun++;const cv=$('#confetti');cv.hidden=true}
+
+/* ======================= BOOT ======================= */
+if(TRY){G.raceOn=true;TD=[0,1,2,3].map(()=>freshT(G.run));TD[0].dev=DEV;gotG=true}
+if(IS_HOST&&!G.hk)G.hk=hsh(HK);
+render();initNet();
+if(IS_HOST&&!LS.get(SK('g'),null)){setTimeout(()=>{if(!G.sentAt){commitG(n=>n);TD.forEach((t,i)=>send('t'+i,t))}},2500)}
+</script>
+</body></html>
