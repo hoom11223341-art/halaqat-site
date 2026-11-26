@@ -4,7 +4,7 @@
 <title>رحلة الكنز · جزر المغامرة</title>
 <meta name="theme-color" content="#06324a">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lalezar&family=IBM+Plex+Sans+Arabic:wght@400;700&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lalezar&family=Cairo:wght@400;700;900&family=IBM+Plex+Sans+Arabic:wght@400;700&display=swap">
 <style>
 :root{--sea1:#04263a;--sea2:#0a4c6e;--sea3:#1584a8;--sand:#f6d98f;--sand2:#e8b95c;--gold:#ffcc33;--coral:#ff6b6b;--leaf:#34c26b;--ink:#062234;--card:#0c3a55;--line:#1f6a8c;--fg:#f3fbff;--mute:#9cc7da;
  --t0:#ff5a5f;--t1:#2fb8ff;--t2:#ffc93c;--t3:#3ee08f}
@@ -165,6 +165,85 @@ body.dispmode .tcard .nm{font-size:24px}body.dispmode .tcard .sc{font-size:44px}
 .pick button.taken{opacity:.5}
 .trybar{background:#5a3d00;border-bottom:2px solid var(--gold);padding:8px 12px;display:flex;flex-wrap:wrap;gap:6px;align-items:center;justify-content:center}
 .toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:#062234;border:2px solid var(--gold);padding:10px 18px;border-radius:14px;z-index:70;font-weight:700}
+/* ================= DISPLAY (broadcast) ================= */
+body.dsp{overflow:hidden;background:radial-gradient(140% 100% at 70% 0%,#0f3550 0%,#061626 55%,#030c16 100%) fixed;font-family:Cairo,'IBM Plex Sans Arabic',sans-serif}
+.dv{height:100vh;display:grid;grid-template-rows:auto minmax(0,1fr) auto;gap:14px;padding:16px 20px}
+.dv-h{display:flex;align-items:center;gap:18px;justify-content:space-between}
+.dv-brand{display:flex;align-items:center;gap:14px}
+.dv-logo{width:54px;height:54px;border-radius:16px;display:grid;place-items:center;font-size:30px;background:linear-gradient(145deg,#ffd84d,#e0920f);box-shadow:0 6px 18px #f2a91a55,inset 0 2px 0 #fff6}
+.dv-brand h1{margin:0;font-family:Lalezar;font-weight:400;font-size:clamp(28px,2.6vw,42px);line-height:1;color:#fff}
+.dv-brand small{display:block;color:#7fa8c2;font-size:14px;font-weight:700;margin-top:2px}
+.live{display:inline-flex;align-items:center;gap:8px;background:#d7263d;color:#fff;font-weight:900;font-size:14px;padding:5px 12px;border-radius:8px}
+.live::before{content:'';width:9px;height:9px;border-radius:50%;background:#fff;animation:blink 1.2s infinite}
+.live.off{background:#2a3f52;color:#a9c2d4}.live.off::before{animation:none;background:#a9c2d4}
+@keyframes blink{50%{opacity:.2}}
+.dv-stats{display:flex;gap:10px}
+.stat{background:#0b2235cc;border:1px solid #1d4562;border-radius:14px;padding:6px 16px;text-align:center;min-width:110px}
+.stat b{display:block;font-size:26px;font-weight:900;color:#fff;font-variant-numeric:tabular-nums;line-height:1.2}
+.stat span{font-size:12px;color:#7fa8c2;font-weight:700}
+.dv-tools{display:flex;gap:6px;opacity:.35;transition:opacity .2s}.dv-tools:hover{opacity:1}
+.dv-tools button{background:#0b2235;border:1px solid #1d4562;border-radius:10px;padding:6px 10px;font-size:13px}
+.dv-m{display:grid;grid-template-columns:minmax(0,1.55fr) minmax(380px,1fr);gap:16px;min-height:0}
+.panel{background:linear-gradient(180deg,#0c2438ee,#081a2aee);border:1px solid #1d4562;border-radius:22px;box-shadow:0 20px 50px #0008,inset 0 1px 0 #ffffff10;position:relative;overflow:hidden}
+.ph{display:flex;align-items:center;justify-content:space-between;padding:14px 18px 10px;border-bottom:1px solid #16384f}
+.ph h2{margin:0;font-size:18px;font-weight:900;color:#fff;display:flex;gap:8px;align-items:center}
+.ph span{color:#7fa8c2;font-size:13px;font-weight:700}
+.mapwrap{position:absolute;inset:50px 10px 10px}
+.mapwrap svg{width:100%;height:100%;display:block}
+.mapwrap .map{border:0;box-shadow:none;border-radius:16px;height:100%}
+.alert{position:absolute;top:62px;left:50%;transform:translate(-50%,-30px);opacity:0;transition:.45s cubic-bezier(.2,1.4,.4,1);z-index:5;background:linear-gradient(90deg,#ffd84d,#f2a91a);color:#2b1700;border-radius:16px;padding:10px 22px;font-weight:900;font-size:clamp(18px,1.7vw,26px);box-shadow:0 14px 34px #0009;white-space:nowrap;display:flex;align-items:center;gap:12px}
+.alert.on{opacity:1;transform:translate(-50%,0)}
+.alert i{font-style:normal;background:#2b1700;color:#ffd84d;border-radius:8px;padding:2px 10px;font-size:14px}
+.joinq{position:absolute;bottom:22px;left:22px;z-index:4;background:#fff;color:#062234;border-radius:20px;padding:14px;display:flex;gap:14px;align-items:center;box-shadow:0 16px 40px #000a}
+.joinq #qr img,.joinq #qr canvas{display:block}
+.joinq b{display:block;font-size:15px}.joinq strong{display:block;font-size:40px;letter-spacing:.12em;direction:ltr;font-weight:900;line-height:1.1}
+.joinq span{font-size:13px;color:#3d5a6e;font-weight:700}
+.lb{position:relative;margin:10px 14px 14px}
+.lr{position:absolute;inset-inline:0;height:var(--rh);transition:top .8s cubic-bezier(.5,0,.2,1),opacity .3s;display:grid;grid-template-columns:54px 64px minmax(0,1fr) auto;align-items:center;gap:12px;padding:0 14px;border-radius:18px;background:linear-gradient(90deg,#0f2d44,#0b2234);border:1px solid #1d4562;overflow:hidden}
+.lr::before{content:'';position:absolute;inset-block:0;inset-inline-start:0;width:6px;background:var(--c)}
+.lr.r0{background:linear-gradient(90deg,#3a2d08,#0f2d44 60%);border-color:#ffcc3388;box-shadow:0 0 0 1px #ffcc3333,0 10px 30px #ffcc331a}
+.lr.idle{opacity:.45}
+.rk{font-size:30px;font-weight:900;color:#7fa8c2;text-align:center;font-variant-numeric:tabular-nums}
+.lr.r0 .rk{color:#ffcc33}
+.av{width:58px;height:58px;border-radius:50%;display:grid;place-items:center;font-size:32px;background:#061626;box-shadow:0 0 0 3px var(--c),0 6px 14px #0008}
+.who b{display:block;font-size:22px;font-weight:900;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.who small{display:flex;gap:8px;align-items:center;color:#8fb3ca;font-size:13px;font-weight:700;white-space:nowrap;overflow:hidden}
+.who small em{font-style:normal;background:#ffcc3322;color:#ffd866;border-radius:6px;padding:0 6px;font-variant-numeric:tabular-nums;direction:ltr}
+.trk{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;margin-top:7px}
+.trk i{height:10px;border-radius:3px;background:#173a54;position:relative}
+.trk i.d{background:var(--c)}
+.trk i.x{background:repeating-linear-gradient(45deg,#4b5d6b 0 4px,#2f3e4a 4px 8px)}
+.trk i.n{background:repeating-linear-gradient(-45deg,var(--c) 0 6px,transparent 6px 12px) ,#173a54;background-size:17px 17px;animation:stripes .8s linear infinite;box-shadow:0 0 10px var(--c)}
+.trk i:last-child{border-radius:3px 3px 3px 3px;outline:1px dashed #ffcc3366;outline-offset:1px}
+@keyframes stripes{to{background-position:17px 0}}
+.pts{text-align:center;min-width:86px}
+.pts b{display:block;font-size:38px;font-weight:900;color:#fff;font-variant-numeric:tabular-nums;line-height:1}
+.lr.r0 .pts b{color:#ffcc33}
+.pts span{font-size:12px;color:#7fa8c2;font-weight:700}
+.pts .plus{position:absolute;inset-inline-end:16px;top:6px;color:#5fe39c;font-weight:900;font-size:16px;opacity:0}
+.pts .plus.go{animation:plus 2.2s ease-out}
+@keyframes plus{0%{opacity:0;transform:translateY(8px)}15%{opacity:1;transform:none}80%{opacity:1}100%{opacity:0;transform:translateY(-10px)}}
+.dv-f{display:grid;grid-template-columns:auto minmax(0,1fr);gap:12px;align-items:center;background:#0b2235cc;border:1px solid #1d4562;border-radius:16px;padding:8px 10px;overflow:hidden}
+.dv-f>b{background:#d7263d;color:#fff;border-radius:10px;padding:6px 14px;font-weight:900;font-size:14px;white-space:nowrap}
+.tick{display:flex;gap:26px;white-space:nowrap;overflow:hidden;color:#d6e8f3;font-weight:700;font-size:16px;mask-image:linear-gradient(90deg,transparent,#000 4%,#000 96%,transparent)}
+.tick span{display:inline-flex;gap:8px;align-items:center}
+.tick span em{font-style:normal;color:#7fa8c2;font-size:13px;direction:ltr;font-variant-numeric:tabular-nums}
+.tick span:first-child{color:#ffd866}
+/* final results */
+.fin2{position:fixed;inset:0;z-index:40;background:radial-gradient(90% 70% at 50% 35%,#16476a 0%,#061626 70%);display:grid;place-items:center;padding:24px;font-family:Cairo,sans-serif}
+.fin2 .t{text-align:center}
+.fin2 small{color:#ffd866;font-weight:900;letter-spacing:.04em;font-size:18px}
+.fin2 h2{margin:4px 0 0;font-family:Lalezar;font-weight:400;font-size:clamp(40px,5vw,78px);color:#fff;line-height:1.15}
+.pd{display:flex;align-items:flex-end;justify-content:center;gap:18px;margin-top:28px}
+.pc{width:min(240px,26vw);display:grid;justify-items:center;gap:8px}
+.pc .av{width:96px;height:96px;font-size:56px}
+.pc .nm{font-size:24px;font-weight:900;color:#fff}
+.pc .sc{font-size:20px;font-weight:900;color:#ffd866}
+.pc .blk{width:100%;border-radius:16px 16px 0 0;display:grid;place-items:start center;padding-top:14px;font-size:56px;font-weight:900;color:#ffffffcc;background:linear-gradient(180deg,var(--c),color-mix(in srgb,var(--c) 40%,#061626));box-shadow:inset 0 2px 0 #fff5,0 20px 40px #0008}
+.pc.p1 .blk{height:230px}.pc.p2 .blk{height:160px}.pc.p3 .blk{height:110px}
+.pc.p1 .av{width:120px;height:120px;font-size:70px;box-shadow:0 0 0 4px #ffcc33,0 0 40px #ffcc3388}
+.crown{font-size:44px;margin-bottom:-14px;animation:pulse 1.6s infinite}
+.fin2 .rest{margin-top:18px;color:#a9c2d4;font-size:18px;font-weight:700}
 @media print{body *{visibility:hidden}}
 </style>
 <script src="https://unpkg.com/mqtt@5.10.1/dist/mqtt.min.js"></script>
@@ -341,10 +420,10 @@ function shipSVG(i){return `<g class="ship" id="ship${i}" style="transform:trans
   <path d="M1 -44 L15 -40 L1 -36Z" fill="${TCH[i]}"/>
   <text x="0" y="32" font-size="18" text-anchor="middle">${TEAMS[i].e}</text></g></g>`}
 function mapSVG(id){
-  let waves='';const r=mulb(7);for(let k=0;k<26;k++){const x=Math.floor(r()*1000),y=Math.floor(r()*600);waves+=`<path class="wave" style="animation-delay:${-r()*6}s" d="M${x} ${y} q10 -8 20 0 q10 8 20 0" stroke="#bfefff" stroke-width="2.5" fill="none" opacity=".35"/>`}
+  let waves='';const r=mulb(7);for(let k=0;k<40;k++){const x=Math.floor(r()*1600)-300,y=Math.floor(r()*800)-100;waves+=`<path class="wave" style="animation-delay:${-r()*6}s" d="M${x} ${y} q10 -8 20 0 q10 8 20 0" stroke="#bfefff" stroke-width="2.5" fill="none" opacity=".35"/>`}
   return `<svg class="map" id="${id}" viewBox="0 0 1000 600" xmlns="http://www.w3.org/2000/svg">
   <defs><radialGradient id="sea${id}" cx="50%" cy="40%" r="75%"><stop offset="0" stop-color="#1fa3c9"/><stop offset=".6" stop-color="#0c6d96"/><stop offset="1" stop-color="#064866"/></radialGradient></defs>
-  <rect width="1000" height="600" fill="url(#sea${id})"/>${waves}
+  <rect x="-700" y="-450" width="2400" height="1500" fill="url(#sea${id})"/>${waves}
   <path d="${pathD()}" fill="none" stroke="#fff6d5" stroke-width="5" stroke-dasharray="4 14" stroke-linecap="round" opacity=".85"/>
   <g transform="translate(${NODES[0][0]} ${NODES[0][1]})"><rect x="-40" y="10" width="80" height="14" fill="#8a5a2b" rx="3"/><rect x="-36" y="22" width="6" height="22" fill="#6b4320"/><rect x="30" y="22" width="6" height="22" fill="#6b4320"/><g transform="translate(0 38)"><rect x="-44" y="-14" width="88" height="26" rx="13" fill="#062234" opacity=".82"/><text y="5" font-size="15" fill="#fff" text-anchor="middle" font-weight="700" font-family="IBM Plex Sans Arabic">⚓ الميناء</text></g></g>
   <g transform="translate(70 70)"><circle r="44" fill="#f6e2b3" stroke="#8a5a1e" stroke-width="3"/><path d="M0 -36 L8 0 L0 36 L-8 0Z" fill="#c0392b"/><path d="M-36 0 L0 -6 L36 0 L0 6Z" fill="#2c3e50"/><text y="-48" font-size="16" text-anchor="middle" fill="#fff" font-weight="700">ش</text></g>
@@ -367,7 +446,7 @@ function render(){
   const app=$('#app');
   if(!ROOM){if(lastKey!=='land'){lastKey='land';app.innerHTML=landHTML()}return}
   if(IS_HOST){renderHost();return}
-  if(DISPLAY){if(!gotG){if(lastKey!=='conn'){lastKey='conn';app.innerHTML=`<div class="land"><div class="card"><div class="bigemoji">🖥️</div><h2 class="disp">شاشة العرض · جارٍ الاتصال بالغرفة ${esc(ROOM)}…</h2><span class="conn chip"></span></div></div>`;paintConn()}return}renderHost();return}
+  if(DISPLAY){if(!gotG){if(lastKey!=='conn'){lastKey='conn';app.innerHTML=`<div class="land"><div class="card"><div class="bigemoji">🖥️</div><h2 class="disp">شاشة العرض · جارٍ الاتصال بالغرفة ${esc(ROOM)}…</h2><span class="conn chip"></span></div></div>`;paintConn()}return}renderDisplay();return}
   renderTeam();
 }
 
@@ -446,16 +525,79 @@ let finShown='';
 function renderFinale(){const host=$('#finHost');if(!host)return;
   if(G.view!=='fin'){if(finShown){host.innerHTML='';finShown='';stopConfetti()}return}
   const k=JSON.stringify(TD.map((t,i)=>total(i)))+G.names;if(finShown===k)return;finShown=k;
-  const r=ranking();const top=r.slice(0,3);const ord=top.length>=3?[top[1],top[0],top[2]]:top.length===2?[top[1],top[0]]:top;
-  host.innerHTML=`<div class="fin"><div><div class="chest">💰</div><h2 class="disp">${r.length?'الفائز بالكنز: '+esc(teamName(r[0])):'لا يوجد فرق بعد'}</h2>
-   <div class="podium">${ord.map(i=>`<div class="pod ${i===r[0]?'p1':''}" style="--c:${TCH[i]}"><span>${['🥇','🥈','🥉'][r.indexOf(i)]}</span><span class="em">${TEAMS[i].e}</span><span class="nm">${esc(teamName(i))}</span><span class="sc">${total(i)}</span></div>`).join('')}</div>
-   ${r[3]!=null?`<p class="note" style="font-size:18px">4. ${TEAMS[r[3]].e} ${esc(teamName(r[3]))} · ${total(r[3])}</p>`:''}
-   ${DISPLAY?'':'<div style="height:16px"></div><button class="b" data-act="fin">رجوع للخريطة</button>'}</div></div>`;
+  const r=ranking();const slot=(i,p)=>i==null?'':`<div class="pc p${p}" style="--c:${TCH[i]}">${p===1?'<div class="crown">👑</div>':''}<div class="av" style="--c:${TCH[i]}">${TEAMS[i].e}</div><div class="nm">${esc(teamName(i))}</div><div class="sc"><span class="num">${total(i)}</span> نقطة</div><div class="blk">${p}</div></div>`;
+  host.innerHTML=`<div class="fin2"><div class="t"><small>🏆 النتائج النهائية · رحلة الكنز</small><h2>${r.length?'الفائز بالكنز: '+esc(teamName(r[0])):'لا توجد فرق بعد'}</h2>
+   <div class="pd">${slot(r[1],2)}${slot(r[0],1)}${slot(r[2],3)}</div>
+   ${r[3]!=null?`<p class="rest">المركز الرابع: ${TEAMS[r[3]].e} ${esc(teamName(r[3]))} · ${total(r[3])} نقطة</p>`:''}
+   ${DISPLAY?'':'<div style="height:14px"></div><button class="b" data-act="fin">رجوع للخريطة</button>'}</div></div>`;
   startConfetti();sWin()}
 function printLocks(){const cards=ISL.map((x,k)=>({x,k,c:G.locks[k].c})).filter(o=>o.c);if(!cards.length){toast('اكتب رمزًا لجزيرة واحدة على الأقل');return}
   const w=window.open('','_blank');if(!w){toast('اسمح بالنوافذ المنبثقة للطباعة');return}
   w.document.write(`<!doctype html><html dir="rtl" lang="ar"><head><meta charset="utf-8"><title>بطاقات رموز الجزر</title><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lalezar&family=IBM+Plex+Sans+Arabic:wght@400;700&display=swap"><style>body{font-family:'IBM Plex Sans Arabic';margin:0;padding:10mm;display:grid;grid-template-columns:1fr 1fr;gap:8mm}.c{border:3px dashed #8a5a1e;border-radius:12px;padding:8mm;text-align:center;background:#fbf0d6;break-inside:avoid}.c h2{font-family:Lalezar;font-size:28px;margin:0}.c b{font-family:Lalezar;font-size:64px;letter-spacing:.2em;direction:ltr;display:block}.e{font-size:48px}@media print{body{-webkit-print-color-adjust:exact;print-color-adjust:exact}}</style></head><body>${cards.map(o=>`<div class="c"><div class="e">🗝️${o.x.ic}</div><h2>رمز ${esc(o.x.n)}</h2><b>${esc(o.c)}</b><p>أدخلوا هذا الرمز في جهازكم لتبحروا إلى الجزيرة ${o.k+1}</p></div>`).join('')}<script>setTimeout(()=>print(),700)<\/script></body></html>`);w.document.close()}
 
+
+/* ======================= DISPLAY (broadcast) ======================= */
+let dvBuilt=false,dvSeen=null,dvAlertT=0;const RH=104,RG=12;
+function events(){const ev=[];for(let i=0;i<4;i++)TD[i].res.forEach((r,k)=>{if(r)ev.push({i,k,r})});return ev.sort((a,b)=>b.r.at-a.r.at)}
+const hm=t=>{const d=new Date(t);return String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0')};
+function evText(e){const nm=`${TEAMS[e.i].e} ${esc(teamName(e.i))}`;if(e.r.s==='timeout')return `⌛ ${nm}: انتهى الوقت في ${esc(ISL[e.k].n)}`;if(e.k===6)return `💰 ${nm} فتح صندوق الكنز! +${e.r.pts}`;return `${e.r.rank===0?'🥇':'✅'} ${nm} أنجز ${esc(ISL[e.k].n)} +${e.r.pts}`}
+function renderDisplay(){
+  const app=$('#app');
+  if(!dvBuilt){dvBuilt=true;lastKey='dv';document.body.classList.add('dsp');
+    app.innerHTML=`<div class="dv">
+     <header class="dv-h">
+      <div class="dv-brand"><div class="dv-logo">🏝️</div><div><h1>رحلة الكنز</h1><small>سباق الجزر السبع · الغرفة <span class="num">${esc(ROOM)}</span></small></div><span class="live off" id="live">قبل البداية</span></div>
+      <div class="dv-stats" id="stats"></div>
+      <div class="dv-tools"><button data-act="snd" id="sndBtn">🔇 صوت</button><button data-act="fs">⛶ ملء الشاشة</button><span class="conn chip" style="font-size:12px;padding:4px 10px"></span></div>
+     </header>
+     <main class="dv-m">
+      <section class="panel"><div class="ph"><h2>🗺️ خريطة الرحلة</h2><span id="mapSub"></span></div><div class="mapwrap">${mapSVG('dmap')}</div><div class="alert" id="alert"></div><div id="joinq"></div></section>
+      <section class="panel"><div class="ph"><h2>🏆 ترتيب الفرق</h2><span>النقاط · التقدم في الجزر</span></div>
+       <div class="lb" id="lb" style="--rh:${RH}px;height:${4*RH+3*RG}px">${[0,1,2,3].map(i=>`<div class="lr" id="lr${i}" style="--c:${TCH[i]};top:${i*(RH+RG)}px"><div class="rk" id="rk${i}"></div><div class="av">${TEAMS[i].e}</div><div class="who"><b id="nm${i}"></b><small id="st${i}"></small><div class="trk" id="tk${i}">${ISL.map(()=>'<i></i>').join('')}</div></div><div class="pts"><b id="sc${i}">0</b><span>نقطة</span><div class="plus" id="pl${i}"></div></div></div>`).join('')}</div>
+      </section>
+     </main>
+     <footer class="dv-f"><b>آخر الأحداث</b><div class="tick" id="tick"></div></footer>
+    </div><div id="finHost"></div>`;
+    paintConn();fitBoard();addEventListener('resize',fitBoard)}
+  placeShips($('#dmap'));
+  // header
+  const live=$('#live');const fin=[0,1,2,3].filter(doneAll).length;
+  if(G.view==='fin'){live.className='live off';live.textContent='النتائج النهائية'}else if(G.raceOn){live.className='live';live.textContent='مباشر'}else{live.className='live off';live.textContent=G.raceAt?'متوقف مؤقتًا':'قبل البداية'}
+  const joined=[0,1,2,3].filter(i=>TD[i].dev).length;const doneIs=TD.reduce((s,t)=>s+t.res.filter(Boolean).length,0);
+  const sk=JSON.stringify([joined,doneIs,fin,G.raceAt]);const st=$('#stats');
+  if(st._k!==sk){st._k=sk;st.innerHTML=`<div class="stat"><b id="elap">${G.raceAt?fmt(Date.now()-G.raceAt):'--:--'}</b><span>مدة السباق</span></div><div class="stat"><b>${joined}<small style="font-size:16px;color:#7fa8c2"> / 4</small></b><span>الفرق المشاركة</span></div><div class="stat"><b>${doneIs}<small style="font-size:16px;color:#7fa8c2"> / ${Math.max(joined,1)*7}</small></b><span>جزر مُنجزة</span></div><div class="stat"><b>${fin}</b><span>وصلوا للكنز</span></div>`}
+  $('#mapSub').textContent=G.raceOn?'السفن تتحرك مباشرة مع تقدم الفرق':'السفن في الميناء بانتظار الإشارة';
+  // join qr
+  const jq=$('#joinq');const showQ=!G.raceOn&&!G.raceAt;
+  if(showQ&&!jq.firstChild){jq.innerHTML=`<div class="joinq"><div id="qr"></div><div><b>امسحوا للانضمام</b><span>أو ادخلوا الرمز</span><strong>${esc(ROOM)}</strong></div></div>`;const q=$('#qr');if(window.QRCode)new QRCode(q,{text:teamLink(),width:132,height:132,correctLevel:QRCode.CorrectLevel.M});else q.remove()}
+  else if(!showQ&&jq.firstChild)jq.innerHTML='';
+  // leaderboard
+  const order=[0,1,2,3].sort((a,b)=>(!!TD[b].dev-!!TD[a].dev)||total(b)-total(a)||TD[b].isl-TD[a].isl||a-b);
+  order.forEach((i,r)=>{const el=$('#lr'+i);const t=TD[i];const top=r*(RHc+RG)+'px';if(el.style.top!==top)el.style.top=top;
+    el.classList.toggle('r0',r===0&&total(i)>0);el.classList.toggle('idle',!t.dev);
+    $('#rk'+i).textContent=r===0&&total(i)>0?'👑':r+1;
+    $('#nm'+i).textContent=teamName(i);
+    const sc=$('#sc'+i),v=String(total(i));if(sc.textContent!==v)sc.textContent=v;
+    const stx=!t.dev?'بانتظار الانضمام':t.isl>=7?'🏆 فتح صندوق الكنز':t.st?`${ISL[t.isl].ic} في ${ISL[t.isl].n} <em data-tm2="${i}">${fmt(remOf(i))}</em>`:t.isl===0?'⚓ في الميناء':`⛵ أنهى ${t.isl} من 7 جزر`;
+    const se=$('#st'+i);if(se._h!==stx){se._h=stx;se.innerHTML=stx}
+    [...$('#tk'+i).children].forEach((d,k)=>{const rr=t.res[k];d.className=rr?(rr.s==='timeout'?'x':'d'):(k===t.isl&&t.st?'n':'')})});
+  // events: ticker + alert
+  const ev=events();
+  const tk=$('#tick'),tx=ev.slice(0,8).map(e=>`<span><em>${hm(e.r.at)}</em>${evText(e)}</span>`).join('')||'<span>⚓ بانتظار انطلاق السفن… أول فريق ينهي جزيرة يأخذ 100 نقطة!</span>';
+  if(tk._h!==tx){tk._h=tx;tk.innerHTML=tx}
+  const ids=new Set(ev.map(e=>e.i+'-'+e.k));
+  if(dvSeen===null)dvSeen=ids;
+  else{const nw=ev.filter(e=>!dvSeen.has(e.i+'-'+e.k));dvSeen=ids;
+    if(nw.length){const e=nw[0];const a=$('#alert');a.innerHTML=`<i>${e.r.s==='timeout'?'تحديث':'خبر عاجل'}</i>${evText(e)}`;a.classList.add('on');clearTimeout(dvAlertT);dvAlertT=setTimeout(()=>a.classList.remove('on'),6000);
+      nw.forEach(x=>{if(x.r.pts){const p=$('#pl'+x.i);p.textContent='+'+x.r.pts;p.classList.remove('go');void p.offsetWidth;p.classList.add('go')}});
+      e.r.s==='done'?sWin():sBad()}}
+  renderFinale();
+}
+function fitBoard(){const lb=$('#lb');if(!lb)return;const avail=lb.parentElement.clientHeight-70;const rh=Math.max(78,Math.min(130,Math.floor((avail-3*RG)/4)));
+  lb.style.setProperty('--rh',rh+'px');lb.style.height=(4*rh+3*RG)+'px';
+  const order=[...lb.children].sort((a,b)=>parseInt(a.style.top)-parseInt(b.style.top));order.forEach((el,r)=>el.style.top=r*(rh+RG)+'px');RHc=rh}
+let RHc=RH;
+function dvTick(){const e=$('#elap');if(e&&G.raceAt)e.textContent=fmt(Date.now()-G.raceAt);document.querySelectorAll('[data-tm2]').forEach(el=>{el.textContent=fmt(remOf(+el.dataset.tm2))})}
 /* ======================= TEAM ======================= */
 let MS=null;        // mission state (local)
 let view=null;      // local overlay: {t:'sail'|'reward', ...}
@@ -593,14 +735,14 @@ const A={
   joinroom:()=>{const c=($('#jcode').value||'').toUpperCase().replace(/[^A-Z0-9]/g,'');if(c.length<4){toast('اكتبوا رمز الغرفة');return}location.href=location.pathname+'?r='+c},
   snd:()=>{initAudio();sOk();const b=$('#sndBtn');if(b)b.textContent='🔊 الصوت مفعّل'},
   drawer:()=>{drawer=!drawer;renderDrawer()},
-  'race-on':()=>commitG(n=>{n.raceOn=true}),
+  'race-on':()=>commitG(n=>{n.raceOn=true;if(!n.raceAt)n.raceAt=Date.now()}),
   'race-off':()=>commitG(n=>{n.raceOn=false}),
   fin:()=>{drawer=false;commitG(n=>{n.view=n.view==='fin'?'map':'fin'})},
   names:()=>{commitG(n=>{n.names=[0,1,2,3].map(i=>($('#tn'+i).value||'').trim()||TEAMS[i].n)});toast('تم حفظ الأسماء ✓')},
   locks:()=>{commitG(n=>{n.locks=ISL.map((_,k)=>({c:toLat($('#lc'+k).value).slice(0,6),h:($('#lh'+k).value||'').trim()}))});toast('تم حفظ الرموز ✓')},
   lockrand:()=>{ISL.forEach((_,k)=>{$('#lc'+k).value=String(100+Math.floor(Math.random()*900))})},
   lockprint:()=>{A.locks();setTimeout(printLocks,50)},
-  reset:()=>{if(resetArm>Date.now()){resetArm=0;const run=rid();commitG(n=>{n.run=run;n.raceOn=false;n.view='map';n.bonus=[0,0,0,0]});TD=[0,1,2,3].map(()=>{const t=freshT(run);t.rev=Date.now();t.sentAt=Date.now();return t});TD.forEach((t,i)=>send('t'+i,t));saveLocal();toast('بدأت مغامرة جديدة');soon()}else{resetArm=Date.now()+4000;renderDrawer();setTimeout(renderDrawer,4100)}},
+  reset:()=>{if(resetArm>Date.now()){resetArm=0;const run=rid();commitG(n=>{n.run=run;n.raceOn=false;n.raceAt=0;n.view='map';n.bonus=[0,0,0,0]});TD=[0,1,2,3].map(()=>{const t=freshT(run);t.rev=Date.now();t.sentAt=Date.now();return t});TD.forEach((t,i)=>send('t'+i,t));saveLocal();toast('بدأت مغامرة جديدة');soon()}else{resetArm=Date.now()+4000;renderDrawer();setTimeout(renderDrawer,4100)}},
   disp:()=>window.open(dispLink(),'_blank'),
   fs:()=>{try{(document.documentElement.requestFullscreen||document.documentElement.webkitRequestFullscreen).call(document.documentElement)}catch(e){}},
   try:()=>window.open(location.pathname+'?r='+ROOM+'&try=1','_blank'),
@@ -648,7 +790,7 @@ document.addEventListener('keydown',e=>{if(e.key==='Enter'&&e.target.id==='jcode
 let lastSec=-1;
 setInterval(()=>{
   if(!ROOM)return;
-  if(IS_HOST||DISPLAY){document.querySelectorAll('[data-tm]').forEach(el=>{const i=+el.dataset.tm;el.textContent='⏱ '+fmt(remOf(i))});paintBanner();return}
+  if(IS_HOST||DISPLAY){document.querySelectorAll('[data-tm]').forEach(el=>{const i=+el.dataset.tm;el.textContent='⏱ '+fmt(remOf(i))});if(DISPLAY)dvTick();else paintBanner();return}
   if(MYT==null||pState()!=='play')return;
   const rem=remOf(MYT);const c=$('#pclk');if(c){c.textContent=fmt(rem);c.classList.toggle('low',rem<30000)}
   const s=Math.ceil(rem/1000);if(s!==lastSec){lastSec=s;if(s<=10&&s>0)sTick()}
