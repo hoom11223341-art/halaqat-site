@@ -134,7 +134,15 @@ body.dispmode .tcard .nm{font-size:24px}body.dispmode .tcard .sc{font-size:44px}
 .twg{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
 .twc.bad{border-color:#ff5a5f}
 /* tap */
-.tapg{display:grid;grid-template-columns:repeat(5,1fr);gap:8px}
+.tapg{display:grid;grid-template-columns:repeat(5,1fr);gap:6px}
+.tap{font-size:clamp(18px,5.5vw,28px)!important}
+.mem.m32{grid-template-columns:repeat(4,1fr);gap:6px}
+@media(min-width:620px){.mem.m32{grid-template-columns:repeat(8,1fr)}.tapg{grid-template-columns:repeat(8,1fr)}}
+.mem.m32 .mc{font-size:clamp(24px,7vw,36px);border-radius:12px}
+.xog{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;max-width:360px;margin:0 auto}
+.xoc{aspect-ratio:1;border-radius:18px;background:linear-gradient(160deg,#f6e7bf,#e6c98a);border:3px solid #c9a15a;font-size:clamp(40px,14vw,64px);display:grid;place-items:center;box-shadow:inset 0 -5px 0 #0002}
+.xoc.vx,.xoc.vo{animation:pop .25s}
+.xoc.w{background:linear-gradient(160deg,#fff4b0,#ffcc33);border-color:#fff;box-shadow:0 0 20px #ffcc33aa}
 .tap{aspect-ratio:1;border-radius:50%;background:radial-gradient(circle at 35% 30%,#fff7d6,#f2c75c 60%,#c48a1f);border:3px solid #ffe7a1;color:#4a2b00;font-family:Lalezar;font-size:clamp(22px,7vw,34px);display:grid;place-items:center}
 .tap.hit{visibility:hidden}
 .tap.bad{background:#ff7b82}
@@ -269,42 +277,66 @@ const TC=['var(--t0)','var(--t1)','var(--t2)','var(--t3)'];
 const TCH=['#ff5a5f','#2fb8ff','#ffc93c','#3ee08f'];
 const RANK_PTS=[100,70,50,30];
 const ISL=[
- {k:'quiz',  n:'جزيرة الأسئلة', ic:'❓',dur:240,intro:'أجيبوا عن 8 أسئلة سهلة واحدًا بعد الآخر. الإجابة الخاطئة توقف سفينتكم 3 ثوانٍ!'},
- {k:'memory',n:'جزيرة الذاكرة', ic:'🃏',dur:240,intro:'اقلبوا البطاقات بطاقتين بطاقتين، وطابقوا كل صورتين متشابهتين حتى تكتشفوا الأزواج الثمانية.'},
- {k:'twin',  n:'جزيرة العين الذكية',ic:'🔍',dur:240,intro:'في كل جولة صورة أصلية، ابحثوا عن نسختها المطابقة تمامًا بين 9 صور. 3 جولات، والخطأ يوقفكم 3 ثوانٍ.'},
- {k:'tap',   n:'جزيرة الأرقام', ic:'🔢',dur:180,intro:'اضغطوا العملات الذهبية بالترتيب من 1 إلى 20 بأسرع ما تقدرون!'},
- {k:'words', n:'جزيرة الكلمات', ic:'🔤',dur:300,intro:'5 كلمات بحرية مخبأة بين الحروف (أفقية أو عمودية). اضغطوا أول حرف في الكلمة ثم آخر حرف.'},
- {k:'riddle',n:'جزيرة الألغاز', ic:'🧩',dur:240,intro:'5 ألغاز ممتعة! فكروا جيدًا واختاروا الإجابة الصحيحة.'},
- {k:'chest', n:'جزيرة الكنز',   ic:'💰',dur:240,intro:'وصلتم إلى جزيرة الكنز! أدخلوا الأرقام الستة التي جمعتموها من الجزر بالترتيب لفتح الصندوق. النقاط هنا مضاعفة!'}];
+ {k:'quiz',  n:'جزيرة الأسئلة', ic:'❓',dur:420,intro:'30 سؤالًا متنوعًا (دين، علوم، رياضيات، لغة، جغرافيا). أجيبوا واحدًا بعد الآخر، والإجابة الخاطئة توقف سفينتكم 3 ثوانٍ!'},
+ {k:'memory',n:'جزيرة الذاكرة', ic:'🃏',dur:360,intro:'32 بطاقة فيها 16 صورة بحرية مختلفة. اقلبوا بطاقتين في كل مرة وطابقوا كل صورتين متشابهتين حتى تكتشفوا الأزواج الستة عشر.'},
+ {k:'xo',    n:'جزيرة إكس أو',  ic:'🎮',dur:360,intro:'العبوا إكس أو ضد قبطان القراصنة! أنتم ❌ وهو ⭕. فوزوا عليه في 3 جولات. التعادل يعيد الجولة، والخسارة توقفكم 5 ثوانٍ.'},
+ {k:'tap',   n:'جزيرة الأرقام', ic:'🔢',dur:300,intro:'40 عملة ذهبية مبعثرة! اضغطوها بالترتيب من 1 إلى 40 بأسرع ما تقدرون. الضغطة الخاطئة توقفكم 5 ثوانٍ.'},
+ {k:'words', n:'جزيرة الكلمات', ic:'🔤',dur:300,intro:'5 كلمات بحرية مخبأة بين الحروف (أفقية أو عمودية). اضغطوا أول حرف في الكلمة ثم آخر حرف. الاختيار الخاطئ يوقفكم 5 ثوانٍ.'},
+ {k:'riddle',n:'جزيرة الألغاز', ic:'🧩',dur:480,intro:'20 لغزًا تحتاج تفكير! اختاروا الإجابة الصحيحة، والخطأ يوقفكم 5 ثوانٍ.'},
+ {k:'chest', n:'جزيرة الكنز',   ic:'💰',dur:240,intro:'وصلتم إلى جزيرة الكنز! أدخلوا الأرقام الستة التي جمعتموها من الجزر بالترتيب لفتح الصندوق. الخطأ يوقفكم 5 ثوانٍ، والنقاط هنا مضاعفة!'}];
 const QUIZ=[
- {q:'كم رِجلًا للعنكبوت؟',o:['4','6','8','10'],a:2},
- {q:'كم عدد أيام الأسبوع؟',o:['5','6','7','8'],a:2},
- {q:'أي هذه الحيوانات يعيش في البحر؟',o:['الجمل','الحوت','الأسد','الحصان'],a:1},
- {q:'كم يساوي 5 + 3 ؟',o:['7','8','9','10'],a:1},
- {q:'ما عاصمة المملكة العربية السعودية؟',o:['جدة','الدمام','الرياض','مكة'],a:2},
- {q:'كم عدد أركان الإسلام؟',o:['3','4','5','6'],a:2},
- {q:'ما الكوكب الذي نعيش عليه؟',o:['المريخ','الأرض','القمر','زحل'],a:1},
- {q:'كم شهرًا في السنة؟',o:['10','11','12','13'],a:2},
- {q:'كم يساوي 10 − 4 ؟',o:['5','6','7','4'],a:1},
- {q:'أي حيوان يُلقّب بسفينة الصحراء؟',o:['الفيل','الحصان','الجمل','الزرافة'],a:2},
- {q:'ماذا تصنع النحلة؟',o:['الحليب','العسل','الحرير','الخبز'],a:1},
- {q:'كم ضلعًا للمثلث؟',o:['3','4','5','6'],a:0},
- {q:'كم يساوي 3 × 4 ؟',o:['7','10','12','14'],a:2},
- {q:'ما لون العلم السعودي؟',o:['أحمر','أزرق','أخضر','أصفر'],a:2},
- {q:'في أي فصل يكون الجو أشد حرارة؟',o:['الشتاء','الصيف','الربيع','الخريف'],a:1},
- {q:'ما الذي يحتاجه النبات لينمو؟',o:['الماء والشمس','الحلوى','الرمل فقط','الظلام'],a:0},
- {q:'كم عدد ألوان قوس المطر تقريبًا؟',o:['3','5','7','10'],a:2},
- {q:'ما صغير القطة؟',o:['جرو','هريرة','مهر','شبل'],a:1}];
+ {q:'ما أكبر كوكب في المجموعة الشمسية؟',o:['زحل','المشتري','الأرض','نبتون'],a:1},
+ {q:'كم عدد قارات العالم؟',o:['5','6','7','8'],a:2},
+ {q:'ما أكبر محيط في العالم؟',o:['الأطلسي','الهندي','الهادئ','المتجمد الشمالي'],a:2},
+ {q:'كم يساوي 7 × 8 ؟',o:['48','54','56','64'],a:2},
+ {q:'كم دقيقة في ساعتين ونصف؟',o:['120','130','150','180'],a:2},
+ {q:'ما الغاز الذي نحتاجه لنتنفس ونعيش؟',o:['ثاني أكسيد الكربون','الأكسجين','النيتروجين','الهيليوم'],a:1},
+ {q:'ما أسرع حيوان يجري على اليابسة؟',o:['الأسد','الغزال','الفهد','الحصان'],a:2},
+ {q:'ما عاصمة جمهورية مصر العربية؟',o:['الإسكندرية','القاهرة','الجيزة','أسوان'],a:1},
+ {q:'كم عدد أجزاء القرآن الكريم؟',o:['20','30','60','114'],a:1},
+ {q:'ما أطول سورة في القرآن الكريم؟',o:['آل عمران','النساء','البقرة','الكهف'],a:2},
+ {q:'ما أكبر حيوان يعيش على الأرض؟',o:['الفيل','الحوت الأزرق','الزرافة','القرش الأبيض'],a:1},
+ {q:'كم ضلعًا للشكل السداسي؟',o:['5','6','7','8'],a:1},
+ {q:'كم يساوي 100 − 37 ؟',o:['53','63','67','73'],a:1},
+ {q:'ما العضو الذي يضخ الدم في جسم الإنسان؟',o:['الرئتان','الكبد','القلب','المعدة'],a:2},
+ {q:'ما أقرب كوكب إلى الشمس؟',o:['الزهرة','عطارد','المريخ','الأرض'],a:1},
+ {q:'في أي مدينة يقع المسجد النبوي؟',o:['مكة المكرمة','المدينة المنورة','الطائف','القدس'],a:1},
+ {q:'عند كم درجة مئوية يغلي الماء؟',o:['50','80','100','200'],a:2},
+ {q:'ما جمع كلمة «كتاب»؟',o:['كتابات','كُتُب','كواتب','مكاتب'],a:1},
+ {q:'ما ضد كلمة «شجاع»؟',o:['قوي','جبان','سريع','كريم'],a:1},
+ {q:'كم يساوي نصف العدد 90 ؟',o:['35','40','45','55'],a:2},
+ {q:'أي هذه الحيوانات من الثدييات؟',o:['القرش','الدلفين','السلحفاة','الأخطبوط'],a:1},
+ {q:'كم يومًا في السنة الكبيسة؟',o:['360','364','365','366'],a:3},
+ {q:'ما اللون الناتج من خلط الأزرق مع الأصفر؟',o:['البنفسجي','البرتقالي','الأخضر','البني'],a:2},
+ {q:'من أي مادة يُصنع الزجاج أساسًا؟',o:['الخشب','الرمل','الحديد','الملح'],a:1},
+ {q:'ما الكوكب الملقب بالكوكب الأحمر؟',o:['زحل','المشتري','المريخ','عطارد'],a:2},
+ {q:'كم عدد ركعات صلاة المغرب؟',o:['2','3','4','5'],a:1},
+ {q:'ما أكبر دولة عربية من حيث المساحة؟',o:['السعودية','مصر','الجزائر','السودان'],a:2},
+ {q:'كم يساوي 9 × 9 ؟',o:['72','81','89','99'],a:1},
+ {q:'ما اسم صغير الحصان؟',o:['الجرو','الشبل','المُهر','الحَمَل'],a:2},
+ {q:'كم عدد أرجل الحشرة؟',o:['4','6','8','10'],a:1}];
 const RIDDLES=[
- {q:'له أسنان كثيرة لكنه لا يعضّ. ما هو؟',o:['المشط','التمساح','المنشار الكهربائي','الكلب'],a:0},
- {q:'له عين واحدة لكنه لا يرى. ما هو؟',o:['القرصان','الإبرة','الكاميرا','الحوت'],a:1},
- {q:'يمشي بلا أرجل ويبكي بلا عيون. ما هو؟',o:['الماء','السحاب','الريح','الدودة'],a:1},
+ {q:'له أسنان كثيرة لكنه لا يعضّ. ما هو؟',o:['المشط','التمساح','المنشار','القرش'],a:0},
+ {q:'له عين واحدة لكنه لا يرى. ما هو؟',o:['القرصان','الإبرة','الكاميرا','البئر'],a:1},
+ {q:'يمشي بلا أرجل ويبكي بلا عيون. ما هو؟',o:['النهر','السحاب','الريح','الدودة'],a:1},
  {q:'بيت ليس له أبواب ولا نوافذ. ما هو؟',o:['الخيمة','الكهف','البيضة','الصندوق'],a:2},
- {q:'يكتب ولا يقرأ أبدًا. ما هو؟',o:['القلم','المعلم','الدفتر','الحاسوب'],a:0},
- {q:'حيوان يحمل بيته على ظهره أينما ذهب. ما هو؟',o:['الجمل','السلحفاة','الأرنب','القرد'],a:1},
  {q:'كلما أخذتَ منه كَبُر. ما هو؟',o:['الحفرة','الكعكة','البالون','الشجرة'],a:0},
- {q:'شيء تراه في الماء ولا يبتل أبدًا. ما هو؟',o:['السمكة','الصخرة','ظلّك / صورتك','المظلة'],a:2}];
-const MEM_E=['🐠','🐙','🦀','🐬','🐳','🐚','⚓','🏝️'];
+ {q:'له رقبة وليس له رأس. ما هو؟',o:['الزرافة','الزجاجة','الكرسي','الحصان'],a:1},
+ {q:'يسمع بلا أذن ويتكلم بلا لسان. ما هو؟',o:['الكتاب','الهاتف','الشجرة','المرآة'],a:1},
+ {q:'كلما زاد نقص. ما هو؟',o:['المال','الماء','العمر','الطعام'],a:2},
+ {q:'أخضر في الأرض، أسود في السوق، أحمر في البيت. ما هو؟',o:['التمر','الشاي','البطيخ','الفلفل'],a:1},
+ {q:'كلما أشعلتَه قَصُر. ما هو؟',o:['الشمعة','الخشب','المصباح','الورق'],a:0},
+ {q:'حيوان ينام وعيناه مفتوحتان. ما هو؟',o:['القطة','السمكة','البومة','الأرنب'],a:1},
+ {q:'له أوراق وليس شجرة، وله جلد وليس حيوانًا. ما هو؟',o:['الكتاب','الملفوف','الحقيبة','الدفتر الإلكتروني'],a:0},
+ {q:'يقرصك ولا تراه. ما هو؟',o:['البعوضة','الجوع','النملة','البرد'],a:1},
+ {q:'تكسره بمجرد أن تنطق باسمه. ما هو؟',o:['الزجاج','الصمت','الوعد','القلم'],a:1},
+ {q:'أنا ابن الماء، فإن تركوني في الماء مِتّ. من أنا؟',o:['السمكة','الثلج','الملح','الصدف'],a:1},
+ {q:'يتكلم كل اللغات ولا يعرف أي لغة. ما هو؟',o:['المترجم','الصدى','الببغاء','الراديو'],a:1},
+ {q:'إذا لمسته صاح. ما هو؟',o:['الجرس','الطفل','الديك','الباب'],a:0},
+ {q:'له أربع أرجل ولا يستطيع المشي. ما هو؟',o:['الطاولة','السلحفاة','الكرسي المتحرك','العنكبوت'],a:0},
+ {q:'يجري ولا يمشي، وله فم ولا يتكلم. ما هو؟',o:['الحصان','النهر','القطار','الرياح'],a:1},
+ {q:'يكتب ولا يقرأ أبدًا. ما هو؟',o:['القلم','المعلم','الدفتر','الحاسوب'],a:0}];
+const MEM_E=['🐠','🐙','🦀','🐬','🐳','🐚','⚓','🏝️','🦈','🐢','🦑','🦞','🐡','⛵','🧭','💎'];
 const TW_E=['🐠','🐙','🦀','🐬','🐳','🐚','⭐','🌴','⚓','💎','🦜','🍉'];
 const TW_BG=['#2b8fbd','#e9b44c','#53b77a','#c86fd6','#ef7d6b'];
 const WS_WORDS=['كنز','بحر','سفينة','جزيرة','شراع'];
@@ -733,12 +765,12 @@ function rewardHTML(){const r=view.r,k=view.k;const dg=k<6?digitsFor(MYT)[k]:nul
 function rngFor(k){const t=TD[MYT];return mulb(hsh(ROOM+'|'+MYT+'|'+k+'|'+t.sr))}
 function initMission(k){const r=rngFor(k);const t=TD[MYT];const b={k,sr:t.sr,frz:0};
   switch(ISL[k].k){
-   case 'quiz':{const qs=shufR(r,QUIZ.map((_,i)=>i)).slice(0,8);return {...b,qs,i:0,ord:qs.map(()=>shufR(r,[0,1,2,3]))}}
+   case 'quiz':{const qs=shufR(r,QUIZ.map((_,i)=>i));return {...b,qs,i:0,ord:qs.map(()=>shufR(r,[0,1,2,3]))}}
    case 'memory':return {...b,cards:shufR(r,[...MEM_E,...MEM_E]),open:[],ok:[],moves:0};
-   case 'twin':return {...b,round:0,seed:Math.floor(r()*1e9)};
-   case 'tap':return {...b,order:shufR(r,Array.from({length:20},(_,i)=>i+1)),next:1};
+   case 'xo':return {...b,wins:0,bd:Array(9).fill(''),msg:''};
+   case 'tap':return {...b,order:shufR(r,Array.from({length:40},(_,i)=>i+1)),next:1};
    case 'words':return {...b,...wsBuild(r),found:[],sel:null};
-   case 'riddle':{const qs=shufR(r,RIDDLES.map((_,i)=>i)).slice(0,5);return {...b,qs,i:0,ord:qs.map(()=>shufR(r,[0,1,2,3]))}}
+   case 'riddle':{const qs=shufR(r,RIDDLES.map((_,i)=>i));return {...b,qs,i:0,ord:qs.map(()=>shufR(r,[0,1,2,3]))}}
    case 'chest':return {...b,inp:'',wrong:0};
   }}
 function missionHTML(){const k=MS.k,x=ISL[k];const head=sub=>`<div class="ititle"><span class="ic">${x.ic}</span><div><small>الجزيرة ${k+1} من 7</small><h2 class="disp">${esc(x.n)}</h2></div></div>${sub||''}`;
@@ -746,14 +778,17 @@ function missionHTML(){const k=MS.k,x=ISL[k];const head=sub=>`<div class="ititle
    case 'quiz':case 'riddle':{const bank=x.k==='quiz'?QUIZ:RIDDLES;const n=MS.qs.length;const q=bank[MS.qs[MS.i]];
      return `<div class="card">${head()}<div class="ctr"><span>${x.k==='quiz'?'سؤال':'لغز'} ${MS.i+1} من ${n}</span></div><div class="prog"><i style="width:${MS.i/n*100}%"></i></div>
       <p class="qtxt">${esc(q.q)}</p><div class="opts2">${MS.ord[MS.i].map(o=>`<button class="opt" data-act="ans:${o}">${esc(q.o[o])}</button>`).join('')}</div></div>`}
-   case 'memory':return `<div class="card">${head()}<div class="ctr"><span>الأزواج: ${MS.ok.length/2} من 8</span><span>محاولات: ${MS.moves}</span></div>
-      <div class="mem">${MS.cards.map((e,i)=>{const up=MS.open.includes(i)||MS.ok.includes(i);return `<button class="mc ${up?'up':''} ${MS.ok.includes(i)?'ok':''}" data-act="mem:${i}"><span>${e}</span></button>`}).join('')}</div></div>`;
+   case 'memory':return `<div class="card">${head()}<div class="ctr"><span>الأزواج: ${MS.ok.length/2} من 16</span><span>محاولات: ${MS.moves}</span></div>
+      <div class="mem m32">${MS.cards.map((e,i)=>{const up=MS.open.includes(i)||MS.ok.includes(i);return `<button class="mc ${up?'up':''} ${MS.ok.includes(i)?'ok':''}" data-act="mem:${i}"><span>${e}</span></button>`}).join('')}</div></div>`;
+   case 'xo':return `<div class="card">${head()}<div class="ctr"><span>الفوز: ${MS.wins} من 3</span><span>أنتم ❌ · القبطان ⭕</span></div><div class="prog"><i style="width:${MS.wins/3*100}%"></i></div>
+      <p class="qtxt" style="margin:10px 0" id="xomsg">${MS.msg||'دوركم! اختاروا مربعًا'}</p>
+      <div class="xog">${MS.bd.map((v,i)=>`<button class="xoc ${v?'v'+v:''} ${(MS.line||[]).includes(i)?'w':''}" data-act="xo:${i}">${v==='x'?'❌':v==='o'?'⭕':''}</button>`).join('')}</div></div>`;
    case 'twin':{const R=twinRound(MS.seed,MS.round);
      return `<div class="card">${head()}<div class="ctr"><span>الجولة ${MS.round+1} من 3</span></div><div class="prog"><i style="width:${MS.round/3*100}%"></i></div>
       <div class="tw-orig" style="margin:12px 0"><b style="font-size:18px">الصورة الأصلية ⬅</b><div style="width:130px">${twCard(R.base,'',46)}</div></div>
       <p class="note" style="text-align:center">أي صورة تطابقها تمامًا؟</p>
       <div class="twg">${R.cards.map((c,i)=>twCard(c,`data-act="tw:${i}" id="tw${i}"`,30)).join('')}</div></div>`}
-   case 'tap':return `<div class="card">${head()}<div class="ctr"><span>التالي: <b class="disp" style="font-size:24px;color:var(--gold)" id="tapn">${MS.next}</b></span><span>${MS.next-1} / 20</span></div>
+   case 'tap':return `<div class="card">${head()}<div class="ctr"><span>التالي: <b class="disp" style="font-size:24px;color:var(--gold)" id="tapn">${MS.next}</b></span><span>${MS.next-1} / 40</span></div>
       <div class="tapg">${MS.order.map(v=>`<button class="tap ${v<MS.next?'hit':''}" id="tp${v}" data-act="tap:${v}">${v}</button>`).join('')}</div></div>`;
    case 'words':return `<div class="card">${head()}<div class="wsw">${WS_WORDS.map(w=>`<span class="${MS.found.includes(w)?'f':''}">${w}</span>`).join('')}</div>
       <div class="wsg" style="grid-template-columns:repeat(${WS_N},1fr)">${MS.grid.map((ch,i)=>`<button class="wsc ${MS.sel===i?'sel':''} ${foundCells().has(i)?'f':''}" data-act="ws:${i}">${ch}</button>`).join('')}</div>
@@ -801,6 +836,22 @@ function finishIsland(s){const k=TD[MYT].isl;const now=Date.now();
   if(s==='done'&&k===6)startConfetti(4000);
   soon()}
 
+const XL=[[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
+function xoEnd(bd){for(const l of XL){const [a,b,c]=l;if(bd[a]&&bd[a]===bd[b]&&bd[a]===bd[c])return {w:bd[a],l}}return bd.every(Boolean)?{w:'draw',l:[]}:null}
+function xoAI(bd){const empt=bd.map((v,i)=>v?-1:i).filter(i=>i>=0);
+  const find=p=>{for(const i of empt){const t=bd.slice();t[i]=p;const e=xoEnd(t);if(e&&e.w===p)return i}return -1};
+  let m=find('o');if(m>=0)return m;                       // يفوز إذا قدر
+  if(Math.random()<.7){m=find('x');if(m>=0)return m}       // يصدّ غالبًا (مستوى متوسط)
+  if(!bd[4]&&Math.random()<.6)return 4;
+  const corners=[0,2,6,8].filter(i=>!bd[i]);if(corners.length&&Math.random()<.5)return corners[Math.floor(Math.random()*corners.length)];
+  return empt[Math.floor(Math.random()*empt.length)]}
+function xoRound(r){MS.line=r.l;
+  if(r.w==='x'){MS.wins++;MS.msg=MS.wins>=3?'🏆 هزمتم القبطان!':`🎉 فزتم بالجولة! (${MS.wins} من 3)`;sOk()}
+  else if(r.w==='o'){MS.msg='😈 فاز القبطان هذه الجولة!'}
+  else{MS.msg='🤝 تعادل! نعيد الجولة'}
+  saveMS();dirty();
+  if(r.w==='o')setTimeout(()=>freeze(5),700);
+  setTimeout(()=>{if(!MS)return;if(MS.wins>=3)return finishIsland('done');MS.bd=Array(9).fill('');MS.line=null;MS.msg=r.w==='o'?'جولة جديدة… ركّزوا!':'جولة جديدة! دوركم';saveMS();dirty()},r.w==='o'?900:1400)}
 /* ======================= ACTIONS ======================= */
 function dirty(){const m=$('#pmain');if(m)m._dirty=true;soon()}
 const A={
@@ -831,17 +882,21 @@ const A={
   'lk-ok':()=>{const k=TD[MYT].isl,L=G.locks[k];if(lockIn===L.c){lockIn='';sOk();commitT(MYT,n=>{n.unl[k]=1});toast('🗝️ فُتح الطريق!')}else{lockIn='';sBad();$('#lkd').textContent='✗';toast('الرمز غير صحيح')}},
   ans:o=>{if(frozen())return;const bank=ISL[MS.k].k==='quiz'?QUIZ:RIDDLES;const q=bank[MS.qs[MS.i]];
     if(+o===q.a){sOk();MS.i++;saveMS();if(MS.i>=MS.qs.length)return finishIsland('done');dirty()}
-    else{document.querySelector(`[data-act="ans:${o}"]`).classList.add('bad');freeze(3)}},
+    else{document.querySelector(`[data-act="ans:${o}"]`).classList.add('bad');freeze(ISL[MS.k].k==='quiz'?3:5)}},
   mem:i=>{i=+i;if(MS.ok.includes(i)||MS.open.includes(i)||MS.lock)return;MS.open.push(i);sTick();
     if(MS.open.length===2){MS.moves++;const [a,b]=MS.open;
-      if(MS.cards[a]===MS.cards[b]){MS.ok.push(a,b);MS.open=[];sOk();saveMS();if(MS.ok.length===16)return setTimeout(()=>finishIsland('done'),500)}
+      if(MS.cards[a]===MS.cards[b]){MS.ok.push(a,b);MS.open=[];sOk();saveMS();if(MS.ok.length===MS.cards.length)return setTimeout(()=>finishIsland('done'),500)}
       else{MS.lock=1;setTimeout(()=>{MS.open=[];MS.lock=0;saveMS();dirty()},900)}}
     saveMS();dirty()},
+  xo:i=>{i=+i;if(frozen()||MS.busy||MS.bd[i]||MS.line)return;MS.bd[i]='x';sTick();
+    const res=xoEnd(MS.bd);if(res)return xoRound(res);
+    MS.busy=1;MS.msg='القبطان يفكر… 🤔';dirty();
+    setTimeout(()=>{if(!MS)return;MS.bd[xoAI(MS.bd)]='o';MS.busy=0;const r2=xoEnd(MS.bd);if(r2)return xoRound(r2);MS.msg='دوركم!';saveMS();dirty()},550)},
   tw:i=>{if(frozen())return;const R=twinRound(MS.seed,MS.round);
     if(+i===R.ans){sOk();MS.round++;saveMS();if(MS.round>=3)return finishIsland('done');dirty()}
-    else{$('#tw'+i).classList.add('bad');freeze(3)}},
-  tap:v=>{if(frozen())return;v=+v;if(v===MS.next){MS.next++;saveMS();sTick();const b=$('#tp'+v);b&&b.classList.add('hit');const n=$('#tapn');if(n)n.textContent=MS.next;if(MS.next>20)finishIsland('done')}
-    else{const b=$('#tp'+v);b&&b.classList.add('bad');setTimeout(()=>b&&b.classList.remove('bad'),400);freeze(2)}},
+    else{$('#tw'+i).classList.add('bad');freeze(ISL[MS.k].k==='quiz'?3:5)}},
+  tap:v=>{if(frozen())return;v=+v;if(v===MS.next){MS.next++;saveMS();sTick();const b=$('#tp'+v);b&&b.classList.add('hit');const n=$('#tapn');if(n)n.textContent=MS.next;if(MS.next>40)finishIsland('done')}
+    else{const b=$('#tp'+v);b&&b.classList.add('bad');setTimeout(()=>b&&b.classList.remove('bad'),400);freeze(5)}},
   ws:i=>{i=+i;if(MS.sel==null){MS.sel=i;sTick();saveMS();return dirty()}
     const a=MS.sel;MS.sel=null;if(a===i)return dirty();
     const ar=Math.floor(a/WS_N),ac=a%WS_N,br=Math.floor(i/WS_N),bc=i%WS_N;let cells=[];
@@ -849,7 +904,7 @@ const A={
     else if(ac===bc){const s=Math.sign(br-ar);for(let r=ar;r!==br+s;r+=s)cells.push(r*WS_N+ac)}
     const str=cells.map(c=>MS.grid[c]).join(''),rev=[...str].reverse().join('');
     const w=WS_WORDS.find(w=>!MS.found.includes(w)&&(w===str||w===rev)&&MS.pl.find(p=>p.w===w&&p.cells.length===cells.length&&p.cells.every(c=>cells.includes(c))));
-    if(w){MS.found.push(w);sOk();saveMS();if(MS.found.length===WS_WORDS.length)return finishIsland('done')}else{sBad();toast('ليست كلمة من القائمة، حاولوا مجددًا')}
+    if(w){MS.found.push(w);sOk();saveMS();if(MS.found.length===WS_WORDS.length)return finishIsland('done')}else{toast('ليست كلمة من القائمة');saveMS();dirty();return freeze(5)}
     saveMS();dirty()},
   'ch-k':d=>{if(frozen())return;if(MS.inp.length<6)MS.inp+=d;$('#chd').textContent=MS.inp;sTick()},
   'ch-clr':()=>{MS.inp='';$('#chd').textContent='······'},
