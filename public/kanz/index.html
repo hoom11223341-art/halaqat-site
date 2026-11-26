@@ -337,7 +337,12 @@ let DEV=LS.get('kz-dev','');if(!DEV){DEV='d'+rid();LS.set('kz-dev',DEV)}
 const SK=k=>'kz-'+k+'-'+ROOM;
 
 /* ======================= STATE ======================= */
-const freshG=()=>({v:1,raceOn:false,names:TEAMS.map(t=>t.n),bonus:[0,0,0,0],locks:ISL.map(()=>({c:'',h:''})),view:'map',run:rid(),hk:0,sentAt:0});
+/* ===== الشفرات الثابتة (تقدر تغيرها هنا أو من لوحة التحكم) ===== */
+const DEF_CHEST='472951';            // شفرة صندوق الكنز: 6 أرقام، رقم لكل جزيرة من 1 إلى 6
+const DEF_LOCKS=['','','','','','',''];  // رموز الجزر المخبأة (اتركها فارغة لإلغاء القفل)
+const SAVED=()=>LS.get('kz-settings',{})||{};
+const chestCode=()=>{const c=toLat(G.chest||SAVED().chest||DEF_CHEST);return c.length===6?c:DEF_CHEST};
+const freshG=()=>({v:1,raceOn:false,names:TEAMS.map(t=>t.n),bonus:[0,0,0,0],chest:SAVED().chest||DEF_CHEST,locks:(SAVED().locks||DEF_LOCKS.map(c=>({c,h:''}))).map(x=>({c:x.c||'',h:x.h||''})),view:'map',run:rid(),hk:0,sentAt:0});
 const freshT=run=>({v:1,dev:'',run:run||'',isl:0,st:0,sr:'',res:[null,null,null,null,null,null,null],unl:[0,0,0,0,0,0,0],rev:0,sentAt:0});
 let G=LS.get(SK('g'),null)||freshG();
 let TD=LS.get(SK('t'),null)||[0,1,2,3].map(()=>freshT(G.run));
@@ -350,7 +355,7 @@ const total=i=>TD[i].res.reduce((s,r)=>s+(r?r.pts:0),0)+((G.bonus&&G.bonus[i])||
 const durOf=k=>ISL[Math.min(k,6)].dur*1000;
 const remOf=i=>{const t=TD[i];if(!t.st)return durOf(t.isl);return Math.max(0,t.st+durOf(t.isl)-Date.now())};
 const doneAll=i=>TD[i].isl>=7;
-const digitsFor=i=>{const r=mulb(hsh(ROOM+'|digits|'+i+'|'+G.run));return [0,1,2,3,4,5].map(()=>1+Math.floor(r()*9))};
+const digitsFor=i=>chestCode().split('').map(Number);
 
 /* ======================= NETWORK ======================= */
 const BROKERS=['wss://broker.emqx.io:8084/mqtt','wss://broker.hivemq.com:8884/mqtt'];
@@ -583,8 +588,11 @@ function renderDrawer(){const d=$('#drawer');d.classList.toggle('on',drawer);if(
   <div class="sec"><h3>🚩 أسماء الفرق</h3><div class="names">${[0,1,2,3].map(i=>`<label><span style="font-size:24px">${TEAMS[i].e}</span><input id="tn${i}" maxlength="16" value="${esc(teamName(i))}"></label>`).join('')}</div>
    <div style="height:8px"></div><button class="b sm ok" data-act="names">حفظ الأسماء</button></div>
   <div class="sec"><h3>🪙 نقاط إضافية (سلوك، تعاون…)</h3>${[0,1,2,3].map(i=>`<div class="adj"><span>${TEAMS[i].e} ${esc(teamName(i))} · <b class="num">${total(i)}</b></span><button class="b sm" data-act="bon:${i}:-10">−10</button><button class="b sm ok" data-act="bon:${i}:10">+10</button></div>`).join('')}</div>
+  <div class="sec"><h3>🔐 شفرة صندوق الكنز</h3>
+   <p class="note">6 أرقام ثابتة: كل جزيرة (من 1 إلى 6) تعطي الفريق رقمًا منها بالترتيب، وفي جزيرة الكنز يدخلونها كاملة. تبقى محفوظة لكل مغامرة جديدة.</p>
+   <div class="row"><input id="chestIn" maxlength="6" inputmode="numeric" value="${esc(chestCode())}" style="direction:ltr;text-align:center;letter-spacing:.3em;font-size:22px;max-width:200px"><button class="b sm ok" data-act="chest">حفظ الشفرة</button></div></div>
   <div class="sec"><h3>🗝️ رموز الجزر المخبأة (اختياري)</h3>
-   <p class="note">لتحويلها لبحث كنز حقيقي: اكتب رمزًا لأي جزيرة واخبئ ورقته في المكان. الفريق لازم يلاقي الورقة ويدخل الرمز قبل الإبحار للجزيرة. اترك الخانة فارغة لإلغاء القفل.</p>
+   <p class="note">لتحويلها لبحث كنز حقيقي: اكتب رمزًا لأي جزيرة واخبئ ورقته في المكان. الفريق لازم يلاقي الورقة ويدخل الرمز قبل الإبحار للجزيرة. اترك الخانة فارغة لإلغاء القفل. الرموز تبقى محفوظة لكل مغامرة جديدة.</p>
    ${ISL.map((x,k)=>`<div class="lk"><span style="font-size:22px;text-align:center">${x.ic}</span><input class="c" id="lc${k}" maxlength="6" inputmode="numeric" placeholder="الرمز" value="${esc(G.locks[k].c)}"><input id="lh${k}" maxlength="120" placeholder="تلميح: مثلًا تحت الكرسي الأزرق" value="${esc(G.locks[k].h)}"></div>`).join('')}
    <div class="row"><button class="b sm ok" data-act="locks">حفظ الرموز</button><button class="b sm" data-act="lockrand">رموز عشوائية</button><button class="b sm" data-act="lockprint">🖨️ طباعة بطاقات الرموز</button></div></div>
   <div class="sec"><h3>🔄 مغامرة جديدة</h3><p class="note">يمسح تقدّم كل الفرق ونقاطها ويرجع السفن للميناء.</p><button class="b hot" data-act="reset">${resetArm>Date.now()?'متأكد؟ اضغط مرة ثانية':'إعادة ضبط كل شيء'}</button></div>`}
@@ -806,7 +814,8 @@ const A={
   'race-off':()=>commitG(n=>{n.raceOn=false}),
   fin:()=>{drawer=false;commitG(n=>{n.view=n.view==='fin'?'map':'fin'})},
   names:()=>{commitG(n=>{n.names=[0,1,2,3].map(i=>($('#tn'+i).value||'').trim()||TEAMS[i].n)});toast('تم حفظ الأسماء ✓')},
-  locks:()=>{commitG(n=>{n.locks=ISL.map((_,k)=>({c:toLat($('#lc'+k).value).slice(0,6),h:($('#lh'+k).value||'').trim()}))});toast('تم حفظ الرموز ✓')},
+  locks:()=>{const L=ISL.map((_,k)=>({c:toLat($('#lc'+k).value).slice(0,6),h:($('#lh'+k).value||'').trim()}));commitG(n=>{n.locks=L});LS.set('kz-settings',{...SAVED(),locks:L});toast('تم حفظ الرموز ✓ (ثابتة لكل مغامرة)')},
+  chest:()=>{const c=toLat($('#chestIn').value);if(c.length!==6){toast('الشفرة لازم تكون 6 أرقام');return}commitG(n=>{n.chest=c});LS.set('kz-settings',{...SAVED(),chest:c});toast('تم حفظ شفرة الصندوق ✓')},
   lockrand:()=>{ISL.forEach((_,k)=>{$('#lc'+k).value=String(100+Math.floor(Math.random()*900))})},
   lockprint:()=>{A.locks();setTimeout(printLocks,50)},
   reset:()=>{if(resetArm>Date.now()){resetArm=0;const run=rid();commitG(n=>{n.run=run;n.raceOn=false;n.raceAt=0;n.view='map';n.bonus=[0,0,0,0]});TD=[0,1,2,3].map(()=>{const t=freshT(run);t.rev=Date.now();t.sentAt=Date.now();return t});TD.forEach((t,i)=>send('t'+i,t));saveLocal();toast('بدأت مغامرة جديدة');soon()}else{resetArm=Date.now()+4000;renderDrawer();setTimeout(renderDrawer,4100)}},
