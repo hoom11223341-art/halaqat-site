@@ -263,6 +263,97 @@ body.dsp{overflow:hidden;background:radial-gradient(140% 100% at 70% 0%,#0f3550 
 .twinkle{animation:tw 1.8s ease-in-out infinite}@keyframes tw{50%{opacity:.3}}
 .beam{animation:beam 3s ease-in-out infinite;transform-box:fill-box;transform-origin:right center}@keyframes beam{50%{opacity:.05}}
 @media (prefers-reduced-motion:reduce){.wave,.foam,.route,.flag,.wake,.cloud,.gull,.twinkle,.beam,.bob{animation:none}}
+.surp .giftbig{font-size:84px;text-align:center;animation:pulse 1.3s infinite;filter:drop-shadow(0 8px 16px #e8439388)}
+.chal{font-size:26px;font-weight:700;line-height:1.6;text-align:center;background:linear-gradient(135deg,#ff6fb1,#e84393);color:#fff;border-radius:18px;padding:18px;margin:10px 0;box-shadow:0 10px 24px #e8439355;border:3px solid #ffd1e6}
+.waitap{text-align:center;color:#ffe08a;font-weight:700;margin:10px 0}
+.dots i{display:inline-block;width:8px;height:8px;border-radius:50%;background:#ffe08a;margin:0 2px;animation:blink 1s infinite}.dots i:nth-child(2){animation-delay:.2s}.dots i:nth-child(3){animation-delay:.4s}
+.pinbox{margin-top:10px;background:#0a3a55;border-radius:14px;padding:10px}.pinbox summary{cursor:pointer;color:var(--mute);font-weight:700}
+.apbox{margin-top:6px;display:grid;gap:4px}.apbox small{color:#ffb3d6;font-size:12px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}.apbox .b{justify-self:start}
+.chestsvg{width:min(320px,80vw);display:block;margin:0 auto;overflow:visible}
+.chestsvg .lid{transform-box:fill-box;transform-origin:0% 100%;animation:lidopen 1s .5s cubic-bezier(.3,1.6,.5,1) both}
+@keyframes lidopen{from{transform:rotate(0)}to{transform:rotate(-38deg) translate(-6px,-14px)}}
+.chestsvg .rays{transform-origin:0 -10px;transform-box:view-box;animation:rays 8s linear infinite,fadein 1s 1s both}
+@keyframes rays{to{transform:rotate(360deg)}}@keyframes fadein{from{opacity:0}}
+.chestsvg .cglow{animation:fadein 1s 1s both}
+.chestsvg .cn{animation:coin 1.4s ease-out both}
+@keyframes coin{0%{opacity:0;transform:translate(0,0)}20%{opacity:1}100%{opacity:1;transform:translate(var(--dx),var(--dy))}}
+.scroll{margin:14px auto 0;max-width:520px;background:linear-gradient(180deg,#f9ecc8,#e9cf91);color:#3b2410;border-radius:10px;padding:0 22px;border:3px solid #a8742a;box-shadow:0 14px 30px #0008,inset 0 0 30px #a8742a55;max-height:0;overflow:hidden;animation:unroll 1.4s 1.8s ease-out forwards;position:relative}
+.scroll.on{animation-delay:0s}
+.scroll::before,.scroll::after{content:'';position:absolute;left:-6px;right:-6px;height:12px;background:linear-gradient(180deg,#8a5a1e,#c99a55,#8a5a1e);border-radius:8px}
+.scroll::before{top:-3px}.scroll::after{bottom:-3px}
+@keyframes unroll{to{max-height:700px;padding:24px 22px}}
+.scrollin{white-space:pre-line;font-size:19px;line-height:1.9;font-weight:700;text-align:center}
+.giftbob{animation:gb 1.4s ease-in-out infinite;transform-box:fill-box}@keyframes gb{50%{transform:translateY(-3px)}}
+
+#cdo{position:fixed;inset:0;z-index:80;display:grid;place-items:center;align-content:center;background:radial-gradient(circle,#0b4a6ecc,#020d17f2);text-align:center;pointer-events:none}
+#cdo b{font-family:Lalezar,sans-serif;font-weight:400;color:#ffcc33;text-shadow:0 8px 0 #8a5200,0 0 60px #ffcc3388;line-height:1}
+#cdo b.n{font-size:min(55vw,420px);animation:cdz 1s ease-out}
+#cdo b.go{font-size:min(16vw,150px);animation:cdz .7s ease-out;color:#fff}
+#cdo span{color:#bfe3f5;font-size:24px;font-weight:700;margin-top:10px}
+@keyframes cdz{0%{transform:scale(2.4);opacity:0}40%{opacity:1}100%{transform:scale(1)}}
+.firefx{position:fixed;inset:0;z-index:75;display:grid;place-items:center;pointer-events:none;background:radial-gradient(circle,#ff6a0055,transparent 70%);animation:fadeout 2.2s forwards}
+.firefx div{text-align:center;font-size:110px;animation:cdz .5s}
+.firefx b{display:block;font-family:Lalezar;font-weight:400;font-size:clamp(34px,10vw,64px);padding:0 12px;color:#ffd24a;text-shadow:0 4px 0 #a33a00}
+.firefx span{font-size:28px;font-weight:900;color:#fff}
+@keyframes fadeout{75%{opacity:1}100%{opacity:0}}
+.tools{display:flex;gap:6px;justify-content:center;margin-top:8px;flex-wrap:wrap}
+.tool{background:linear-gradient(180deg,#6b2fd6,#4a1ea3);border:2px solid #b794ff;border-radius:999px;padding:4px 12px;font-weight:700;font-size:14px;color:#fff;animation:pulse 2s infinite}
+.tool.on{background:#1d8a52;border-color:#5fe39c;animation:none}
+.tmodal{position:fixed;inset:0;z-index:70;background:#000a;display:grid;place-items:center;padding:16px}.tmodal .card{width:min(440px,100%)}
+.loot{margin:12px auto;max-width:340px;background:linear-gradient(135deg,#6b2fd6,#4a1ea3);border:2px solid #b794ff;border-radius:16px;padding:12px;display:grid;gap:4px}.loot b{font-size:22px}.loot small{color:#e3d6ff}
+.efx-storm{position:fixed;inset:0;z-index:65}
+.storm{position:absolute;inset:0;background:radial-gradient(circle at 50% 40%,#3a4a5ccc,#05080ef5);display:grid;place-items:center;text-align:center;animation:shake .4s infinite}
+.storm .stc b{display:block;font-family:Lalezar;font-weight:400;font-size:34px;color:#fff}.storm .stc span{color:#bcd;font-weight:700}.storm .stc .n{font-size:90px;color:#ffcc33}
+.bolt{position:absolute;inset:0;background:#fff;opacity:0;animation:bolt 2.3s infinite}
+@keyframes bolt{0%,88%,100%{opacity:0}90%{opacity:.8}92%{opacity:0}94%{opacity:.5}}
+@keyframes shake{0%,100%{transform:translate(0)}25%{transform:translate(-4px,2px) rotate(-.5deg)}75%{transform:translate(4px,-2px) rotate(.5deg)}}
+.efx-fog{position:fixed;inset:0;z-index:64;pointer-events:none}
+.fog{position:absolute;inset:0;backdrop-filter:blur(9px);-webkit-backdrop-filter:blur(9px);background:radial-gradient(circle at 30% 30%,#ffffffaa,#e6eef3cc 40%,#ffffff99);animation:fogm 4s ease-in-out infinite alternate}
+@keyframes fogm{to{background-position:40px 20px;opacity:.92}}
+.fogl{position:absolute;top:12px;left:50%;transform:translateX(-50%);background:#062234;color:#fff;border-radius:999px;padding:8px 18px;font-weight:900;white-space:nowrap}
+
+.alert.red{background:linear-gradient(90deg,#ff4d4d,#c0122b);color:#fff}.alert.red i{background:#fff;color:#c0122b}
+.alert.fire{background:linear-gradient(90deg,#ff9a1f,#ff4d00);color:#fff}.alert.fire i{background:#3a0e00;color:#ffb35a}
+.alert.purple{background:linear-gradient(90deg,#8b5cf6,#5b21b6);color:#fff}.alert.purple i{background:#1e0b45;color:#d8c7ff}
+.alert.green{background:linear-gradient(90deg,#34d399,#059669);color:#032b1d}.alert.blue{background:linear-gradient(90deg,#38bdf8,#1d4ed8);color:#fff}.alert.blue i{background:#062066;color:#bfe3ff}
+.alert.gold{box-shadow:0 0 40px #ffcc33aa,0 14px 34px #0009}
+.lr.hot{border-color:#ff4d4d;animation:hot 1s infinite}@keyframes hot{50%{box-shadow:0 0 0 2px #ff4d4d,0 0 30px #ff4d4d88}}
+.bdg{font-size:.8em}.bdg .inv{display:inline-block!important;width:auto;font-size:12px!important;color:#fff!important;background:#4a1ea3;border-radius:6px;padding:0 5px;margin-inline-start:4px;vertical-align:middle}
+
+.fin3{position:fixed;inset:0;z-index:45;display:grid;place-items:center;text-align:center;padding:20px;font-family:Cairo,sans-serif;overflow:hidden}
+.fin3.dark{background:radial-gradient(circle at 50% 40%,#0d2a40,#010509 75%)}
+.fin3.win{background:radial-gradient(circle at 50% 40%,color-mix(in srgb,var(--c) 55%,#0d2a40),#020a12 78%)}
+.fin3 small{display:block;color:#ffd866;font-weight:900;font-size:clamp(16px,1.8vw,24px);letter-spacing:.02em}
+.fin3 .big{font-family:Lalezar;font-weight:400;font-size:clamp(44px,7vw,110px);line-height:1.15;margin:6px 0;color:#fff;text-shadow:0 6px 30px #000}
+.fin3 .big.gold{color:#ffcc33;text-shadow:0 6px 0 #8a5200,0 0 60px #ffcc3399}
+.fin3 p{color:#d6e8f3;font-size:clamp(18px,2vw,28px);font-weight:700}
+.fx-in{position:relative;z-index:2;animation:fxin .9s cubic-bezier(.2,1.3,.4,1) both}
+.fx-in.pop{animation:fxpop 1.1s cubic-bezier(.2,1.5,.4,1) both}
+@keyframes fxin{from{opacity:0;transform:translateY(40px) scale(.9)}}
+@keyframes fxpop{0%{opacity:0;transform:scale(.3)}60%{opacity:1;transform:scale(1.08)}100%{transform:scale(1)}}
+.spot{position:absolute;inset:-20%;background:radial-gradient(circle at 50% 45%,#ffffff22,transparent 30%)}
+.spot.on{background:radial-gradient(circle at 50% 45%,color-mix(in srgb,var(--c) 45%,transparent),transparent 40%)}
+.spot.sweep{background:radial-gradient(circle at 30% 45%,#ffffff2a,transparent 22%);animation:sweep 1.2s ease-in-out infinite alternate}
+@keyframes sweep{to{transform:translateX(40%)}}
+.rvbig{font-size:clamp(80px,10vw,140px)}
+.rv{display:grid;justify-items:center;gap:8px}
+.rv .av{width:clamp(100px,11vw,150px);height:clamp(100px,11vw,150px);font-size:clamp(56px,6.5vw,90px)}
+.rvn{font-family:Lalezar;font-size:clamp(40px,5vw,72px);color:#fff}
+.rvs{font-size:clamp(22px,2.4vw,34px);font-weight:900;color:#ffd866}.rvs b{font-variant-numeric:tabular-nums}
+.rvs.xl{font-size:clamp(30px,3.4vw,50px)}
+.drum{font-size:100px;animation:shake .15s infinite}
+.sus .big{animation:pulse .6s infinite}
+.av.hero{width:clamp(140px,16vw,220px);height:clamp(140px,16vw,220px);font-size:clamp(80px,10vw,130px);margin:0 auto;box-shadow:0 0 0 6px #ffcc33,0 0 80px #ffcc33aa}
+.crown2{font-size:clamp(60px,7vw,100px);margin-bottom:-20px;animation:pulse 1.2s infinite}
+.champ{font-family:Lalezar;font-weight:400!important;font-size:clamp(24px,3vw,40px)!important;color:#fff!important}
+.rays2{position:absolute;inset:-50%;background:repeating-conic-gradient(from 0deg,#ffcc3322 0 10deg,transparent 10deg 20deg);animation:rays 30s linear infinite}
+.tbig{font-size:clamp(90px,11vw,150px);animation:pulse 1.4s infinite}
+.trow{display:flex;gap:14px;align-items:center;justify-content:center;font-size:clamp(26px,3vw,42px);color:#fff}
+.trow .av{width:70px;height:70px;font-size:40px}
+.tgrid{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;margin-top:16px}
+.tc{background:#0c2438;border:2px solid var(--c);border-radius:16px;padding:8px 14px;display:grid;justify-items:center;min-width:140px}.tc span{font-size:30px}.tc b{color:#fff;font-size:16px}.tc small{color:#9cc7da!important;font-size:13px!important;letter-spacing:0!important}
+#fw{position:fixed;inset:0;z-index:46;pointer-events:none}
+#finT .fin3{z-index:90}
 @media print{body *{visibility:hidden}}
 </style>
 <script src="https://unpkg.com/mqtt@5.10.1/dist/mqtt.min.js"></script>
@@ -283,7 +374,9 @@ const ISL=[
  {k:'tap',   n:'جزيرة الأرقام', ic:'🔢',dur:300,intro:'40 عملة ذهبية مبعثرة! اضغطوها بالترتيب من 1 إلى 40 بأسرع ما تقدرون. الضغطة الخاطئة توقفكم 5 ثوانٍ.'},
  {k:'words', n:'جزيرة الكلمات', ic:'🔤',dur:300,intro:'5 كلمات بحرية مخبأة بين الحروف (أفقية أو عمودية). اضغطوا أول حرف في الكلمة ثم آخر حرف. الاختيار الخاطئ يوقفكم 5 ثوانٍ.'},
  {k:'riddle',n:'جزيرة الألغاز', ic:'🧩',dur:480,intro:'20 لغزًا تحتاج تفكير! اختاروا الإجابة الصحيحة، والخطأ يوقفكم 5 ثوانٍ.'},
+ {k:'surprise',n:'جزيرة المفاجأة',ic:'🎁',dur:360,intro:'تحدٍّ حركي في الواقع! ستظهر لكم مهمة تنفذونها بأجسامكم، وبعد ما تخلصونها نادوا المقدم ليعتمدها ✅'},
  {k:'chest', n:'جزيرة الكنز',   ic:'💰',dur:240,intro:'وصلتم إلى جزيرة الكنز! أدخلوا الأرقام الستة التي جمعتموها من الجزر بالترتيب لفتح الصندوق. الخطأ يوقفكم 5 ثوانٍ، والنقاط هنا مضاعفة!'}];
+const NI=ISL.length,CH=NI-1;
 const QUIZ=[
  {q:'ما أكبر كوكب في المجموعة الشمسية؟',o:['زحل','المشتري','الأرض','نبتون'],a:1},
  {q:'كم عدد قارات العالم؟',o:['5','6','7','8'],a:2},
@@ -371,10 +464,27 @@ const SK=k=>'kz-'+k+'-'+ROOM;
 /* ======================= STATE ======================= */
 /* ===== الشفرات الثابتة (تقدر تغيرها هنا أو من لوحة التحكم) ===== */
 const DEF_CHEST='472951';            // شفرة صندوق الكنز: 6 أرقام، رقم لكل جزيرة من 1 إلى 6
-const DEF_LOCKS=['315','628','947','184','562','739','806'];  // رموز الجزر 1→7 (اتركها '' لإلغاء القفل)
+const DEF_LOCKS=['315','628','947','184','562','739','271','806'];  // رموز الجزر 1→8 (اتركها '' لإلغاء القفل)
+const DEF_PIN='2468';                // رمز المقدم لاعتماد تحدي جزيرة المفاجأة من جوال الفريق
+const DEF_CHAL=[                     // تحديات جزيرة المفاجأة (كل فريق يأخذ تحديًا مختلفًا)
+ 'أحضروا للمقدم 3 أشياء لونها أزرق!',
+ 'ابنوا هرمًا من 6 أكواب ثم نادوا المقدم ليراه.',
+ 'كل أعضاء الفريق يقفون على رِجل واحدة 20 ثانية دون أن يسقط أحد!',
+ 'اصنعوا بأجسامكم شكل سفينة، والمقدم يحكم!',
+ 'رتّبوا أنفسكم حسب الطول من الأقصر للأطول… بدون كلام!',
+ 'أحضروا للمقدم 5 أشياء مختلفة تبدأ بحرف الميم.',
+ 'قولوا معًا وبصوت واحد: «نحن أبطال رحلة الكنز!» ثلاث مرات.',
+ 'كل عضو يقفز 10 قفزات ضفدع، والفريق يعدّ بصوت عالٍ.'];
+const DEF_MSG=`يا أبطال البحار! 🏴‍☠️
+فتحتم الصندوق بشجاعة… لكن الذهب الحقيقي خبّأه القبطان العجوز في مكان آخر!
+
+اتبعوا هذه الإشارة:
+«حيث تُحفظ المصاحف وتعلو أصوات التلاوة، انظروا خلف الرفّ الأخير» 📖
+
+أسرعوا قبل أن تسبقكم السفن الأخرى، ولا تكشفوا السرّ لأحد! 🤫`;
 const chestCode=()=>{const c=toLat(G.chest||DEF_CHEST);return c.length===6?c:DEF_CHEST};
-const freshG=()=>({v:1,raceOn:false,names:TEAMS.map(t=>t.n),bonus:[0,0,0,0],chest:DEF_CHEST,locks:DEF_LOCKS.map(c=>({c,h:''})),view:'map',run:rid(),hk:0,sentAt:0});
-const freshT=run=>({v:1,dev:'',run:run||'',isl:0,st:0,sr:'',res:[null,null,null,null,null,null,null],unl:[0,0,0,0,0,0,0],rev:0,sentAt:0});
+const freshG=()=>({v:1,raceOn:false,names:TEAMS.map(t=>t.n),bonus:[0,0,0,0],chest:DEF_CHEST,msg:DEF_MSG,chal:DEF_CHAL.join('\n'),appr:{},locks:DEF_LOCKS.map(c=>({c,h:''})),view:'map',run:rid(),hk:0,sentAt:0});
+const freshT=run=>({v:1,dev:'',run:run||'',isl:0,st:0,sr:'',res:Array(NI).fill(null),unl:Array(NI).fill(0),inv:[],sh:0,atk:[],got:[],log:[],mist:0,sb:0,mxs:0,rev:0,sentAt:0});
 let G=LS.get(SK('g'),null)||freshG();
 let TD=LS.get(SK('t'),null)||[0,1,2,3].map(()=>freshT(G.run));
 let gotG=!!LS.get(SK('g'),null);
@@ -382,11 +492,15 @@ let conn='wait';
 let MYT=TRY?0:LS.get(SK('myt'),null);
 
 const teamName=i=>(G.names&&G.names[i])||TEAMS[i].n;
-const total=i=>TD[i].res.reduce((s,r)=>s+(r?r.pts:0),0)+((G.bonus&&G.bonus[i])||0);
-const durOf=k=>ISL[Math.min(k,6)].dur*1000;
+const total=i=>TD[i].res.reduce((s,r)=>s+(r?r.pts:0),0)+((G.bonus&&G.bonus[i])||0)+(TD[i].sb||0);
+const durOf=k=>ISL[Math.min(k,CH)].dur*1000;
 const remOf=i=>{const t=TD[i];if(!t.st)return durOf(t.isl);return Math.max(0,t.st+durOf(t.isl)-Date.now())};
-const doneAll=i=>TD[i].isl>=7;
+const doneAll=i=>TD[i].isl>=NI;
 const digitsFor=i=>chestCode().split('').map(Number);
+const chalList=()=>String(G.chal||DEF_CHAL.join('\n')).split('\n').map(x=>x.trim()).filter(Boolean);
+const chalFor=i=>{const L=chalList();if(!L.length)return 'نفّذوا التحدي الذي يطلبه المقدم!';return L[(hsh(ROOM+'|'+G.run)+i)%L.length]};
+const treasureMsg=()=>String(G.msg||DEF_MSG);
+const isSurp=k=>ISL[k]&&ISL[k].k==='surprise';
 
 /* ======================= NETWORK ======================= */
 const BROKERS=['wss://broker.emqx.io:8084/mqtt','wss://broker.hivemq.com:8884/mqtt'];
@@ -447,14 +561,15 @@ const sSail=()=>[300,380,460].forEach((f,i)=>beep(f,.3,'sine',.08,i*.08));
 const sTick=()=>beep(1046,.07,'square',.05);
 
 /* ======================= MAP ======================= */
-const NODES=[[880,548],[745,465],[575,505],[405,440],[225,470],[110,320],[300,240],[575,150]];
+const NODES=[[880,548],[745,465],[575,505],[405,440],[225,470],[100,335],[245,215],[445,265],[665,135]];
 function pathD(){const p=NODES;let d=`M${p[0][0]} ${p[0][1]}`;for(let i=0;i<p.length-1;i++){const a=p[Math.max(0,i-1)],b=p[i],c=p[i+1],e=p[Math.min(p.length-1,i+2)];const c1=[b[0]+(c[0]-a[0])/6,b[1]+(c[1]-a[1])/6],c2=[c[0]-(e[0]-b[0])/6,c[1]-(e[1]-b[1])/6];d+=` C${c1[0].toFixed(1)} ${c1[1].toFixed(1)} ${c2[0].toFixed(1)} ${c2[1].toFixed(1)} ${c[0]} ${c[1]}`}return d}
 function blob(r,rx,ry,n,j){const pts=[];for(let i=0;i<n;i++){const a=i/n*Math.PI*2;const f=1+(r()-.5)*j;pts.push([Math.cos(a)*rx*f,Math.sin(a)*ry*f])}
   let d='';for(let i=0;i<n;i++){const p=pts[i],q=pts[(i+1)%n];const m=[(p[0]+q[0])/2,(p[1]+q[1])/2];if(!i){const l=pts[n-1];d=`M${((l[0]+p[0])/2).toFixed(1)} ${((l[1]+p[1])/2).toFixed(1)}`}d+=` Q${p[0].toFixed(1)} ${p[1].toFixed(1)} ${m[0].toFixed(1)} ${m[1].toFixed(1)}`}return d+'Z'}
+const ISL_ART_S={p:[[-18,-6,.95]],r:[[30,4]],gift:1};
 const ISL_ART=[{p:[[-14,-6,1],[8,-10,.8]],r:[[30,2]]},{p:[[10,-8,1]],r:[[-30,4],[-22,6]],hut:1},{p:[[-18,-4,.9],[2,-12,1],[20,-4,.75]],r:[]},{p:[[-6,-8,1]],r:[[26,2]],hut:1},{p:[[-20,-6,.85],[14,-10,1]],r:[[-34,5]]},{p:[[0,-10,1.05]],r:[[28,3],[-28,5]]}];
 function palm(x,y,s){return `<use href="#palm" transform="translate(${x} ${y}) scale(${s})"/>`}
-function islandSVG(k,P){const [x,y]=NODES[k+1];const big=k===6;const s=big?1.45:1;const r=mulb(101+k*37);
-  const sand=blob(r,58,24,11,.28),grass=blob(r,40,15,9,.35),reef=blob(r,80,34,12,.22);const A=ISL_ART[k]||{p:[],r:[]};
+function islandSVG(k,P){const [x,y]=NODES[k+1];const big=k===CH;const s=big?1.45:1;const r=mulb(101+k*37);
+  const sand=blob(r,58,24,11,.28),grass=blob(r,40,15,9,.35),reef=blob(r,80,34,12,.22);const A=ISL[k].k==='surprise'?ISL_ART_S:(ISL_ART[k]||{p:[],r:[]});
   let deco='';
   if(big){deco=`${palm(-30,-4,1.05)}${palm(-12,-12,.8)}
     <g transform="translate(18 -2)"><ellipse cx="0" cy="8" rx="20" ry="5" fill="#000" opacity=".25"/>
@@ -465,7 +580,7 @@ function islandSVG(k,P){const [x,y]=NODES[k+1];const big=k===6;const s=big?1.45:
      <circle cx="2" cy="-10" r="16" fill="url(#${P}glow)" class="twinkle"/></g>
     <g transform="translate(-4 12)" stroke="#c0392b" stroke-width="3.2" stroke-linecap="round"><path d="M-7 -4 L7 4"/><path d="M7 -4 L-7 4"/></g>
     <g transform="translate(34 -18)"><rect x="-1" y="-30" width="2" height="32" fill="#5b3a1e"/><path class="flag" d="M1 -30 Q10 -27 18 -29 L18 -18 Q10 -16 1 -19Z" fill="#ffcc33" stroke="#8a5a12" stroke-width=".8"/></g>`}
-  else{deco=A.r.map(([rx,ry])=>`<use href="#rock" transform="translate(${rx} ${ry})"/>`).join('')+(A.hut?`<g transform="translate(${A.p[0][0]>0?-24:22} -2)"><path d="M-9 0 L9 0 L9 -9 L-9 -9Z" fill="#c99a5b" stroke="#6b4320"/><path d="M-12 -8 L0 -19 L12 -8Z" fill="#a8643a" stroke="#5b3416"/><rect x="-2.5" y="-6" width="5" height="6" fill="#5b3416"/></g>`:'')+A.p.map(([px,py,ps])=>palm(px,py,ps)).join('')}
+  else{deco=A.r.map(([rx,ry])=>`<use href="#rock" transform="translate(${rx} ${ry})"/>`).join('')+(A.hut?`<g transform="translate(${A.p[0][0]>0?-24:22} -2)"><path d="M-9 0 L9 0 L9 -9 L-9 -9Z" fill="#c99a5b" stroke="#6b4320"/><path d="M-12 -8 L0 -19 L12 -8Z" fill="#a8643a" stroke="#5b3416"/><rect x="-2.5" y="-6" width="5" height="6" fill="#5b3416"/></g>`:'')+(A.gift?`<g transform="translate(10 -4)" class="giftbob"><ellipse cy="10" rx="14" ry="4" fill="#000" opacity=".22"/><rect x="-12" y="-10" width="24" height="20" rx="3" fill="#e84393" stroke="#7a1747"/><rect x="-14" y="-14" width="28" height="7" rx="2" fill="#ff6fb1" stroke="#7a1747"/><rect x="-2.5" y="-14" width="5" height="24" fill="#ffd54a"/><path d="M0 -14 Q-10 -24 -12 -16 Q-8 -12 0 -14 Q8 -12 12 -16 Q10 -24 0 -14Z" fill="#ffd54a" stroke="#a87b0a" stroke-width=".8"/><text x="16" y="-16" font-size="14" font-weight="900" fill="#fff" stroke="#7a1747" stroke-width=".6">؟</text></g>`:'')+A.p.map(([px,py,ps])=>palm(px,py,ps)).join('')}
   return `<g class="isl" id="isl${k}" transform="translate(${x} ${y}) scale(${s})">
    <path d="${reef}" fill="url(#${P}reef)" transform="translate(0 6)"/>
    <path d="${sand}" fill="none" stroke="#fff" stroke-width="2.5" stroke-dasharray="6 7" opacity=".7" transform="translate(0 6) scale(1.12)" class="foam"/>
@@ -495,7 +610,7 @@ function shipSVG(i){const c=TCH[i];return `<g class="ship" id="ship${i}" style="
 function mapSVG(id){const P=id;
   let waves='';const r=mulb(7);for(let k=0;k<46;k++){const x=Math.floor(r()*1600)-300,y=Math.floor(r()*800)-100,w=14+r()*14;waves+=`<path class="wave" style="animation-delay:${(-r()*6).toFixed(2)}s" d="M${x} ${y} q${w/2} -6 ${w} 0 q${w/2} 6 ${w} 0" stroke="#d9f6ff" stroke-width="2" fill="none" opacity="${(.18+r()*.25).toFixed(2)}"/>`}
   let caust='';for(let k=0;k<14;k++){caust+=`<ellipse cx="${Math.floor(r()*1000)}" cy="${Math.floor(r()*600)}" rx="${40+r()*90|0}" ry="${14+r()*30|0}" fill="#bff3ff" opacity=".05"/>`}
-  const clouds=[[250,60,1],[820,90,.8],[470,330,.6]].map(([x,y,s],k)=>`<g class="cloud" style="animation-delay:${-k*9}s"><g transform="translate(${x} ${y}) scale(${s})" opacity=".55"><ellipse cx="0" cy="0" rx="46" ry="16" fill="#fff"/><ellipse cx="-20" cy="-10" rx="22" ry="16" fill="#fff"/><ellipse cx="14" cy="-14" rx="26" ry="18" fill="#fff"/></g></g>`).join('');
+  const clouds=[[250,60,1],[840,260,.8],[600,370,.6]].map(([x,y,s],k)=>`<g class="cloud" style="animation-delay:${-k*9}s"><g transform="translate(${x} ${y}) scale(${s})" opacity=".55"><ellipse cx="0" cy="0" rx="46" ry="16" fill="#fff"/><ellipse cx="-20" cy="-10" rx="22" ry="16" fill="#fff"/><ellipse cx="14" cy="-14" rx="26" ry="18" fill="#fff"/></g></g>`).join('');
   const gulls=[[700,200],[730,215],[380,110]].map(([x,y],k)=>`<path class="gull" style="animation-delay:${-k*.4}s" d="M${x-9} ${y} q4.5 -6 9 0 q4.5 -6 9 0" stroke="#fff" stroke-width="2" fill="none" stroke-linecap="round"/>`).join('');
   const [hx,hy]=NODES[0];
   return `<svg class="map" id="${id}" viewBox="0 0 1000 600" xmlns="http://www.w3.org/2000/svg">
@@ -534,12 +649,12 @@ function mapSVG(id){const P=id;
   <rect x="-700" y="-450" width="2400" height="1500" fill="url(#${P}vig)" pointer-events="none"/>
   </svg>`}
 const OFF=[[-26,-14],[26,-14],[-26,22],[26,22]];
-function nodeOf(i){const t=TD[i];if(t.isl>=7)return 7;return t.isl+(t.st?1:0)}
+function nodeOf(i){const t=TD[i];if(t.isl>=NI)return NI;return t.isl+(t.st?1:0)}
 function placeShips(svg){if(!svg)return;const cur=new Set();
   for(let i=0;i<4;i++){const g=svg.querySelector('#ship'+i);if(!g)continue;const n=nodeOf(i);const [x,y]=NODES[n];const o=OFF[i];const dx=n===0?[-80,-38,4,46][i]:o[0]*1.6,dy=n===0?-22:o[1]-38;
     const tr=`translate(${x+dx}px,${y+dy}px)`;if(g.style.transform!==tr)g.style.transform=tr;
     g.style.opacity=TRY?(i===0?'1':'0'):TD[i].dev?'1':((IS_HOST||DISPLAY)?'.3':'0');
-    if(TD[i].st&&TD[i].isl<7)cur.add(TD[i].isl)}
+    if(TD[i].st&&TD[i].isl<NI)cur.add(TD[i].isl)}
   ISL.forEach((_,k)=>{const el=svg.querySelector('#isl'+k);if(el)el.classList.toggle('isl-cur',cur.has(k))})}
 
 /* ======================= RENDER ROOT ======================= */
@@ -557,7 +672,7 @@ function render(){
 function landHTML(){return `<div class="land"><div class="card">
   <div class="bigemoji">🏝️⛵💰</div>
   <h1 class="disp">رحلة الكنز</h1>
-  <p class="sub">مغامرة بحرية بين 7 جزر! كل فريق سفينة، وكل جزيرة مهمة… والفائز من يصل أولًا إلى صندوق الكنز.</p>
+  <p class="sub">مغامرة بحرية بين 8 جزر! كل فريق سفينة، وكل جزيرة مهمة… والفائز من يصل أولًا إلى صندوق الكنز.</p>
   <div class="opts">
    <button class="b pri bigbtn disp" data-act="newroom">🧭 أنا القبطان (المقدم): ابدأ مغامرة جديدة</button>
    <div class="sec" style="text-align:right"><h3>⛵ أنا فريق</h3><input id="jcode" placeholder="رمز الغرفة" maxlength="8" autocomplete="off"><div style="height:10px"></div><button class="b ok" style="width:100%" data-act="joinroom">دخول</button></div>
@@ -570,7 +685,7 @@ const teamLink=()=>location.origin+location.pathname+'?r='+ROOM;
 const dispLink=()=>location.origin+location.pathname+'?r='+ROOM+'&view=1';
 const hostLink=()=>location.origin+location.pathname+'?r='+ROOM+'&k='+HK;
 function ranking(){return [0,1,2,3].filter(i=>TD[i].dev||total(i)).sort((a,b)=>total(b)-total(a)||TD[b].isl-TD[a].isl)}
-function statusOf(i){const t=TD[i];if(!t.dev)return 'لم ينضم بعد';if(t.isl>=7)return '🏆 فتح صندوق الكنز!';if(t.st)return `يلعب في ${ISL[t.isl].n}`;if(t.isl===0)return G.raceOn?'في الميناء، يستعد للإبحار':'في الميناء ينتظر الإشارة';return `أنهى ${ISL[t.isl-1].n}`}
+function statusOf(i){const t=TD[i];if(!t.dev)return 'لم ينضم بعد';if(t.isl>=NI)return '🏆 فتح صندوق الكنز!';if(t.st)return `يلعب في ${ISL[t.isl].n}`;if(t.isl===0)return G.raceOn?'في الميناء، يستعد للإبحار':'في الميناء ينتظر الإشارة';return `أنهى ${ISL[t.isl-1].n}`}
 function renderHost(){
   const app=$('#app');
   if(!hostBuilt){hostBuilt=true;lastKey='host';document.body.classList.toggle('dispmode',DISPLAY);
@@ -578,7 +693,7 @@ function renderHost(){
      <div class="hbar"><h1 class="disp">🏝️ رحلة الكنز</h1>
       <div class="row"><span class="chip">الغرفة: <b class="num" style="color:var(--gold)">${ROOM}</b></span><span class="conn chip"></span>
        <button class="b sm" data-act="snd" id="sndBtn">🔇 تفعيل الصوت</button>
-       ${DISPLAY?'<button class="b sm" data-act="fs">⛶ ملء الشاشة</button>':'<button class="b sm pri" data-act="drawer">⚙️ لوحة التحكم</button>'}</div></div>
+       ${DISPLAY?'<button class="b sm" data-act="fs">⛶ ملء الشاشة</button>':'<button class="b sm hot" data-act="fin">📣 الإعلان التاريخي</button><button class="b sm pri" data-act="drawer">⚙️ لوحة التحكم</button>'}</div></div>
      <div class="banner" id="banner"></div>
      <div class="hgrid"><div>${mapSVG('hmap')}</div><div class="side" id="side"></div></div>
     </div><aside class="drawer" id="drawer"></aside><div id="finHost"></div>`;
@@ -588,7 +703,7 @@ function renderHost(){
   if(side._k!==sk){side._k=sk;
     const order=[0,1,2,3].sort((a,b)=>total(b)-total(a)||TD[b].isl-TD[a].isl);
     side.innerHTML=`${!G.raceOn?`<div class="card qrbox"><b class="disp" style="font-size:26px">امسحوا وانضموا للمغامرة!</b><div id="qr"></div><span class="note">أو ادخلوا الرمز <b class="num" style="color:var(--gold);font-size:22px">${ROOM}</b></span></div>`:''}
-     ${order.map((i,ri)=>`<div class="tcard" style="--c:${TC[i]}"><span class="rk">#${ri+1}</span><span class="em">${TEAMS[i].e}</span><div><div class="nm">${esc(teamName(i))}</div><div class="st">${statusOf(i)}</div><div class="tdots">${ISL.map((x,k)=>{const r=TD[i].res[k];const cur=k===TD[i].isl&&TD[i].st;return `<i class="${r?(r.s==='timeout'?'x':'d'):cur?'n':''}">${r?(r.s==='timeout'?'⌛':'✓'):x.ic}</i>`}).join('')}</div>${TD[i].st&&TD[i].isl<7?`<div class="tm num" data-tm="${i}">⏱ ${fmt(remOf(i))}</div>`:''}</div><span class="sc">${total(i)}</span></div>`).join('')}
+     ${order.map((i,ri)=>`<div class="tcard" style="--c:${TC[i]}"><span class="rk">#${ri+1}</span><span class="em">${TEAMS[i].e}</span><div><div class="nm">${esc(teamName(i))}</div><div class="st">${statusOf(i)}</div>${TD[i].st&&isSurp(TD[i].isl)?`<div class="apbox"><small>🎁 ${esc(chalFor(i))}</small><button class="b sm ok" data-act="appr:${i}">✅ اعتماد التحدي</button></div>`:''}<div class="tdots">${ISL.map((x,k)=>{const r=TD[i].res[k];const cur=k===TD[i].isl&&TD[i].st;return `<i class="${r?(r.s==='timeout'?'x':'d'):cur?'n':''}">${r?(r.s==='timeout'?'⌛':'✓'):x.ic}</i>`}).join('')}</div>${TD[i].st&&TD[i].isl<NI?`<div class="tm num" data-tm="${i}">⏱ ${fmt(remOf(i))}</div>`:''}</div><span class="sc">${total(i)}</span></div>`).join('')}
      <div class="card" style="text-align:center">${G.raceOn?'<b style="color:#5fe39c">⛵ السباق جارٍ!</b>':(DISPLAY?'<b>⏳ بانتظار إشارة القبطان لبدء السباق…</b>':'<b>⏳ بانتظار بدء السباق</b><p class="note">افتح لوحة التحكم واضغط «ابدأ السباق» بعد ما تنضم الفرق.</p>')}</div>`;
     const q=$('#qr');if(q&&!window.QRCode)q.remove();if(q&&window.QRCode){q.innerHTML='';new QRCode(q,{text:teamLink(),width:200,height:200,correctLevel:QRCode.CorrectLevel.M})}}
   paintBanner();
@@ -599,7 +714,7 @@ function paintBanner(){const el=$('#banner');if(!el)return;let best=null;
   for(let i=0;i<4;i++)TD[i].res.forEach((r,k)=>{if(r&&r.s==='done'&&(!best||r.at>best.r.at))best={i,k,r}});
   const leader=ranking()[0];
   let txt='';
-  if(best&&Date.now()-best.r.at<60000)txt=best.k===6?`💰 ${TEAMS[best.i].e} ${esc(teamName(best.i))} فتح صندوق الكنز!`:`🎉 ${TEAMS[best.i].e} ${esc(teamName(best.i))} أنجز ${esc(ISL[best.k].n)} (+${best.r.pts})`;
+  if(best&&Date.now()-best.r.at<60000)txt=best.k===CH?`💰 ${TEAMS[best.i].e} ${esc(teamName(best.i))} فتح صندوق الكنز!`:`🎉 ${TEAMS[best.i].e} ${esc(teamName(best.i))} أنجز ${esc(ISL[best.k].n)} (+${best.r.pts})`;
   else if(G.raceOn&&leader!=null&&total(leader)>0)txt=`👑 في الصدارة: ${TEAMS[leader].e} ${esc(teamName(leader))} · ${total(leader)} نقطة`;
   else if(!G.raceOn)txt='⚓ السفن في الميناء… بانتظار إشارة البدء';
   else txt='⛵ السباق بدأ! أبحروا يا أبطال';
@@ -610,7 +725,7 @@ function renderDrawer(){const d=$('#drawer');d.classList.toggle('on',drawer);if(
   d._k=k;
   d.innerHTML=`<div class="row" style="justify-content:space-between;margin-bottom:12px"><b class="disp" style="font-size:26px">⚙️ لوحة التحكم</b><button class="b sm" data-act="drawer">✕ إغلاق</button></div>
   <div class="sec"><h3>🚦 السباق</h3><div class="row">${G.raceOn?'<button class="b hot" data-act="race-off">⏸ إيقاف الإبحار</button>':'<button class="b pri" data-act="race-on">⛵ ابدأ السباق</button>'}
-   <button class="b ${G.view==='fin'?'ok':''}" data-act="fin">${G.view==='fin'?'إخفاء إعلان الفائز':'🏆 إعلان الفائز'}</button></div>
+   <button class="b ${G.view==='fin'?'ok':''}" data-act="fin">${G.view==='fin'?'إخفاء الإعلان':'📣 الإعلان التاريخي للفائز'}</button></div>
    <p class="note">إيقاف الإبحار يمنع الفرق من بدء جزيرة جديدة، والجزيرة الجارية تكمل.</p></div>
   <div class="sec"><h3>📲 روابط الدخول</h3><p class="note">رابط الفرق (يُعرض كـ QR على الشاشة):</p><div class="linkbox">${esc(teamLink())}</div>
    <div class="row"><button class="b sm" data-act="copy:team">نسخ رابط الفرق</button><button class="b sm" data-act="try">🧪 جرّب المهام بنفسك</button></div>
@@ -619,6 +734,14 @@ function renderDrawer(){const d=$('#drawer');d.classList.toggle('on',drawer);if(
   <div class="sec"><h3>🚩 أسماء الفرق</h3><div class="names">${[0,1,2,3].map(i=>`<label><span style="font-size:24px">${TEAMS[i].e}</span><input id="tn${i}" maxlength="16" value="${esc(teamName(i))}"></label>`).join('')}</div>
    <div style="height:8px"></div><button class="b sm ok" data-act="names">حفظ الأسماء</button></div>
   <div class="sec"><h3>🪙 نقاط إضافية (سلوك، تعاون…)</h3>${[0,1,2,3].map(i=>`<div class="adj"><span>${TEAMS[i].e} ${esc(teamName(i))} · <b class="num">${total(i)}</b></span><button class="b sm" data-act="bon:${i}:-10">−10</button><button class="b sm ok" data-act="bon:${i}:10">+10</button></div>`).join('')}</div>
+  <div class="sec"><h3>📜 رسالة صندوق الكنز</h3>
+   <p class="note">تظهر للفريق بعد ما يفتح الصندوق، وتدلّهم على مكان الكنز الحقيقي. اكتبها بأسلوبك.</p>
+   <textarea id="msgIn" rows="8" style="line-height:1.7">${esc(treasureMsg())}</textarea>
+   <div class="row" style="margin-top:8px"><button class="b sm ok" data-act="msgsave">حفظ الرسالة</button><button class="b sm" data-act="msgdef">استرجاع النص المقترح</button></div></div>
+  <div class="sec"><h3>🎁 تحديات جزيرة المفاجأة</h3>
+   <p class="note">تحدٍّ حركي في الواقع قبل جزيرة الكنز. اكتب كل تحدٍّ في سطر، وكل فريق يأخذ تحديًا مختلفًا. لما ينفّذ الفريق التحدي اضغط «✅ اعتماد التحدي» بجانب اسمه على الشاشة، أو أدخل رمز المقدم <b class="num" style="color:var(--gold)">${DEF_PIN}</b> في جواله.</p>
+   <textarea id="chalIn" rows="6" style="line-height:1.7">${esc(chalList().join('\n'))}</textarea>
+   <div style="height:8px"></div><button class="b sm ok" data-act="chalsave">حفظ التحديات</button></div>
   <div class="sec"><h3>🔐 شفرة صندوق الكنز</h3>
    <p class="note">6 أرقام ثابتة: كل جزيرة (من 1 إلى 6) تعطي الفريق رقمًا منها بالترتيب، وفي جزيرة الكنز يدخلونها كاملة. الشفرة الثابتة مكتوبة في ملف اللعبة، والتعديل هنا يخص هذه المغامرة فقط.</p>
    <div class="row"><input id="chestIn" maxlength="6" inputmode="numeric" value="${esc(chestCode())}" style="direction:ltr;text-align:center;letter-spacing:.3em;font-size:22px;max-width:200px"><button class="b sm ok" data-act="chest">حفظ الشفرة</button></div></div>
@@ -627,16 +750,65 @@ function renderDrawer(){const d=$('#drawer');d.classList.toggle('on',drawer);if(
    ${ISL.map((x,k)=>`<div class="lk"><span style="font-size:22px;text-align:center">${x.ic}</span><input class="c" id="lc${k}" maxlength="6" inputmode="numeric" placeholder="الرمز" value="${esc(G.locks[k].c)}"><input id="lh${k}" maxlength="120" placeholder="تلميح: مثلًا تحت الكرسي الأزرق" value="${esc(G.locks[k].h)}"></div>`).join('')}
    <div class="row"><button class="b sm ok" data-act="locks">حفظ الرموز</button><button class="b sm" data-act="lockrand">رموز عشوائية</button><button class="b sm" data-act="lockprint">🖨️ طباعة بطاقات الرموز</button></div></div>
   <div class="sec"><h3>🔄 مغامرة جديدة</h3><p class="note">يمسح تقدّم كل الفرق ونقاطها ويرجع السفن للميناء.</p><button class="b hot" data-act="reset">${resetArm>Date.now()?'متأكد؟ اضغط مرة ثانية':'إعادة ضبط كل شيء'}</button></div>`}
-let finShown='';
+let finShown='',finStage='';
+function titlesFor(){const J=[0,1,2,3].filter(i=>TD[i].dev&&TD[i].res.some(r=>r&&r.s==='done'));const T=[];
+  const best=(f,cmp,ok)=>{let b=null;J.forEach(i=>{const v=f(i);if(v==null||(ok&&!ok(v)))return;if(b==null||cmp(v,b.v))b={i,v}});return b};
+  let b=best(i=>TD[i].mist||0,(a,c)=>a<c);if(b)T.push({ic:'🧠',n:'العقل المدبّر',d:`أقل عدد أخطاء: ${b.v}`,i:b.i});
+  b=best(i=>{const d=TD[i].res.filter(r=>r&&r.s==='done'&&r.d>0&&ISL[TD[i].res.indexOf(r)].k!=='surprise').map(r=>r.d);return d.length?Math.min(...d):null},(a,c)=>a<c);if(b)T.push({ic:'⚡',n:'البرق',d:`أسرع إنجاز لجزيرة: ${fmt(b.v)}`,i:b.i});
+  b=best(i=>{const r=TD[i].res.find((r,k)=>r&&r.s==='done'&&ISL[k].k==='memory');return r&&r.mv?r.mv:null},(a,c)=>a<c);if(b)T.push({ic:'🎯',n:'قنّاص الذاكرة',d:`أنهى الذاكرة في ${b.v} محاولة`,i:b.i});
+  b=best(i=>TD[i].mxs||0,(a,c)=>a>c,v=>v>=5);if(b)T.push({ic:'🔥',n:'ملك السلاسل',d:`${b.v} إجابات صحيحة متتالية`,i:b.i});
+  b=best(i=>(TD[i].log||[]).filter(l=>l.ty==='atk').length,(a,c)=>a>c,v=>v>0);if(b)T.push({ic:'🏴‍☠️',n:'أشرس قرصان',d:`أطلق ${b.v} هجمات`,i:b.i});
+  b=best(i=>(TD[i].log||[]).filter(l=>l.ty==='block').length,(a,c)=>a>c,v=>v>0);if(b)T.push({ic:'🛡️',n:'الحصن المنيع',d:`صدّ ${b.v} هجمات`,i:b.i});
+  [0,1,2,3].filter(i=>TD[i].dev&&!T.some(t=>t.i===i)).forEach(i=>T.push({ic:'💪',n:'روح الأبطال',d:'لم يستسلموا حتى النهاية',i}));
+  return T}
+function finPlan(){const r=ranking(),m=r.length;const P=[];let t=0;
+  P.push({k:'intro',t,len:4.5});t+=4.5;
+  for(let p=m-1;p>=1;p--){P.push({k:'pos',p,t,len:4.2});t+=4.2}
+  if(m){P.push({k:'sus',t,len:4.5});t+=4.5;P.push({k:'win',t,len:8});t+=8}
+  const T=titlesFor();T.forEach((x,q)=>{P.push({k:'ttl',q,t,len:3.6});t+=3.6});
+  P.push({k:'final',t,len:1e9});return {P,r,T,winAt:m?P.find(x=>x.k==='win').t:0}}
+function countUp(el,to,ms){const t0=performance.now();(function f(n){const p=Math.min(1,(n-t0)/ms);el.textContent=Math.round(to*(1-Math.pow(1-p,3)));if(p<1)requestAnimationFrame(f)})(t0)}
+function drumroll(sec){if(!AC)return;const n=Math.floor(sec*18);for(let k=0;k<n;k++){const t=k/n*sec;beep(70+Math.random()*30,.06,'triangle',.05+.12*(k/n),t)}}
+function fanfare(){if(!AC)return;[[523,0],[523,.15],[523,.3],[659,.45],[784,.75],[659,1.0],[784,1.15],[1047,1.4]].forEach(([f,t])=>{beep(f,.3,'sawtooth',.07,t);beep(f*2,.3,'triangle',.04,t)});[523,659,784,1047].forEach(f=>beep(f,1.8,'triangle',.07,1.7))}
+function boom(){if(!AC)return;beep(120,.5,'sine',.25);beep(60,.8,'sine',.2,.05)}
 function renderFinale(){const host=$('#finHost');if(!host)return;
-  if(G.view!=='fin'){if(finShown){host.innerHTML='';finShown='';stopConfetti()}return}
-  const k=JSON.stringify(TD.map((t,i)=>total(i)))+G.names;if(finShown===k)return;finShown=k;
-  const r=ranking();const slot=(i,p)=>i==null?'':`<div class="pc p${p}" style="--c:${TCH[i]}">${p===1?'<div class="crown">👑</div>':''}<div class="av" style="--c:${TCH[i]}">${TEAMS[i].e}</div><div class="nm">${esc(teamName(i))}</div><div class="sc"><span class="num">${total(i)}</span> نقطة</div><div class="blk">${p}</div></div>`;
-  host.innerHTML=`<div class="fin2"><div class="t"><small>🏆 النتائج النهائية · رحلة الكنز</small><h2>${r.length?'الفائز بالكنز: '+esc(teamName(r[0])):'لا توجد فرق بعد'}</h2>
-   <div class="pd">${slot(r[1],2)}${slot(r[0],1)}${slot(r[2],3)}</div>
-   ${r[3]!=null?`<p class="rest">المركز الرابع: ${TEAMS[r[3]].e} ${esc(teamName(r[3]))} · ${total(r[3])} نقطة</p>`:''}
-   ${DISPLAY?'':'<div style="height:14px"></div><button class="b" data-act="fin">رجوع للخريطة</button>'}</div></div>`;
-  startConfetti();sWin()}
+  if(G.view!=='fin'){if(finShown){host.innerHTML='';finShown='';finStage='';stopConfetti();stopFW()}return}
+  finShown='1';const {P,r,T}=finPlan();const el=(Date.now()-(G.finAt||0))/1000;
+  if(el<0){if(finStage!=='pre'){finStage='pre';host.innerHTML='<div class="fin3 dark"></div>'}return}
+  const st=[...P].reverse().find(x=>el>=x.t)||P[0];const key=st.k+(st.p??'')+(st.q??'');
+  if(key===finStage)return;finStage=key;const fresh=el-st.t<1.2;
+  const row=(i,place)=>`<div class="rv" style="--c:${TCH[i]}"><div class="rvp">${place}</div><div class="av" style="--c:${TCH[i]}">${TEAMS[i].e}</div><div class="rvn">${esc(teamName(i))}</div><div class="rvs"><b class="cu" data-to="${total(i)}">0</b> نقطة</div></div>`;
+  const medal=['🥇','🥈','🥉','4️⃣'];
+  let h='';
+  if(st.k==='intro'){h=`<div class="fin3 dark"><div class="spot"></div><div class="fx-in"><small>رحلة الكنز · الحفل الختامي</small><h2 class="big">لحظة الحقيقة…</h2><p>من سيحمل كنز الجزر الثماني؟</p></div></div>`;if(fresh)drumroll(4)}
+  else if(st.k==='pos'){const i=r[st.p];h=`<div class="fin3 dark"><div class="spot on" style="--c:${TCH[i]}"></div><div class="fx-in"><small>في المركز ${['الأول','الثاني','الثالث','الرابع'][st.p]}</small><div class="rvbig">${medal[st.p]}</div>${row(i,'')}</div></div>`;if(fresh){boom();setTimeout(sOk,300)}}
+  else if(st.k==='sus'){h=`<div class="fin3 dark sus"><div class="spot sweep"></div><div class="fx-in"><small>والآن…</small><h2 class="big">الفائز بكنز رحلة الكنز هو…</h2><div class="drum">🥁</div></div></div>`;if(fresh)drumroll(4.4)}
+  else if(st.k==='win'){const i=r[0];h=`<div class="fin3 win" style="--c:${TCH[i]}"><div class="rays2"></div><div class="fx-in pop"><div class="crown2">👑</div><div class="av hero" style="--c:${TCH[i]}">${TEAMS[i].e}</div><h2 class="big gold">${esc(teamName(i))}</h2><div class="rvs xl"><b class="cu" data-to="${total(i)}">0</b> نقطة</div><p class="champ">🏆 أبطال رحلة الكنز 🏆</p></div></div>`;if(fresh){fanfare();boom()}startFW(1e9);startConfetti()}
+  else if(st.k==='ttl'){const x=T[st.q];h=`<div class="fin3 win" style="--c:${TCH[x.i]}"><div class="fx-in pop"><small>🎖️ الألقاب الخاصة</small><div class="tbig">${x.ic}</div><h2 class="big gold">${x.n}</h2><div class="trow"><span class="av" style="--c:${TCH[x.i]}">${TEAMS[x.i].e}</span><b>${esc(teamName(x.i))}</b></div><p>${esc(x.d)}</p></div></div>`;if(fresh)[784,1047,1319].forEach((f,k)=>beep(f,.3,'triangle',.1,k*.1));startFW(1e9)}
+  else{const slot=(i,p)=>i==null?'':`<div class="pc p${p}" style="--c:${TCH[i]}">${p===1?'<div class="crown">👑</div>':''}<div class="av" style="--c:${TCH[i]}">${TEAMS[i].e}</div><div class="nm">${esc(teamName(i))}</div><div class="sc"><span class="num">${total(i)}</span> نقطة</div><div class="blk">${p}</div></div>`;
+    h=`<div class="fin2"><div class="t"><small>🏆 النتائج النهائية · رحلة الكنز</small><h2>${r.length?'الفائز بالكنز: '+esc(teamName(r[0])):'لا توجد فرق بعد'}</h2>
+     <div class="pd">${slot(r[1],2)}${slot(r[0],1)}${slot(r[2],3)}</div>
+     ${r[3]!=null?`<p class="rest">المركز الرابع: ${TEAMS[r[3]].e} ${esc(teamName(r[3]))} · ${total(r[3])} نقطة</p>`:''}
+     ${T.length?`<div class="tgrid">${T.map(x=>`<div class="tc" style="--c:${TCH[x.i]}"><span>${x.ic}</span><b>${x.n}</b><small>${TEAMS[x.i].e} ${esc(teamName(x.i))}</small></div>`).join('')}</div>`:''}
+     ${DISPLAY?'':'<div style="height:14px"></div><button class="b" data-act="fin">رجوع للخريطة</button>'}</div></div>`;startConfetti();startFW(1e9)}
+  host.innerHTML=h;host.querySelectorAll('.cu').forEach(e=>countUp(e,+e.dataset.to,fresh?1600:1))}
+function paintFinT(){if(IS_HOST||DISPLAY||MYT==null||TRY)return;let el=$('#finT');
+  if(G.view!=='fin'||!G.finAt||!TD[MYT].dev){if(el){el.remove();stopConfetti()}return}
+  if(!el){el=document.createElement('div');el.id='finT';document.body.appendChild(el)}
+  const {r,T,winAt}=finPlan();const e=(Date.now()-G.finAt)/1000;const k=e<winAt?'wait':'res';if(el._k===k)return;el._k=k;
+  if(k==='wait'){el.innerHTML=`<div class="fin3 dark"><div class="fx-in"><div style="font-size:80px">👀</div><h2 class="big" style="font-size:40px">انظروا إلى الشاشة الكبيرة!</h2><p>لحظة إعلان النتائج… 🥁</p></div></div>`;return}
+  const p=r.indexOf(MYT);const mine=T.filter(x=>x.i===MYT);
+  el.innerHTML=`<div class="fin3 ${p===0?'win':'dark'}" style="--c:${TCH[MYT]}"><div class="fx-in pop"><div style="font-size:90px">${['🥇','🥈','🥉','🏅'][Math.max(0,p)]||'🏅'}</div><small>${esc(teamName(MYT))}</small><h2 class="big ${p===0?'gold':''}">${p===0?'أنتم أبطال رحلة الكنز!':`المركز ${['الأول','الثاني','الثالث','الرابع'][p]||''}`}</h2><div class="rvs xl">${total(MYT)} نقطة</div>${mine.map(x=>`<p class="champ">${x.ic} لقب «${x.n}»</p>`).join('')}</div></div>`;
+  if(p===0){startConfetti();sWin()}}
+/* fireworks */
+let fwRun=0;
+function startFW(ms){if(fwRun)return;let cv=$('#fw');if(!cv){cv=document.createElement('canvas');cv.id='fw';document.body.appendChild(cv)}cv.width=innerWidth;cv.height=innerHeight;const x=cv.getContext('2d');const id=fwRun=Date.now();const P=[];let next=0;
+  (function f(n){if(fwRun!==id)return;x.globalCompositeOperation='destination-out';x.fillStyle='rgba(0,0,0,.18)';x.fillRect(0,0,cv.width,cv.height);x.globalCompositeOperation='lighter';
+    if(n>next){next=n+380+Math.random()*500;const cx=cv.width*(.15+Math.random()*.7),cy=cv.height*(.12+Math.random()*.4),c=['#ffcc33','#ff5a5f','#2fb8ff','#3ee08f','#ff6fb1','#fff'][Math.floor(Math.random()*6)];
+      for(let k=0;k<70;k++){const a=Math.random()*Math.PI*2,v=2+Math.random()*5;P.push({x:cx,y:cy,vx:Math.cos(a)*v,vy:Math.sin(a)*v,l:60+Math.random()*30,c})}if(AC&&Math.random()<.5)beep(80+Math.random()*60,.25,'sine',.06)}
+    for(let k=P.length-1;k>=0;k--){const p=P[k];p.x+=p.vx;p.y+=p.vy;p.vy+=.06;p.vx*=.985;p.l--;if(p.l<=0){P.splice(k,1);continue}x.fillStyle=p.c;x.globalAlpha=Math.min(1,p.l/40);x.beginPath();x.arc(p.x,p.y,2.2,0,7);x.fill()}x.globalAlpha=1;
+    requestAnimationFrame(f)})(0)}
+function stopFW(){fwRun=0;const c=$('#fw');c&&c.remove()}
 function printLocks(){const cards=ISL.map((x,k)=>({x,k,c:G.locks[k].c})).filter(o=>o.c);if(!cards.length){toast('اكتب رمزًا لجزيرة واحدة على الأقل');return}
   const w=window.open('','_blank');if(!w){toast('اسمح بالنوافذ المنبثقة للطباعة');return}
   w.document.write(`<!doctype html><html dir="rtl" lang="ar"><head><meta charset="utf-8"><title>بطاقات رموز الجزر</title><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lalezar&family=IBM+Plex+Sans+Arabic:wght@400;700&display=swap"><style>body{font-family:'IBM Plex Sans Arabic';margin:0;padding:10mm;display:grid;grid-template-columns:1fr 1fr;gap:8mm}.c{border:3px dashed #8a5a1e;border-radius:12px;padding:8mm;text-align:center;background:#fbf0d6;break-inside:avoid}.c h2{font-family:Lalezar;font-size:28px;margin:0}.c b{font-family:Lalezar;font-size:64px;letter-spacing:.2em;direction:ltr;display:block}.e{font-size:48px}@media print{body{-webkit-print-color-adjust:exact;print-color-adjust:exact}}</style></head><body>${cards.map(o=>`<div class="c"><div class="e">🗝️${o.x.ic}</div><h2>رمز ${esc(o.x.n)}</h2><b>${esc(o.c)}</b><p>أدخلوا هذا الرمز في جهازكم لتبحروا إلى الجزيرة ${o.k+1}</p></div>`).join('')}<script>setTimeout(()=>print(),700)<\/script></body></html>`);w.document.close()}
@@ -644,22 +816,35 @@ function printLocks(){const cards=ISL.map((x,k)=>({x,k,c:G.locks[k].c})).filter(
 
 /* ======================= DISPLAY (broadcast) ======================= */
 let dvBuilt=false,dvSeen=null,dvAlertT=0;const RH=104,RG=12;
-function events(){const ev=[];for(let i=0;i<4;i++)TD[i].res.forEach((r,k)=>{if(r)ev.push({i,k,r})});return ev.sort((a,b)=>b.r.at-a.r.at)}
+function events(){const ev=[];for(let i=0;i<4;i++){TD[i].res.forEach((r,k)=>{if(r)ev.push({id:'r'+i+'-'+k,i,k,r,at:r.at,ty:'res'})});
+  (TD[i].log||[]).forEach(l=>{if(l.ty!=='hit')ev.push({id:'l'+i+'-'+l.at+l.ty,i,at:l.at,ty:l.ty,l})})}return ev.sort((a,b)=>b.at-a.at)}
 const hm=t=>{const d=new Date(t);return String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0')};
-function evText(e){const nm=`${TEAMS[e.i].e} ${esc(teamName(e.i))}`;if(e.r.s==='timeout')return `⌛ ${nm}: انتهى الوقت في ${esc(ISL[e.k].n)}`;if(e.k===6)return `💰 ${nm} فتح صندوق الكنز! +${e.r.pts}`;return `${e.r.rank===0?'🥇':'✅'} ${nm} أنجز ${esc(ISL[e.k].n)} +${e.r.pts}`}
+const tnm=i=>`${TEAMS[i].e} ${esc(teamName(i))}`;
+function evText(e){const nm=tnm(e.i);
+  if(e.ty==='fire')return `🔥 ${nm} سلسلة نارية ×${e.l.n}! +20`;
+  if(e.ty==='atk')return `${TOOLS[e.l.tool].ic} ${nm} أطلق ${TOOLS[e.l.tool].n} على ${tnm(e.l.to)}!`;
+  if(e.ty==='block')return `🛡️ ${nm} صدّ ${TOOLS[e.l.tool]?TOOLS[e.l.tool].n:'هجوم'} ${tnm(e.l.by)}!`;
+  if(e.ty==='shield')return `🛡️ ${nm} فعّل الدرع`;
+  if(e.r.s==='timeout')return `⌛ ${nm}: انتهى الوقت في ${esc(ISL[e.k].n)}`;if(e.k===CH)return `💰 ${nm} فتح صندوق الكنز! +${e.r.pts}`;return `${e.r.rank===0?'🥇':'✅'} ${nm} أنجز ${esc(ISL[e.k].n)} +${e.r.pts}`}
+let alQ=[],alBusy=0,prevOrd=null,atChest=null;
+function pushAlert(html,cls,snd){alQ.push({html,cls,snd});if(alQ.length>6)alQ.shift();runAlerts()}
+function runAlerts(){if(alBusy||!alQ.length)return;const a=$('#alert');if(!a)return;const x=alQ.shift();alBusy=1;
+  a.className='alert '+(x.cls||'');a.innerHTML=x.html;void a.offsetWidth;a.classList.add('on');x.snd&&x.snd();
+  setTimeout(()=>{a.classList.remove('on');setTimeout(()=>{alBusy=0;runAlerts()},450)},alQ.length?3200:5500)}
+function siren(){for(let k=0;k<3;k++){beep(660,.22,'sawtooth',.08,k*.5);beep(880,.22,'sawtooth',.08,k*.5+.25)}}
 function renderDisplay(){
   const app=$('#app');
   if(!dvBuilt){dvBuilt=true;lastKey='dv';document.body.classList.add('dsp');
     app.innerHTML=`<div class="dv">
      <header class="dv-h">
-      <div class="dv-brand"><div class="dv-logo">🏝️</div><div><h1>رحلة الكنز</h1><small>سباق الجزر السبع · الغرفة <span class="num">${esc(ROOM)}</span></small></div><span class="live off" id="live">قبل البداية</span></div>
+      <div class="dv-brand"><div class="dv-logo">🏝️</div><div><h1>رحلة الكنز</h1><small>سباق الجزر الثماني · الغرفة <span class="num">${esc(ROOM)}</span></small></div><span class="live off" id="live">قبل البداية</span></div>
       <div class="dv-stats" id="stats"></div>
       <div class="dv-tools"><button data-act="snd" id="sndBtn">🔇 صوت</button><button data-act="fs">⛶ ملء الشاشة</button><span class="conn chip" style="font-size:12px;padding:4px 10px"></span></div>
      </header>
      <main class="dv-m">
       <section class="panel"><div class="ph"><h2>🗺️ خريطة الرحلة</h2><span id="mapSub"></span></div><div class="mapwrap">${mapSVG('dmap')}</div><div class="alert" id="alert"></div><div id="joinq"></div></section>
       <section class="panel"><div class="ph"><h2>🏆 ترتيب الفرق</h2><span>النقاط · التقدم في الجزر</span></div>
-       <div class="lb" id="lb" style="--rh:${RH}px;height:${4*RH+3*RG}px">${[0,1,2,3].map(i=>`<div class="lr" id="lr${i}" style="--c:${TCH[i]};top:${i*(RH+RG)}px"><div class="rk" id="rk${i}"></div><div class="av">${TEAMS[i].e}</div><div class="who"><b id="nm${i}"></b><small id="st${i}"></small><div class="trk" id="tk${i}">${ISL.map(()=>'<i></i>').join('')}</div></div><div class="pts"><b id="sc${i}">0</b><span>نقطة</span><div class="plus" id="pl${i}"></div></div></div>`).join('')}</div>
+       <div class="lb" id="lb" style="--rh:${RH}px;height:${4*RH+3*RG}px">${[0,1,2,3].map(i=>`<div class="lr" id="lr${i}" style="--c:${TCH[i]};top:${i*(RH+RG)}px"><div class="rk" id="rk${i}"></div><div class="av">${TEAMS[i].e}</div><div class="who"><b><span id="nm${i}"></span> <span class="bdg" id="bd${i}"></span></b><small id="st${i}"></small><div class="trk" id="tk${i}">${ISL.map(()=>'<i></i>').join('')}</div></div><div class="pts"><b id="sc${i}">0</b><span>نقطة</span><div class="plus" id="pl${i}"></div></div></div>`).join('')}</div>
       </section>
      </main>
      <footer class="dv-f"><b>آخر الأحداث</b><div class="tick" id="tick"></div></footer>
@@ -671,7 +856,7 @@ function renderDisplay(){
   if(G.view==='fin'){live.className='live off';live.textContent='النتائج النهائية'}else if(G.raceOn){live.className='live';live.textContent='مباشر'}else{live.className='live off';live.textContent=G.raceAt?'متوقف مؤقتًا':'قبل البداية'}
   const joined=[0,1,2,3].filter(i=>TD[i].dev).length;const doneIs=TD.reduce((s,t)=>s+t.res.filter(Boolean).length,0);
   const sk=JSON.stringify([joined,doneIs,fin,G.raceAt]);const st=$('#stats');
-  if(st._k!==sk){st._k=sk;st.innerHTML=`<div class="stat"><b id="elap">${G.raceAt?fmt(Date.now()-G.raceAt):'--:--'}</b><span>مدة السباق</span></div><div class="stat"><b>${joined}<small style="font-size:16px;color:#7fa8c2"> / 4</small></b><span>الفرق المشاركة</span></div><div class="stat"><b>${doneIs}<small style="font-size:16px;color:#7fa8c2"> / ${Math.max(joined,1)*7}</small></b><span>جزر مُنجزة</span></div><div class="stat"><b>${fin}</b><span>وصلوا للكنز</span></div>`}
+  if(st._k!==sk){st._k=sk;st.innerHTML=`<div class="stat"><b id="elap">${G.raceAt?fmt(Date.now()-G.raceAt):'--:--'}</b><span>مدة السباق</span></div><div class="stat"><b>${joined}<small style="font-size:16px;color:#7fa8c2"> / 4</small></b><span>الفرق المشاركة</span></div><div class="stat"><b>${doneIs}<small style="font-size:16px;color:#7fa8c2"> / ${Math.max(joined,1)*NI}</small></b><span>جزر مُنجزة</span></div><div class="stat"><b>${fin}</b><span>وصلوا للكنز</span></div>`}
   $('#mapSub').textContent=G.raceOn?'السفن تتحرك مباشرة مع تقدم الفرق':'السفن في الميناء بانتظار الإشارة';
   // join qr
   const jq=$('#joinq');const showQ=!G.raceOn&&!G.raceAt;
@@ -684,19 +869,37 @@ function renderDisplay(){
     $('#rk'+i).textContent=r===0&&total(i)>0?'👑':r+1;
     $('#nm'+i).textContent=teamName(i);
     const sc=$('#sc'+i),v=String(total(i));if(sc.textContent!==v)sc.textContent=v;
-    const stx=!t.dev?'بانتظار الانضمام':t.isl>=7?'🏆 فتح صندوق الكنز':t.st?`${ISL[t.isl].ic} في ${ISL[t.isl].n} <em data-tm2="${i}">${fmt(remOf(i))}</em>`:t.isl===0?'⚓ في الميناء':`⛵ أنهى ${t.isl} من 7 جزر`;
+    const stx=!t.dev?'بانتظار الانضمام':t.isl>=NI?'🏆 فتح صندوق الكنز':t.st?`${ISL[t.isl].ic} في ${ISL[t.isl].n} <em data-tm2="${i}">${fmt(remOf(i))}</em>`:t.isl===0?'⚓ في الميناء':`⛵ أنهى ${t.isl} من ${NI} جزر`;
     const se=$('#st'+i);if(se._h!==stx){se._h=stx;se.innerHTML=stx}
     [...$('#tk'+i).children].forEach((d,k)=>{const rr=t.res[k];d.className=rr?(rr.s==='timeout'?'x':'d'):(k===t.isl&&t.st?'n':'')})});
   // events: ticker + alert
   const ev=events();
-  const tk=$('#tick'),tx=ev.slice(0,8).map(e=>`<span><em>${hm(e.r.at)}</em>${evText(e)}</span>`).join('')||'<span>⚓ بانتظار انطلاق السفن… أول فريق ينهي جزيرة يأخذ 100 نقطة!</span>';
+  const tk=$('#tick'),tx=ev.slice(0,8).map(e=>`<span><em>${hm(e.at)}</em>${evText(e)}</span>`).join('')||'<span>⚓ بانتظار انطلاق السفن… أول فريق ينهي جزيرة يأخذ 100 نقطة!</span>';
   if(tk._h!==tx){tk._h=tx;tk.innerHTML=tx}
-  const ids=new Set(ev.map(e=>e.i+'-'+e.k));
+  const ids=new Set(ev.map(e=>e.id));
   if(dvSeen===null)dvSeen=ids;
-  else{const nw=ev.filter(e=>!dvSeen.has(e.i+'-'+e.k));dvSeen=ids;
-    if(nw.length){const e=nw[0];const a=$('#alert');a.innerHTML=`<i>${e.r.s==='timeout'?'تحديث':'خبر عاجل'}</i>${evText(e)}`;a.classList.add('on');clearTimeout(dvAlertT);dvAlertT=setTimeout(()=>a.classList.remove('on'),6000);
-      nw.forEach(x=>{if(x.r.pts){const p=$('#pl'+x.i);p.textContent='+'+x.r.pts;p.classList.remove('go');void p.offsetWidth;p.classList.add('go')}});
-      e.r.s==='done'?sWin():sBad()}}
+  else{const nw=ev.filter(e=>!dvSeen.has(e.id)).reverse();dvSeen=ids;
+    nw.forEach(e=>{
+      if(e.ty==='res'){if(e.r.pts){const p=$('#pl'+e.i);p.textContent='+'+e.r.pts;p.classList.remove('go');void p.offsetWidth;p.classList.add('go')}
+        pushAlert(`<i>${e.r.s==='timeout'?'تحديث':'خبر عاجل'}</i>${evText(e)}`,e.k===CH?'gold':'',e.r.s==='done'?sWin:sBad)}
+      else if(e.ty==='fire')pushAlert(`<i>🔥 نار!</i>${evText(e)}`,'fire',()=>[523,659,784,1047].forEach((f,x)=>beep(f,.18,'square',.08,x*.07)));
+      else if(e.ty==='atk')pushAlert(`<i>⚔️ هجوم!</i>${evText(e)}`,'purple',()=>[880,660,440,220].forEach((f,x)=>beep(f,.14,'sawtooth',.09,x*.07)));
+      else if(e.ty==='block')pushAlert(`<i>🛡️ صدّ!</i>${evText(e)}`,'green',sOk);
+    })}
+  // approaching treasure
+  const nowChest=new Set([0,1,2,3].filter(i=>TD[i].dev&&TD[i].isl===CH&&TD[i].st));
+  if(atChest)nowChest.forEach(i=>{if(!atChest.has(i))pushAlert(`<i>⚠️ تحذير</i>${tnm(i)} وصل جزيرة الكنز!`,'red',siren)});atChest=nowChest;
+  // overtakes
+  const ord=[0,1,2,3].filter(i=>TD[i].dev).sort((a,b)=>total(b)-total(a)||a-b);
+  if(prevOrd){for(let x=0;x<ord.length;x++){const a=ord[x],pa=prevOrd.indexOf(a);if(pa>x){const passed=prevOrd.slice(x,pa).find(b=>ord.indexOf(b)>x&&total(a)>total(b));
+      if(passed!=null){pushAlert(`<i>🚀 تجاوز!</i>${tnm(a)} تجاوز ${tnm(passed)}${x===0?' واعتلى الصدارة 👑':''}`,'blue',()=>[392,523,659,784].forEach((f,k)=>beep(f,.16,'triangle',.12,k*.06)));break}}}}
+  prevOrd=ord;
+  // row badges
+  [0,1,2,3].forEach(i=>{const t=TD[i],now=Date.now();const fire=(t.log||[]).some(l=>l.ty==='fire'&&now-l.at<25000);
+    const hit=[0,1,2,3].some(j=>(TD[j].atk||[]).some(a=>a.to===i&&now-a.at<(TOOLS[a.ty].dur||10)*1000)&&!(t.log||[]).some(l=>l.ty==='block'&&now-l.at<15000));
+    const bd=(fire?'🔥':'')+(t.sh?'🛡️':'')+(hit?'🌪️':'')+((t.inv||[]).length?`<small class="inv">🎒${t.inv.length}</small>`:'');
+    const b=$('#bd'+i);if(b&&b._h!==bd){b._h=bd;b.innerHTML=bd}
+    $('#lr'+i).classList.toggle('hot',t.isl===CH&&!!t.st)});
   renderFinale();
 }
 function fitBoard(){const lb=$('#lb');if(!lb)return;const avail=lb.parentElement.clientHeight-70;const rh=Math.max(78,Math.min(130,Math.floor((avail-3*RG)/4)));
@@ -710,40 +913,41 @@ let view=null;      // local overlay: {t:'sail'|'reward', ...}
 let lockIn='';
 function loadMS(){if(MYT==null)return null;const s=LS.get(SK('ms'+MYT)+(TRY?'-try':''),null);const t=TD[MYT];if(s&&s.sr===t.sr&&s.k===t.isl)return s;return null}
 function saveMS(){if(MS)LS.set(SK('ms'+MYT)+(TRY?'-try':''),MS)}
-function pState(){if(MYT==null)return 'pick';const t=TD[MYT];if(!TRY&&!mine(MYT))return 'pick';if(t.isl>=7)return 'fin';if(t.st)return 'play';if(TRY||G.raceOn)return 'ready';return 'wait'}
+function pState(){if(MYT==null)return 'pick';const t=TD[MYT];if(!TRY&&!mine(MYT))return 'pick';if(t.isl>=NI)return 'fin';if(t.st)return 'play';if(TRY||G.raceOn)return 'ready';return 'wait'}
 function renderTeam(){
   const app=$('#app');
   if(!TRY&&!gotG){if(lastKey!=='conn'){lastKey='conn';app.innerHTML=`<div class="land"><div class="card"><div class="bigemoji">⛵</div><h2 class="disp">جارٍ الاتصال بالغرفة ${esc(ROOM)}…</h2><span class="conn chip"></span><p class="note">تأكدوا من اتصال الإنترنت ومن رمز الغرفة.</p><a class="b sm" href="${location.pathname}" style="text-decoration:none">رجوع</a></div></div>`;paintConn()}return}
   if(!TRY&&MYT!=null&&!mine(MYT)&&TD[MYT].dev!==DEV){MYT=null;LS.del(SK('myt'))}
   const ps=pState();
   if(ps==='pick'){const k='pick'+JSON.stringify(TD.map(t=>t.dev))+G.names;if(lastKey!==k){lastKey=k;app.innerHTML=pickHTML()}return}
-  if(!$('#phead')||lastKey.indexOf('team')!==0){lastKey='team';app.innerHTML=`${TRY?trybarHTML():''}<div class="phead" id="phead"></div><div class="pmain" id="pmain"></div><div id="frz"></div>`}
-  paintHead();
+  if(!$('#phead')||lastKey.indexOf('team')!==0){lastKey='team';app.innerHTML=`${TRY?trybarHTML():''}<div class="phead" id="phead"></div><div class="pmain" id="pmain"></div><div id="frz"></div><div id="efx"></div>`}
+  paintHead();checkAttacks();
   const t=TD[MYT];
   let key;
-  if(view&&view.t==='reward')key='rw'+view.k;
+  if(view&&view.t==='msg')key='msg';
+  else if(view&&view.t==='reward')key='rw'+view.k;
   else if(view&&view.t==='sail')key='sail'+t.isl;
   else key=ps+'|'+t.isl+'|'+t.sr+'|'+(ps==='ready'?(needLock()?'L':'')+G.raceOn:'')+(ps==='wait'?G.raceOn:'')+(ps==='fin'?total(MYT):'');
   const main=$('#pmain');
   if(main._k!==key||main._dirty){main._k=key;main._dirty=false;
-    if(view&&view.t==='reward')main.innerHTML=rewardHTML();
+    if(view&&(view.t==='reward'||view.t==='msg'))main.innerHTML=rewardHTML();
     else if(view&&view.t==='sail')main.innerHTML=`<div class="card sailing"><div class="bigemoji">⛵</div><h2 class="disp" style="font-size:34px">نُبحر إلى ${esc(ISL[t.isl].n)}…</h2><p class="note">تمسكوا جيدًا! 🌊</p></div>`;
     else if(ps==='wait')main.innerHTML=`${miniMap()}<div class="card" style="text-align:center"><div class="bigemoji">⚓</div><h2 class="disp" style="font-size:32px">أنتم في الميناء!</h2><p class="intro">انتظروا إشارة القبطان (المقدم) لبدء السباق…</p></div>`;
     else if(ps==='ready')main.innerHTML=readyHTML();
-    else if(ps==='fin')main.innerHTML=`${miniMap()}<div class="card reward"><div class="chest" style="font-size:90px">💰</div><h2 class="disp" style="font-size:38px;color:var(--gold)">فتحتم صندوق الكنز!</h2><div class="coin">${total(MYT)} 🪙</div><p class="intro">أحسنتم يا ${esc(teamName(MYT))}! انتظروا إعلان الفائز على الشاشة الكبيرة.</p></div>`;
+    else if(ps==='fin')main.innerHTML=`${miniMap()}<div class="card reward"><div class="chest" style="font-size:90px">💰</div><h2 class="disp" style="font-size:38px;color:var(--gold)">فتحتم صندوق الكنز!</h2><div class="coin">${total(MYT)} 🪙</div><p class="intro">أحسنتم يا ${esc(teamName(MYT))}! انتظروا إعلان الفائز على الشاشة الكبيرة.</p><button class="b pri" data-act="showmsg">📜 اعرضوا رسالة الكنز مرة ثانية</button></div>`;
     else if(ps==='play'){if(!MS||MS.sr!==t.sr||MS.k!==t.isl)MS=loadMS();if(!MS){MS=initMission(t.isl);saveMS()}main.innerHTML=missionHTML()}
     placeShips($('#mmap'));
   }else placeShips($('#mmap'));
-  paintFreeze();
+  paintFreeze();paintEfx();
 }
 function trybarHTML(){return `<div class="trybar"><b>🧪 وضع التجربة</b><span class="note" style="margin:0">لا يؤثر على المسابقة</span>${ISL.map((x,k)=>`<button class="b sm" data-act="tryto:${k}">${x.ic}</button>`).join('')}<button class="b sm" data-act="tryreset">من البداية</button></div>`}
 function pickHTML(){return `<div class="wrap"><div class="card" style="text-align:center"><div class="bigemoji">🏴</div><h2 class="disp" style="font-size:34px;margin:6px 0">اختاروا سفينتكم</h2><p class="note">جهاز واحد لكل فريق · الغرفة <b class="num">${esc(ROOM)}</b></p>
   <div class="pick">${[0,1,2,3].map(i=>{const tk=TD[i].dev&&TD[i].dev!==DEV;return `<button class="${tk?'taken':''}" style="--c:${TCH[i]}" data-act="pick:${i}"><span class="em">${TEAMS[i].e}</span><span class="nm">${esc(teamName(i))}</span><span class="note">${tk?'🔒 مأخوذة (اضغط للاستلام)':'متاحة'}</span></button>`}).join('')}</div></div></div>`}
 function paintHead(){const h=$('#phead');if(!h)return;const t=TD[MYT];
-  const k=JSON.stringify([t.res,t.isl,t.st,G.names,G.bonus]);
+  const k=JSON.stringify([t.res,t.isl,t.st,G.names,G.bonus,t.inv,t.sh,t.sb]);
   if(h._k!==k){h._k=k;
   h.innerHTML=`<div class="r1"><span class="tn"><span style="font-size:26px">${TEAMS[MYT].e}</span>${esc(TRY?'تجربة المقدم':teamName(MYT))}</span><span class="pts">${total(MYT)} 🪙</span><span class="clk num ${t.st?'':'hidden'}" id="pclk">${fmt(remOf(MYT))}</span></div>
-   <div class="steps">${ISL.map((x,k)=>{const r=t.res[k];const c=r?(r.s==='timeout'?'x':'d'):k===t.isl?'n':'';return `<i class="${c}" title="${esc(x.n)}">${r?(r.s==='timeout'?'⌛':'✓'):x.ic}</i>`}).join('')}</div>`}
+   <div class="steps">${ISL.map((x,k)=>{const r=t.res[k];const c=r?(r.s==='timeout'?'x':'d'):k===t.isl?'n':'';return `<i class="${c}" title="${esc(x.n)}">${r?(r.s==='timeout'?'⌛':'✓'):x.ic}</i>`}).join('')}</div>${toolBar()}`}
 }
 function miniMap(){return `<div style="max-width:560px;width:100%;margin:0 auto">${mapSVG('mmap')}</div>`}
 const needLock=()=>{const t=TD[MYT];const L=G.locks&&G.locks[t.isl];return !TRY&&L&&L.c&&!t.unl[t.isl]};
@@ -751,15 +955,29 @@ function readyHTML(){const t=TD[MYT],x=ISL[t.isl];
   if(needLock()){const L=G.locks[t.isl];return `${miniMap()}<div class="card"><div class="ititle"><span class="ic">🗝️</span><div><small>قبل الإبحار إلى الجزيرة ${t.isl+1}</small><h2 class="disp">ابحثوا عن رمز الجزيرة!</h2></div></div>
    <p class="intro">${L.h?esc(L.h):'الرمز مكتوب في ورقة مخبأة في المكان. ابحثوا عنها!'}</p>
    <div class="disp7" id="lkd">${lockIn||'·'.repeat(L.c.length)}</div><div style="height:10px"></div>${keypad('lk')}</div>`}
-  return `${miniMap()}<div class="card"><div class="ititle"><span class="ic">${x.ic}</span><div><small>الجزيرة ${t.isl+1} من 7 · ⏱ ${Math.round(x.dur/60)} دقائق</small><h2 class="disp">${esc(x.n)}</h2></div></div>
+  return `${miniMap()}<div class="card"><div class="ititle"><span class="ic">${x.ic}</span><div><small>الجزيرة ${t.isl+1} من ${NI} · ⏱ ${Math.round(x.dur/60)} دقائق</small><h2 class="disp">${esc(x.n)}</h2></div></div>
    <p class="intro">${esc(x.intro)}</p>
-   <p class="note">🏁 أول فريق يُنهي الجزيرة يأخذ 100 · الثاني 70 · الثالث 50 · الرابع 30${t.isl===6?' (×2 هنا!)':''}</p>
+   <p class="note">🏁 أول فريق يُنهي الجزيرة يأخذ 100 · الثاني 70 · الثالث 50 · الرابع 30${t.isl===CH?' (×2 هنا!)':''}</p>
    <button class="b pri bigbtn disp" data-act="sail">⛵ أبحروا!</button></div>`}
 function keypad(p){return `<div class="keypad">${[1,2,3,4,5,6,7,8,9].map(n=>`<button class="b" data-act="${p}-k:${n}">${n}</button>`).join('')}<button class="b" data-act="${p}-clr">مسح</button><button class="b" data-act="${p}-k:0">0</button><button class="b pri" data-act="${p}-ok">فتح</button></div>`}
-function rewardHTML(){const r=view.r,k=view.k;const dg=k<6?digitsFor(MYT)[k]:null;
+function chestSVG(){return `<svg viewBox="-110 -110 220 170" class="chestsvg"><defs><radialGradient id="cglow"><stop offset="0" stop-color="#fff6b0"/><stop offset="1" stop-color="#ffcc33" stop-opacity="0"/></radialGradient><linearGradient id="cwood" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#b06a2c"/><stop offset="1" stop-color="#6b3a14"/></linearGradient></defs>
+  <g class="rays">${Array.from({length:12},(_,i)=>`<path d="M0 -10 L-9 -120 L9 -120Z" fill="#ffe27a" opacity=".35" transform="rotate(${i*30} 0 -10)"/>`).join('')}</g>
+  <circle cx="0" cy="-10" r="70" fill="url(#cglow)" class="cglow"/>
+  ${Array.from({length:10},(_,i)=>`<circle class="cn" style="--dx:${(i-4.5)*18}px;--dy:${-60-((i*37)%50)}px;animation-delay:${1.1+i*.06}s" cx="0" cy="-6" r="7" fill="#ffd54a" stroke="#b8860b" stroke-width="1.5"/>`).join('')}
+  <ellipse cx="0" cy="52" rx="74" ry="9" fill="#000" opacity=".3"/>
+  <rect x="-66" y="-6" width="132" height="56" rx="6" fill="url(#cwood)" stroke="#3b1f0b" stroke-width="3"/>
+  <rect x="-66" y="10" width="132" height="8" fill="#e0a530"/><rect x="-50" y="-6" width="10" height="56" fill="#e0a530"/><rect x="40" y="-6" width="10" height="56" fill="#e0a530"/>
+  <rect x="-9" y="-2" width="18" height="22" rx="3" fill="#ffd54a" stroke="#7a5212" stroke-width="2"/><circle cx="0" cy="7" r="3" fill="#3b1f0b"/>
+  <g class="lid"><path d="M-66 -6 L-66 -26 Q0 -62 66 -26 L66 -6Z" fill="url(#cwood)" stroke="#3b1f0b" stroke-width="3"/><path d="M-50 -6 L-50 -40 M50 -6 L50 -40" stroke="#e0a530" stroke-width="10"/></g></svg>`}
+function rewardHTML(){if(view.t==='msg')return `<div class="card reward"><h2 class="disp" style="font-size:32px;color:var(--gold)">📜 رسالة الكنز</h2><div class="scroll on"><div class="scrollin">${esc(treasureMsg())}</div></div><button class="b pri bigbtn disp" data-act="next">رجوع</button></div>`;
+  const r=view.r,k=view.k;
+  if(k===CH)return `<div class="card reward chestv">${chestSVG()}<h2 class="disp" style="font-size:36px;color:var(--gold);margin:6px 0">${r.s==='timeout'?'انتهى الوقت… لكن القبطان أشفق عليكم وفتح الصندوق!':'فتحتم صندوق الكنز! 🎉'}</h2>${r.pts?`<div class="coin">+${r.pts} 🪙</div>`:''}
+   <div class="scroll"><div class="scrollin">${esc(treasureMsg())}</div></div>
+   <button class="b pri bigbtn disp" data-act="next" style="margin-top:12px">🏆 النهاية</button></div>`;const dg=k<6?digitsFor(MYT)[k]:null;
   return `<div class="card reward">${r.s==='timeout'?`<div class="bigemoji">⌛</div><h2 class="disp" style="font-size:34px">انتهى الوقت!</h2><p class="intro">لا بأس، الرحلة مستمرة!</p>`:`<div class="bigemoji">🎉</div><h2 class="disp" style="font-size:34px">أنجزتم ${esc(ISL[k].n)}!</h2><div class="coin">+${r.pts} 🪙</div><p class="note">${r.rank===0?'🥇 أول فريق ينهي هذه الجزيرة!':`المركز ${r.rank+1} في هذه الجزيرة`}</p>`}
+   ${r.tool?`<div class="loot">🎒 غنيمة جديدة: <b>${TOOLS[r.tool].ic} ${TOOLS[r.tool].n}</b><small>${TOOLS[r.tool].d}. تجدونها أعلى الشاشة.</small></div>`:''}
    ${dg!=null?`<div class="mappiece"><span>🗺️ قطعة الخريطة رقم ${k+1}</span><b class="num">${dg}</b><span>اكتبوا هذا الرقم في ورقتكم! تحتاجونه لفتح صندوق الكنز.</span></div>`:''}
-   <button class="b pri bigbtn disp" data-act="next">${k<6?'تابعوا الإبحار ⛵':'🏆 النهاية'}</button></div>`}
+   <button class="b pri bigbtn disp" data-act="next">${k<CH?'تابعوا الإبحار ⛵':'🏆 النهاية'}</button></div>`}
 
 /* ---------------- missions ---------------- */
 function rngFor(k){const t=TD[MYT];return mulb(hsh(ROOM+'|'+MYT+'|'+k+'|'+t.sr))}
@@ -771,15 +989,22 @@ function initMission(k){const r=rngFor(k);const t=TD[MYT];const b={k,sr:t.sr,frz
    case 'tap':return {...b,order:shufR(r,Array.from({length:40},(_,i)=>i+1)),next:1};
    case 'words':return {...b,...wsBuild(r),found:[],sel:null};
    case 'riddle':{const qs=shufR(r,RIDDLES.map((_,i)=>i));return {...b,qs,i:0,ord:qs.map(()=>shufR(r,[0,1,2,3]))}}
+   case 'surprise':return {...b,pin:''};
    case 'chest':return {...b,inp:'',wrong:0};
   }}
-function missionHTML(){const k=MS.k,x=ISL[k];const head=sub=>`<div class="ititle"><span class="ic">${x.ic}</span><div><small>الجزيرة ${k+1} من 7</small><h2 class="disp">${esc(x.n)}</h2></div></div>${sub||''}`;
+function missionHTML(){const k=MS.k,x=ISL[k];const head=sub=>`<div class="ititle"><span class="ic">${x.ic}</span><div><small>الجزيرة ${k+1} من ${NI}</small><h2 class="disp">${esc(x.n)}</h2></div></div>${sub||''}`;
   switch(x.k){
    case 'quiz':case 'riddle':{const bank=x.k==='quiz'?QUIZ:RIDDLES;const n=MS.qs.length;const q=bank[MS.qs[MS.i]];
      return `<div class="card">${head()}<div class="ctr"><span>${x.k==='quiz'?'سؤال':'لغز'} ${MS.i+1} من ${n}</span></div><div class="prog"><i style="width:${MS.i/n*100}%"></i></div>
       <p class="qtxt">${esc(q.q)}</p><div class="opts2">${MS.ord[MS.i].map(o=>`<button class="opt" data-act="ans:${o}">${esc(q.o[o])}</button>`).join('')}</div></div>`}
    case 'memory':return `<div class="card">${head()}<div class="ctr"><span>الأزواج: ${MS.ok.length/2} من 16</span><span>محاولات: ${MS.moves}</span></div>
       <div class="mem m32">${MS.cards.map((e,i)=>{const up=MS.open.includes(i)||MS.ok.includes(i);return `<button class="mc ${up?'up':''} ${MS.ok.includes(i)?'ok':''}" data-act="mem:${i}"><span>${e}</span></button>`}).join('')}</div></div>`;
+   case 'surprise':return `<div class="card surp">${head()}
+      <div class="giftbig">🎁</div>
+      <p class="note" style="text-align:center;margin:0">تحدّيكم في الواقع:</p>
+      <div class="chal">${esc(chalFor(MYT))}</div>
+      <div class="waitap"><span class="dots"><i></i><i></i><i></i></span> نفّذوا التحدي ثم نادوا المقدم ليعتمده من جهازه</div>
+      <details class="pinbox"><summary>أو يدخل المقدم رمزه هنا 🔑</summary><div class="disp7" id="spd">${MS.pin?'•'.repeat(MS.pin.length):'····'}</div><div style="height:8px"></div>${keypad('sp')}</details></div>`;
    case 'xo':return `<div class="card">${head()}<div class="ctr"><span>الفوز: ${MS.wins} من 3</span><span>أنتم ❌ · القبطان ⭕</span></div><div class="prog"><i style="width:${MS.wins/3*100}%"></i></div>
       <p class="qtxt" style="margin:10px 0" id="xomsg">${MS.msg||'دوركم! اختاروا مربعًا'}</p>
       <div class="xog">${MS.bd.map((v,i)=>`<button class="xoc ${v?'v'+v:''} ${(MS.line||[]).includes(i)?'w':''}" data-act="xo:${i}">${v==='x'?'❌':v==='o'?'⭕':''}</button>`).join('')}</div></div>`;
@@ -817,7 +1042,8 @@ function wsBuild(r){for(let tries=0;tries<200;tries++){const g=Array(WS_N*WS_N).
 function foundCells(){const s=new Set();MS.pl.forEach(p=>{if(MS.found.includes(p.w))p.cells.forEach(c=>s.add(c))});return s}
 
 /* ---------------- freeze ---------------- */
-function freeze(sec){MS.frz=Date.now()+sec*1000;saveMS();sBad();paintFreeze()}
+function mistake(){MS&&(MS.streak=0);if(!TRY)commitT(MYT,n=>{n.mist=(n.mist||0)+1})}
+function freeze(sec){mistake();MS.frz=Date.now()+sec*1000;saveMS();sBad();paintFreeze()}
 function frozen(){return MS&&MS.frz>Date.now()}
 function paintFreeze(){const f=$('#frz');if(!f)return;const on=pState()==='play'&&!view&&frozen();
   if(!on){if(f.innerHTML)f.innerHTML='';return}
@@ -828,12 +1054,13 @@ function paintFreeze(){const f=$('#frz');if(!f)return;const on=pState()==='play'
 /* ---------------- finish ---------------- */
 function finishIsland(s){const k=TD[MYT].isl;const now=Date.now();
   let rank=0;if(!TRY)for(let j=0;j<4;j++)if(j!==MYT&&TD[j].res[k]&&TD[j].res[k].s==='done'&&TD[j].res[k].at<now)rank++;
-  const pts=s==='done'?RANK_PTS[Math.min(rank,3)]*(k===6?2:1):0;
-  const r={s,at:now,pts,rank};
-  commitT(MYT,n=>{if(n.isl!==k||!n.st)return false;n.res[k]=r;n.isl=k+1;n.st=0;n.sr=''});
+  const pts=s==='done'?RANK_PTS[Math.min(rank,3)]*(k===CH?2:1):0;
+  const r={s,at:now,pts,rank,d:now-(TD[MYT].st||now)};if(MS&&ISL[k].k==='memory')r.mv=MS.moves;
+  const tl=s==='done'&&k<CH&&(TD[MYT].inv||[]).length<3?awardTool(k):null;r.tool=tl;
+  commitT(MYT,n=>{if(n.isl!==k||!n.st)return false;n.res[k]=r;n.isl=k+1;n.st=0;n.sr='';if(tl)n.inv=[...(n.inv||[]),tl]});
   LS.del(SK('ms'+MYT)+(TRY?'-try':''));MS=null;
   view={t:'reward',k,r};s==='done'?sWin():sBad();
-  if(s==='done'&&k===6)startConfetti(4000);
+  
   soon()}
 
 const XL=[[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
@@ -852,6 +1079,34 @@ function xoRound(r){MS.line=r.l;
   saveMS();dirty();
   if(r.w==='o')setTimeout(()=>freeze(5),700);
   setTimeout(()=>{if(!MS)return;if(MS.wins>=3)return finishIsland('done');MS.bd=Array(9).fill('');MS.line=null;MS.msg=r.w==='o'?'جولة جديدة… ركّزوا!':'جولة جديدة! دوركم';saveMS();dirty()},r.w==='o'?900:1400)}
+const TOOLS={storm:{ic:'🌪️',n:'عاصفة',d:'توقف سفينة فريق آخر 10 ثوانٍ',dur:10},fog:{ic:'🌫️',n:'ضباب',d:'يغطي شاشة فريق آخر بالضباب 12 ثانية',dur:12},shield:{ic:'🛡️',n:'درع',d:'يحمي سفينتكم من الهجوم القادم'}};
+const pushLog=(l,e)=>[...(l||[]),{...e,at:Date.now()}].slice(-20);
+let EFX=null;
+function fireFx(n){const d=document.createElement('div');d.className='firefx';d.innerHTML=`<div>🔥<b>سلسلة نارية ×${n}!</b><span>+20 نقطة</span></div>`;document.body.appendChild(d);setTimeout(()=>d.remove(),2200);
+  [523,659,784,1047].forEach((f,i)=>beep(f,.18,'square',.08,i*.07));try{navigator.vibrate&&navigator.vibrate([60,40,60,40,120])}catch(e){}}
+function checkAttacks(){if(TRY||MYT==null||!mine(MYT))return;const me=TD[MYT];const got=me.got||[];
+  for(let j=0;j<4;j++){if(j===MYT)continue;for(const a of (TD[j].atk||[])){
+    if(a.to!==MYT||got.includes(a.id)||Date.now()-a.at>90000)continue;
+    if(TD[MYT].sh){commitT(MYT,n=>{n.sh=0;n.got=[...(n.got||[]),a.id].slice(-40);n.log=pushLog(n.log,{ty:'block',by:j,tool:a.ty})});toast(`🛡️ درعكم صدّ ${TOOLS[a.ty].n} ${teamName(j)}!`);sOk()}
+    else{EFX={ty:a.ty,until:Date.now()+TOOLS[a.ty].dur*1000,by:j};LS.set(SK('efx'),EFX);commitT(MYT,n=>{n.got=[...(n.got||[]),a.id].slice(-40)});sBad();beep(90,.6,'sawtooth',.15);try{navigator.vibrate&&navigator.vibrate([200,80,200,80,400])}catch(e){}}
+    return}}}
+function paintEfx(){const f=$('#efx');if(!f)return;if(!EFX)EFX=LS.get(SK('efx'),null);
+  const on=EFX&&EFX.until>Date.now()&&pState()!=='fin';
+  if(!on){if(f.innerHTML){f.innerHTML='';f.className=''}return}
+  const n=Math.ceil((EFX.until-Date.now())/1000),T=TOOLS[EFX.ty],by=`${TEAMS[EFX.by].e} ${esc(teamName(EFX.by))}`;
+  if(f.className!=='efx-'+EFX.ty){f.className='efx-'+EFX.ty;f.innerHTML=EFX.ty==='storm'?`<div class="storm"><div class="bolt"></div><div class="stc"><div style="font-size:90px">🌪️</div><b>عاصفة من ${by}!</b><span>السفينة تتمايل… انتظروا</span><b class="n" id="efxn">${n}</b></div></div>`:`<div class="fog"><div class="fogl">🌫️ ضباب من ${by}! <b id="efxn">${n}</b></div></div>`}
+  else{const e=$('#efxn');if(e&&e.textContent!==String(n))e.textContent=n}}
+function toolBar(){const t=TD[MYT];const inv=t.inv||[];if(!inv.length&&!t.sh)return '';
+  return `<div class="tools">${t.sh?'<span class="tool on" title="الدرع مفعّل">🛡️ مفعّل</span>':''}${inv.map((ty,i)=>`<button class="tool" data-act="tool:${i}">${TOOLS[ty].ic} ${TOOLS[ty].n}</button>`).join('')}</div>`}
+function openTool(i){const t=TD[MYT];const ty=(t.inv||[])[+i];if(!ty)return;const T=TOOLS[ty];
+  if(!TRY&&(!G.raceOn||Date.now()<(G.raceAt||0))){toast('الأدوات تعمل أثناء السباق فقط');return}
+  const targets=[0,1,2,3].filter(j=>j!==MYT&&TD[j].dev&&!doneAll(j));
+  const m=document.createElement('div');m.className='tmodal';m.id='tmodal';
+  m.innerHTML=`<div class="card"><div style="font-size:60px;text-align:center">${T.ic}</div><h2 class="disp" style="text-align:center;margin:0;color:var(--gold)">${T.n}</h2><p class="note" style="text-align:center">${T.d}</p>
+   ${ty==='shield'?`<button class="b pri bigbtn" data-act="useshield:${i}">🛡️ فعّلوا الدرع</button>`:targets.length?`<p style="text-align:center;font-weight:700">على مَن تطلقونها؟</p><div class="pick">${targets.map(j=>`<button style="--c:${TCH[j]}" data-act="fire:${i}:${j}"><span class="em">${TEAMS[j].e}</span><span class="nm">${esc(teamName(j))}</span></button>`).join('')}</div>`:'<p class="note" style="text-align:center">لا توجد سفن يمكن مهاجمتها الآن</p>'}
+   <div style="height:10px"></div><button class="b" style="width:100%" data-act="tclose">إلغاء</button></div>`;
+  document.body.appendChild(m)}
+function awardTool(k){const tl=['storm','fog','shield'][(k+MYT)%3];return tl}
 /* ======================= ACTIONS ======================= */
 function dirty(){const m=$('#pmain');if(m)m._dirty=true;soon()}
 const A={
@@ -860,9 +1115,9 @@ const A={
   joinroom:()=>{const c=($('#jcode').value||'').toUpperCase().replace(/[^A-Z0-9]/g,'');if(c.length<4){toast('اكتبوا رمز الغرفة');return}location.href=location.pathname+'?r='+c},
   snd:()=>{initAudio();sOk();const b=$('#sndBtn');if(b)b.textContent='🔊 الصوت مفعّل'},
   drawer:()=>{drawer=!drawer;renderDrawer()},
-  'race-on':()=>commitG(n=>{n.raceOn=true;if(!n.raceAt)n.raceAt=Date.now()}),
+  'race-on':()=>{initAudio();commitG(n=>{n.raceOn=true;if(!n.raceAt)n.raceAt=Date.now()+4500})},
   'race-off':()=>commitG(n=>{n.raceOn=false}),
-  fin:()=>{drawer=false;commitG(n=>{n.view=n.view==='fin'?'map':'fin'})},
+  fin:()=>{drawer=false;initAudio();commitG(n=>{if(n.view==='fin'){n.view='map'}else{n.view='fin';n.finAt=Date.now()+1500}})},
   names:()=>{commitG(n=>{n.names=[0,1,2,3].map(i=>($('#tn'+i).value||'').trim()||TEAMS[i].n)});toast('تم حفظ الأسماء ✓')},
   locks:()=>{const L=ISL.map((_,k)=>({c:toLat($('#lc'+k).value).slice(0,6),h:($('#lh'+k).value||'').trim()}));commitG(n=>{n.locks=L});toast('تم حفظ الرموز لهذه المغامرة ✓')},
   chest:()=>{const c=toLat($('#chestIn').value);if(c.length!==6){toast('الشفرة لازم تكون 6 أرقام');return}commitG(n=>{n.chest=c});toast('تم حفظ الشفرة لهذه المغامرة ✓')},
@@ -874,14 +1129,16 @@ const A={
   try:()=>window.open(location.pathname+'?r='+ROOM+'&try=1','_blank'),
   pick:i=>{i=+i;const tk=TD[i].dev&&TD[i].dev!==DEV;if(tk&&!confirm('هذه السفينة مستخدمة في جهاز آخر. تستلمها في هذا الجهاز؟'))return;
     initAudio();MYT=i;LS.set(SK('myt'),i);commitT(i,n=>{n.dev=DEV;n.run=G.run});lastKey=''},
-  sail:()=>{initAudio();const t=TD[MYT];if(t.st||(!TRY&&!G.raceOn)||needLock())return;view={t:'sail'};sSail();soon();
+  sail:()=>{initAudio();const t=TD[MYT];if(t.st||(!TRY&&!G.raceOn)||needLock())return;if(!TRY&&G.raceAt&&Date.now()<G.raceAt)return;view={t:'sail'};sSail();soon();
     setTimeout(()=>{view=null;commitT(MYT,n=>{if(n.st)return false;n.st=Date.now();n.sr=rid()})},2200)},
   next:()=>{view=null;dirty();window.scrollTo(0,0)},
   'lk-k':d=>{const L=G.locks[TD[MYT].isl];if(lockIn.length<L.c.length)lockIn+=d;$('#lkd').textContent=lockIn;sTick()},
   'lk-clr':()=>{lockIn='';$('#lkd').textContent='·'.repeat(G.locks[TD[MYT].isl].c.length)},
   'lk-ok':()=>{const k=TD[MYT].isl,L=G.locks[k];if(lockIn===L.c){lockIn='';sOk();commitT(MYT,n=>{n.unl[k]=1});toast('🗝️ فُتح الطريق!')}else{lockIn='';sBad();$('#lkd').textContent='✗';toast('الرمز غير صحيح')}},
   ans:o=>{if(frozen())return;const bank=ISL[MS.k].k==='quiz'?QUIZ:RIDDLES;const q=bank[MS.qs[MS.i]];
-    if(+o===q.a){sOk();MS.i++;saveMS();if(MS.i>=MS.qs.length)return finishIsland('done');dirty()}
+    if(+o===q.a){sOk();MS.i++;MS.streak=(MS.streak||0)+1;
+      if(MS.streak%5===0){const st=MS.streak;fireFx(st);commitT(MYT,n=>{n.sb=(n.sb||0)+20;n.mxs=Math.max(n.mxs||0,st);n.log=pushLog(n.log,{ty:'fire',n:st})})}
+      saveMS();if(MS.i>=MS.qs.length)return finishIsland('done');dirty()}
     else{document.querySelector(`[data-act="ans:${o}"]`).classList.add('bad');freeze(ISL[MS.k].k==='quiz'?3:5)}},
   mem:i=>{i=+i;if(MS.ok.includes(i)||MS.open.includes(i)||MS.lock)return;MS.open.push(i);sTick();
     if(MS.open.length===2){MS.moves++;const [a,b]=MS.open;
@@ -906,28 +1163,53 @@ const A={
     const w=WS_WORDS.find(w=>!MS.found.includes(w)&&(w===str||w===rev)&&MS.pl.find(p=>p.w===w&&p.cells.length===cells.length&&p.cells.every(c=>cells.includes(c))));
     if(w){MS.found.push(w);sOk();saveMS();if(MS.found.length===WS_WORDS.length)return finishIsland('done')}else{toast('ليست كلمة من القائمة');saveMS();dirty();return freeze(5)}
     saveMS();dirty()},
+  tool:i=>openTool(i),
+  tclose:()=>{const m=$('#tmodal');m&&m.remove()},
+  useshield:i=>{commitT(MYT,n=>{n.inv=(n.inv||[]).filter((_,x)=>x!==+i);n.sh=1;n.log=pushLog(n.log,{ty:'shield'})});A.tclose();toast('🛡️ الدرع مفعّل! سيصدّ الهجوم القادم');sOk()},
+  fire:(i,j)=>{i=+i;j=+j;const ty=(TD[MYT].inv||[])[i];if(!ty)return;commitT(MYT,n=>{n.inv=(n.inv||[]).filter((_,x)=>x!==i);n.atk=[...(n.atk||[]),{id:rid(),to:j,ty,at:Date.now()}].slice(-10);n.log=pushLog(n.log,{ty:'atk',to:j,tool:ty})});
+    A.tclose();toast(`🚀 أطلقتم ${TOOLS[ty].n} على ${teamName(j)}!`);[880,660,440,220].forEach((f,x)=>beep(f,.12,'sawtooth',.09,x*.06))},
+  'sp-k':d=>{if(frozen())return;if(MS.pin.length<6)MS.pin+=d;$('#spd').textContent='•'.repeat(MS.pin.length);sTick()},
+  'sp-clr':()=>{MS.pin='';$('#spd').textContent='····'},
+  'sp-ok':()=>{if(frozen())return;if(MS.pin===DEF_PIN)return finishIsland('done');MS.pin='';saveMS();$('#spd').textContent='✗';freeze(5)},
+  appr:i=>{i=+i;commitG(n=>{n.appr=Object.assign({},n.appr,{[i]:TD[i].sr})});sOk();toast('✅ تم اعتماد تحدي '+teamName(i))},
+  chalsave:()=>{commitG(n=>{n.chal=$('#chalIn').value});toast('تم حفظ التحديات ✓')},
+  msgsave:()=>{commitG(n=>{n.msg=$('#msgIn').value});toast('تم حفظ رسالة الكنز ✓')},
+  msgdef:()=>{$('#msgIn').value=DEF_MSG},
+  showmsg:()=>{view={t:'msg'};dirty()},
   'ch-k':d=>{if(frozen())return;if(MS.inp.length<6)MS.inp+=d;$('#chd').textContent=MS.inp;sTick()},
   'ch-clr':()=>{MS.inp='';$('#chd').textContent='······'},
   'ch-ok':()=>{if(frozen())return;if(MS.inp===digitsFor(MYT).join('')){finishIsland('done')}else{MS.wrong++;MS.inp='';saveMS();dirty();freeze(5)}},
-  tryto:k=>{k=+k;view=null;LS.del(SK('ms0')+'-try');MS=null;commitT(0,n=>{n.isl=k;n.st=0;n.sr='';for(let j=k;j<7;j++)n.res[j]=null});dirty()},
+  tryto:k=>{k=+k;view=null;LS.del(SK('ms0')+'-try');MS=null;commitT(0,n=>{n.isl=k;n.st=0;n.sr='';for(let j=k;j<NI;j++)n.res[j]=null});dirty()},
   tryreset:()=>{view=null;LS.del(SK('ms0')+'-try');MS=null;TD[0]=freshT(G.run);TD[0].dev=DEV;dirty()},
   copy:w=>{const t=w==='host'?hostLink():w==='disp'?dispLink():teamLink();(navigator.clipboard?navigator.clipboard.writeText(t):Promise.reject()).then(()=>toast('تم النسخ ✓'),()=>prompt('انسخ الرابط:',t))}
 };
-document.addEventListener('click',e=>{const el=e.target.closest('[data-act]');if(!el)return;const [a,...rest]=el.dataset.act.split(':');const f=A[a];if(f)f(...rest)});
+document.addEventListener('click',e=>{if(DISPLAY||IS_HOST)initAudio();const el=e.target.closest('[data-act]');if(!el)return;const [a,...rest]=el.dataset.act.split(':');const f=A[a];if(f)f(...rest)});
 document.addEventListener('keydown',e=>{if(e.key==='Enter'&&e.target.id==='jcode')A.joinroom()});
 
 /* ======================= TICK ======================= */
 let lastSec=-1;
 setInterval(()=>{
   if(!ROOM)return;
-  if(IS_HOST||DISPLAY){document.querySelectorAll('[data-tm]').forEach(el=>{const i=+el.dataset.tm;el.textContent='⏱ '+fmt(remOf(i))});if(DISPLAY)dvTick();else paintBanner();return}
+  paintCountdown();paintFinT();
+  if(IS_HOST||DISPLAY){document.querySelectorAll('[data-tm]').forEach(el=>{const i=+el.dataset.tm;el.textContent='⏱ '+fmt(remOf(i))});if(DISPLAY)dvTick();else paintBanner();if(G.view==='fin')renderFinale();return}
+  if(MYT!=null&&lastKey==='team'){paintEfx()}
   if(MYT==null||pState()!=='play')return;
   const rem=remOf(MYT);const c=$('#pclk');if(c){c.textContent=fmt(rem);c.classList.toggle('low',rem<30000)}
   const s=Math.ceil(rem/1000);if(s!==lastSec){lastSec=s;if(s<=10&&s>0)sTick()}
   paintFreeze();
+  if(!view&&isSurp(TD[MYT].isl)&&G.appr&&G.appr[MYT]&&G.appr[MYT]===TD[MYT].sr)return finishIsland('done');
   if(rem<=0&&!view)finishIsland('timeout');
 },250);
 
+let cdLast='';
+function paintCountdown(){let el=$('#cdo');const ra=G.raceAt||0,now=Date.now();const on=ra&&now>ra-4600&&now<ra+1300&&G.view!=='fin';
+  if(!on){if(el)el.remove();cdLast='';return}
+  if(!el){el=document.createElement('div');el.id='cdo';document.body.appendChild(el)}
+  const left=Math.ceil((ra-now)/1000);const txt=left>=4?'استعدوا…':left>0?String(left):'أبحروا! ⛵';
+  if(txt!==cdLast){cdLast=txt;el.innerHTML=`<b class="${left>0&&left<4?'n':'go'}">${txt}</b>${left>=4?'<span>السباق على وشك الانطلاق</span>':''}`;
+    if(left>0&&left<4){beep(440,.25,'square',.12);try{navigator.vibrate&&navigator.vibrate(150)}catch(e){}}
+    else if(left<=0){horn();try{navigator.vibrate&&navigator.vibrate([300,100,500])}catch(e){};if(!IS_HOST&&!DISPLAY)soon()}}}
+function horn(){if(!AC)return;[[147,1.1],[220,1.1],[294,1.2]].forEach(([f,d])=>beep(f,d,'sawtooth',.09));setTimeout(()=>[523,659,784].forEach((f,i)=>beep(f,.4,'triangle',.12,i*.09)),900)}
 /* ======================= CONFETTI ======================= */
 let cfRun=0;
 function startConfetti(ms){const cv=$('#confetti');cv.hidden=false;const x=cv.getContext('2d');cv.width=innerWidth;cv.height=innerHeight;
