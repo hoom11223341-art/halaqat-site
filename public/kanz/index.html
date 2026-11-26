@@ -61,6 +61,15 @@ input,textarea{font:inherit}
 .tcard .sc{font-family:Lalezar;font-size:34px;color:var(--gold)}
 .tcard .rk{position:absolute;top:6px;left:10px;font-size:12px;color:var(--mute)}
 .tcard .tm{font-size:13px;color:#ffe08a}
+.tdots{display:flex;gap:4px;margin-top:6px;flex-wrap:wrap}
+.tdots i{font-style:normal;width:26px;height:26px;border-radius:50%;display:grid;place-items:center;background:#0a3a55;border:2px solid var(--line);font-size:12px}
+.tdots i.d{background:#1d8a52;border-color:#5fe39c}.tdots i.x{background:#6b2a30;border-color:#ff7b82}.tdots i.n{border-color:var(--gold);box-shadow:0 0 0 3px #ffcc3355;animation:pulse 1.2s infinite}
+.banner{text-align:center;font-family:Lalezar;font-size:clamp(22px,2.4vw,38px);color:#fff;min-height:0}
+.banner:empty{display:none}
+.banner span{display:inline-block;background:linear-gradient(90deg,#0a3a55,#125a80,#0a3a55);border:2px solid var(--gold);border-radius:999px;padding:6px 26px;animation:pop .5s}
+@keyframes pop{from{transform:scale(.6);opacity:0}}
+body.dispmode .hgrid{grid-template-columns:minmax(0,1fr) 420px}
+body.dispmode .tcard .nm{font-size:24px}body.dispmode .tcard .sc{font-size:44px}body.dispmode .tdots i{width:30px;height:30px;font-size:14px}.tdots{flex-wrap:nowrap}
 .qrbox{display:grid;place-items:center;gap:8px;text-align:center}
 .qrbox #qr{background:#fff;padding:10px;border-radius:14px}
 .drawer{position:fixed;inset:0 auto 0 0;width:min(460px,100vw);background:#072a3f;border-inline-start:2px solid var(--line);z-index:50;overflow:auto;padding:16px;box-shadow:0 0 40px #000a;transform:translateX(-105%);transition:transform .25s}
@@ -230,7 +239,8 @@ const ROOM=(QS.get('r')||'').toUpperCase().replace(/[^A-Z0-9]/g,'').slice(0,8);
 let HK=(QS.get('k')||'').replace(/[^A-Za-z0-9]/g,'');
 if(ROOM&&!HK&&QS.get('host')==='1')HK=LS.get('kz-hk-'+ROOM,'');
 const TRY=!!ROOM&&QS.get('try')==='1';
-let IS_HOST=!!ROOM&&!!HK&&!TRY;
+const DISPLAY=!!ROOM&&QS.get('view')==='1'&&!TRY;
+let IS_HOST=!!ROOM&&!!HK&&!TRY&&!DISPLAY;
 if(IS_HOST)LS.set('kz-hk-'+ROOM,HK);
 const CID=rid();
 let DEV=LS.get('kz-dev','');if(!DEV){DEV='d'+rid();LS.set('kz-dev',DEV)}
@@ -346,7 +356,7 @@ function nodeOf(i){const t=TD[i];if(t.isl>=7)return 7;return t.isl+(t.st?1:0)}
 function placeShips(svg){if(!svg)return;const cur=new Set();
   for(let i=0;i<4;i++){const g=svg.querySelector('#ship'+i);if(!g)continue;const n=nodeOf(i);const [x,y]=NODES[n];const o=OFF[i];const dx=n===0?[-38,6,50,94][i]:o[0]*1.6,dy=n===0?-22:o[1]-38;
     const tr=`translate(${x+dx}px,${y+dy}px)`;if(g.style.transform!==tr)g.style.transform=tr;
-    g.style.opacity=TRY?(i===0?'1':'0'):TD[i].dev?'1':(IS_HOST?'.3':'0');
+    g.style.opacity=TRY?(i===0?'1':'0'):TD[i].dev?'1':((IS_HOST||DISPLAY)?'.3':'0');
     if(TD[i].st&&TD[i].isl<7)cur.add(TD[i].isl)}
   ISL.forEach((_,k)=>{const el=svg.querySelector('#isl'+k);if(el)el.classList.toggle('isl-cur',cur.has(k))})}
 
@@ -357,6 +367,7 @@ function render(){
   const app=$('#app');
   if(!ROOM){if(lastKey!=='land'){lastKey='land';app.innerHTML=landHTML()}return}
   if(IS_HOST){renderHost();return}
+  if(DISPLAY){if(!gotG){if(lastKey!=='conn'){lastKey='conn';app.innerHTML=`<div class="land"><div class="card"><div class="bigemoji">🖥️</div><h2 class="disp">شاشة العرض · جارٍ الاتصال بالغرفة ${esc(ROOM)}…</h2><span class="conn chip"></span></div></div>`;paintConn()}return}renderHost();return}
   renderTeam();
 }
 
@@ -374,17 +385,19 @@ function landHTML(){return `<div class="land"><div class="card">
 /* ======================= HOST ======================= */
 let drawer=false,resetArm=0,hostBuilt=false;
 const teamLink=()=>location.origin+location.pathname+'?r='+ROOM;
+const dispLink=()=>location.origin+location.pathname+'?r='+ROOM+'&view=1';
 const hostLink=()=>location.origin+location.pathname+'?r='+ROOM+'&k='+HK;
 function ranking(){return [0,1,2,3].filter(i=>TD[i].dev||total(i)).sort((a,b)=>total(b)-total(a)||TD[b].isl-TD[a].isl)}
 function statusOf(i){const t=TD[i];if(!t.dev)return 'لم ينضم بعد';if(t.isl>=7)return '🏆 فتح صندوق الكنز!';if(t.st)return `يلعب في ${ISL[t.isl].n}`;if(t.isl===0)return G.raceOn?'في الميناء، يستعد للإبحار':'في الميناء ينتظر الإشارة';return `أنهى ${ISL[t.isl-1].n}`}
 function renderHost(){
   const app=$('#app');
-  if(!hostBuilt){hostBuilt=true;lastKey='host';
+  if(!hostBuilt){hostBuilt=true;lastKey='host';document.body.classList.toggle('dispmode',DISPLAY);
     app.innerHTML=`<div class="host">
      <div class="hbar"><h1 class="disp">🏝️ رحلة الكنز</h1>
       <div class="row"><span class="chip">الغرفة: <b class="num" style="color:var(--gold)">${ROOM}</b></span><span class="conn chip"></span>
        <button class="b sm" data-act="snd" id="sndBtn">🔇 تفعيل الصوت</button>
-       <button class="b sm pri" data-act="drawer">⚙️ لوحة التحكم</button></div></div>
+       ${DISPLAY?'<button class="b sm" data-act="fs">⛶ ملء الشاشة</button>':'<button class="b sm pri" data-act="drawer">⚙️ لوحة التحكم</button>'}</div></div>
+     <div class="banner" id="banner"></div>
      <div class="hgrid"><div>${mapSVG('hmap')}</div><div class="side" id="side"></div></div>
     </div><aside class="drawer" id="drawer"></aside><div id="finHost"></div>`;
     paintConn();}
@@ -393,11 +406,22 @@ function renderHost(){
   if(side._k!==sk){side._k=sk;
     const order=[0,1,2,3].sort((a,b)=>total(b)-total(a)||TD[b].isl-TD[a].isl);
     side.innerHTML=`${!G.raceOn?`<div class="card qrbox"><b class="disp" style="font-size:26px">امسحوا وانضموا للمغامرة!</b><div id="qr"></div><span class="note">أو ادخلوا الرمز <b class="num" style="color:var(--gold);font-size:22px">${ROOM}</b></span></div>`:''}
-     ${order.map((i,ri)=>`<div class="tcard" style="--c:${TC[i]}"><span class="rk">#${ri+1}</span><span class="em">${TEAMS[i].e}</span><div><div class="nm">${esc(teamName(i))}</div><div class="st">${statusOf(i)}</div>${TD[i].st&&TD[i].isl<7?`<div class="tm num" data-tm="${i}">⏱ ${fmt(remOf(i))}</div>`:''}</div><span class="sc">${total(i)}</span></div>`).join('')}
-     <div class="card" style="text-align:center">${G.raceOn?'<b style="color:#5fe39c">⛵ السباق جارٍ!</b>':'<b>⏳ بانتظار بدء السباق</b><p class="note">افتح لوحة التحكم واضغط «ابدأ السباق» بعد ما تنضم الفرق.</p>'}</div>`;
+     ${order.map((i,ri)=>`<div class="tcard" style="--c:${TC[i]}"><span class="rk">#${ri+1}</span><span class="em">${TEAMS[i].e}</span><div><div class="nm">${esc(teamName(i))}</div><div class="st">${statusOf(i)}</div><div class="tdots">${ISL.map((x,k)=>{const r=TD[i].res[k];const cur=k===TD[i].isl&&TD[i].st;return `<i class="${r?(r.s==='timeout'?'x':'d'):cur?'n':''}">${r?(r.s==='timeout'?'⌛':'✓'):x.ic}</i>`}).join('')}</div>${TD[i].st&&TD[i].isl<7?`<div class="tm num" data-tm="${i}">⏱ ${fmt(remOf(i))}</div>`:''}</div><span class="sc">${total(i)}</span></div>`).join('')}
+     <div class="card" style="text-align:center">${G.raceOn?'<b style="color:#5fe39c">⛵ السباق جارٍ!</b>':(DISPLAY?'<b>⏳ بانتظار إشارة القبطان لبدء السباق…</b>':'<b>⏳ بانتظار بدء السباق</b><p class="note">افتح لوحة التحكم واضغط «ابدأ السباق» بعد ما تنضم الفرق.</p>')}</div>`;
     const q=$('#qr');if(q&&!window.QRCode)q.remove();if(q&&window.QRCode){q.innerHTML='';new QRCode(q,{text:teamLink(),width:200,height:200,correctLevel:QRCode.CorrectLevel.M})}}
+  paintBanner();
   renderDrawer();renderFinale();
 }
+let banKey='';
+function paintBanner(){const el=$('#banner');if(!el)return;let best=null;
+  for(let i=0;i<4;i++)TD[i].res.forEach((r,k)=>{if(r&&r.s==='done'&&(!best||r.at>best.r.at))best={i,k,r}});
+  const leader=ranking()[0];
+  let txt='';
+  if(best&&Date.now()-best.r.at<60000)txt=best.k===6?`💰 ${TEAMS[best.i].e} ${esc(teamName(best.i))} فتح صندوق الكنز!`:`🎉 ${TEAMS[best.i].e} ${esc(teamName(best.i))} أنجز ${esc(ISL[best.k].n)} (+${best.r.pts})`;
+  else if(G.raceOn&&leader!=null&&total(leader)>0)txt=`👑 في الصدارة: ${TEAMS[leader].e} ${esc(teamName(leader))} · ${total(leader)} نقطة`;
+  else if(!G.raceOn)txt='⚓ السفن في الميناء… بانتظار إشارة البدء';
+  else txt='⛵ السباق بدأ! أبحروا يا أبطال';
+  if(txt!==banKey){banKey=txt;el.innerHTML=`<span>${txt}</span>`;if(best&&Date.now()-best.r.at<3000&&DISPLAY)sOk()}}
 function renderDrawer(){const d=$('#drawer');d.classList.toggle('on',drawer);if(!drawer){d._k='';return}
   const k=JSON.stringify([G,resetArm,TD.map(t=>t.dev)]);if(d._k===k)return;
   if(d.contains(document.activeElement)&&document.activeElement.tagName.match(/INPUT|TEXTAREA/))return;
@@ -408,6 +432,7 @@ function renderDrawer(){const d=$('#drawer');d.classList.toggle('on',drawer);if(
    <p class="note">إيقاف الإبحار يمنع الفرق من بدء جزيرة جديدة، والجزيرة الجارية تكمل.</p></div>
   <div class="sec"><h3>📲 روابط الدخول</h3><p class="note">رابط الفرق (يُعرض كـ QR على الشاشة):</p><div class="linkbox">${esc(teamLink())}</div>
    <div class="row"><button class="b sm" data-act="copy:team">نسخ رابط الفرق</button><button class="b sm" data-act="try">🧪 جرّب المهام بنفسك</button></div>
+   <p class="note">🖥️ شاشة العرض (للبروجكتر أو التلفزيون، تعرض التقدم فقط بدون تحكم):</p><div class="row"><button class="b sm pri" data-act="disp">فتح شاشة العرض</button><button class="b sm" data-act="copy:disp">نسخ رابطها</button></div>
    <p class="note">رابط المقدم (لا تشاركه مع الفرق، به تفتح التحكم من جهاز آخر):</p><button class="b sm" data-act="copy:host">نسخ رابط المقدم</button></div>
   <div class="sec"><h3>🚩 أسماء الفرق</h3><div class="names">${[0,1,2,3].map(i=>`<label><span style="font-size:24px">${TEAMS[i].e}</span><input id="tn${i}" maxlength="16" value="${esc(teamName(i))}"></label>`).join('')}</div>
    <div style="height:8px"></div><button class="b sm ok" data-act="names">حفظ الأسماء</button></div>
@@ -425,7 +450,7 @@ function renderFinale(){const host=$('#finHost');if(!host)return;
   host.innerHTML=`<div class="fin"><div><div class="chest">💰</div><h2 class="disp">${r.length?'الفائز بالكنز: '+esc(teamName(r[0])):'لا يوجد فرق بعد'}</h2>
    <div class="podium">${ord.map(i=>`<div class="pod ${i===r[0]?'p1':''}" style="--c:${TCH[i]}"><span>${['🥇','🥈','🥉'][r.indexOf(i)]}</span><span class="em">${TEAMS[i].e}</span><span class="nm">${esc(teamName(i))}</span><span class="sc">${total(i)}</span></div>`).join('')}</div>
    ${r[3]!=null?`<p class="note" style="font-size:18px">4. ${TEAMS[r[3]].e} ${esc(teamName(r[3]))} · ${total(r[3])}</p>`:''}
-   <div style="height:16px"></div><button class="b" data-act="fin">رجوع للخريطة</button></div></div>`;
+   ${DISPLAY?'':'<div style="height:16px"></div><button class="b" data-act="fin">رجوع للخريطة</button>'}</div></div>`;
   startConfetti();sWin()}
 function printLocks(){const cards=ISL.map((x,k)=>({x,k,c:G.locks[k].c})).filter(o=>o.c);if(!cards.length){toast('اكتب رمزًا لجزيرة واحدة على الأقل');return}
   const w=window.open('','_blank');if(!w){toast('اسمح بالنوافذ المنبثقة للطباعة');return}
@@ -576,6 +601,8 @@ const A={
   lockrand:()=>{ISL.forEach((_,k)=>{$('#lc'+k).value=String(100+Math.floor(Math.random()*900))})},
   lockprint:()=>{A.locks();setTimeout(printLocks,50)},
   reset:()=>{if(resetArm>Date.now()){resetArm=0;const run=rid();commitG(n=>{n.run=run;n.raceOn=false;n.view='map';n.bonus=[0,0,0,0]});TD=[0,1,2,3].map(()=>{const t=freshT(run);t.rev=Date.now();t.sentAt=Date.now();return t});TD.forEach((t,i)=>send('t'+i,t));saveLocal();toast('بدأت مغامرة جديدة');soon()}else{resetArm=Date.now()+4000;renderDrawer();setTimeout(renderDrawer,4100)}},
+  disp:()=>window.open(dispLink(),'_blank'),
+  fs:()=>{try{(document.documentElement.requestFullscreen||document.documentElement.webkitRequestFullscreen).call(document.documentElement)}catch(e){}},
   try:()=>window.open(location.pathname+'?r='+ROOM+'&try=1','_blank'),
   pick:i=>{i=+i;const tk=TD[i].dev&&TD[i].dev!==DEV;if(tk&&!confirm('هذه السفينة مستخدمة في جهاز آخر. تستلمها في هذا الجهاز؟'))return;
     initAudio();MYT=i;LS.set(SK('myt'),i);commitT(i,n=>{n.dev=DEV;n.run=G.run});lastKey=''},
@@ -612,7 +639,7 @@ const A={
   'ch-ok':()=>{if(frozen())return;if(MS.inp===digitsFor(MYT).join('')){finishIsland('done')}else{MS.wrong++;MS.inp='';saveMS();dirty();freeze(5)}},
   tryto:k=>{k=+k;view=null;LS.del(SK('ms0')+'-try');MS=null;commitT(0,n=>{n.isl=k;n.st=0;n.sr='';for(let j=k;j<7;j++)n.res[j]=null});dirty()},
   tryreset:()=>{view=null;LS.del(SK('ms0')+'-try');MS=null;TD[0]=freshT(G.run);TD[0].dev=DEV;dirty()},
-  copy:w=>{const t=w==='host'?hostLink():teamLink();(navigator.clipboard?navigator.clipboard.writeText(t):Promise.reject()).then(()=>toast('تم النسخ ✓'),()=>prompt('انسخ الرابط:',t))}
+  copy:w=>{const t=w==='host'?hostLink():w==='disp'?dispLink():teamLink();(navigator.clipboard?navigator.clipboard.writeText(t):Promise.reject()).then(()=>toast('تم النسخ ✓'),()=>prompt('انسخ الرابط:',t))}
 };
 document.addEventListener('click',e=>{const el=e.target.closest('[data-act]');if(!el)return;const [a,...rest]=el.dataset.act.split(':');const f=A[a];if(f)f(...rest)});
 document.addEventListener('keydown',e=>{if(e.key==='Enter'&&e.target.id==='jcode')A.joinroom()});
@@ -621,7 +648,7 @@ document.addEventListener('keydown',e=>{if(e.key==='Enter'&&e.target.id==='jcode
 let lastSec=-1;
 setInterval(()=>{
   if(!ROOM)return;
-  if(IS_HOST){document.querySelectorAll('[data-tm]').forEach(el=>{const i=+el.dataset.tm;el.textContent='⏱ '+fmt(remOf(i))});return}
+  if(IS_HOST||DISPLAY){document.querySelectorAll('[data-tm]').forEach(el=>{const i=+el.dataset.tm;el.textContent='⏱ '+fmt(remOf(i))});paintBanner();return}
   if(MYT==null||pState()!=='play')return;
   const rem=remOf(MYT);const c=$('#pclk');if(c){c.textContent=fmt(rem);c.classList.toggle('low',rem<30000)}
   const s=Math.ceil(rem/1000);if(s!==lastSec){lastSec=s;if(s<=10&&s>0)sTick()}
