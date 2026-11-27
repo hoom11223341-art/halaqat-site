@@ -354,6 +354,8 @@ body.dsp{overflow:hidden;background:radial-gradient(140% 100% at 70% 0%,#0f3550 
 .tc{background:#0c2438;border:2px solid var(--c);border-radius:16px;padding:8px 14px;display:grid;justify-items:center;min-width:140px}.tc span{font-size:30px}.tc b{color:#fff;font-size:16px}.tc small{color:#9cc7da!important;font-size:13px!important;letter-spacing:0!important}
 #fw{position:fixed;inset:0;z-index:46;pointer-events:none}
 #finT .fin3{z-index:90}
+.peek{text-align:center;font-weight:900;font-size:20px;color:#3a2200;background:linear-gradient(180deg,#ffe27a,#f2b234);border-radius:14px;padding:8px;margin-bottom:10px;animation:pulse 1s infinite}.peek b{font-family:Lalezar;font-size:28px}
+.mem.peeking .mc{border-color:#ffcc33}
 @media print{body *{visibility:hidden}}
 </style>
 <script src="https://unpkg.com/mqtt@5.10.1/dist/mqtt.min.js"></script>
@@ -374,7 +376,7 @@ const ISL=[
  {k:'tap',   n:'جزيرة الأرقام', ic:'🔢',dur:300,intro:'40 عملة ذهبية مبعثرة! اضغطوها بالترتيب من 1 إلى 40 بأسرع ما تقدرون. الضغطة الخاطئة توقفكم 5 ثوانٍ.'},
  {k:'words', n:'جزيرة الكلمات', ic:'🔤',dur:300,intro:'5 كلمات بحرية مخبأة بين الحروف (أفقية أو عمودية). اضغطوا أول حرف في الكلمة ثم آخر حرف. الاختيار الخاطئ يوقفكم 5 ثوانٍ.'},
  {k:'riddle',n:'جزيرة الألغاز', ic:'🧩',dur:480,intro:'20 لغزًا تحتاج تفكير! اختاروا الإجابة الصحيحة، والخطأ يوقفكم 5 ثوانٍ.'},
- {k:'surprise',n:'جزيرة المفاجأة',ic:'🎁',dur:360,intro:'تحدٍّ حركي في الواقع! ستظهر لكم مهمة تنفذونها بأجسامكم، وبعد ما تخلصونها نادوا المقدم ليعتمدها ✅'},
+ {k:'surprise',n:'جزيرة التحدي',ic:'💪',dur:360,intro:'تحدٍّ حركي في الواقع! ستظهر لكم مهمة تنفذونها بأجسامكم، وبعد ما تخلصونها نادوا المقدم ليعتمدها ✅'},
  {k:'chest', n:'جزيرة الكنز',   ic:'💰',dur:240,intro:'وصلتم إلى جزيرة الكنز! أدخلوا الأرقام الستة التي جمعتموها من الجزر بالترتيب لفتح الصندوق. الخطأ يوقفكم 5 ثوانٍ، والنقاط هنا مضاعفة!'}];
 const NI=ISL.length,CH=NI-1;
 const QUIZ=[
@@ -465,8 +467,8 @@ const SK=k=>'kz-'+k+'-'+ROOM;
 /* ===== الشفرات الثابتة (تقدر تغيرها هنا أو من لوحة التحكم) ===== */
 const DEF_CHEST='472951';            // شفرة صندوق الكنز: 6 أرقام، رقم لكل جزيرة من 1 إلى 6
 const DEF_LOCKS=['315','628','947','184','562','739','271','806'];  // رموز الجزر 1→8 (اتركها '' لإلغاء القفل)
-const DEF_PIN='2468';                // رمز المقدم لاعتماد تحدي جزيرة المفاجأة من جوال الفريق
-const DEF_CHAL=[                     // تحديات جزيرة المفاجأة (كل فريق يأخذ تحديًا مختلفًا)
+const DEF_PIN='2468';                // رمز المقدم لاعتماد تحدي جزيرة التحدي من جوال الفريق
+const DEF_CHAL=[                     // تحديات جزيرة التحدي (كل فريق يأخذ تحديًا مختلفًا)
  'أحضروا للمقدم 3 أشياء لونها أزرق!',
  'ابنوا هرمًا من 6 أكواب ثم نادوا المقدم ليراه.',
  'كل أعضاء الفريق يقفون على رِجل واحدة 20 ثانية دون أن يسقط أحد!',
@@ -703,7 +705,7 @@ function renderHost(){
   if(side._k!==sk){side._k=sk;
     const order=[0,1,2,3].sort((a,b)=>total(b)-total(a)||TD[b].isl-TD[a].isl);
     side.innerHTML=`${!G.raceOn?`<div class="card qrbox"><b class="disp" style="font-size:26px">امسحوا وانضموا للمغامرة!</b><div id="qr"></div><span class="note">أو ادخلوا الرمز <b class="num" style="color:var(--gold);font-size:22px">${ROOM}</b></span></div>`:''}
-     ${order.map((i,ri)=>`<div class="tcard" style="--c:${TC[i]}"><span class="rk">#${ri+1}</span><span class="em">${TEAMS[i].e}</span><div><div class="nm">${esc(teamName(i))}</div><div class="st">${statusOf(i)}</div>${TD[i].st&&isSurp(TD[i].isl)?`<div class="apbox"><small>🎁 ${esc(chalFor(i))}</small><button class="b sm ok" data-act="appr:${i}">✅ اعتماد التحدي</button></div>`:''}<div class="tdots">${ISL.map((x,k)=>{const r=TD[i].res[k];const cur=k===TD[i].isl&&TD[i].st;return `<i class="${r?(r.s==='timeout'?'x':'d'):cur?'n':''}">${r?(r.s==='timeout'?'⌛':'✓'):x.ic}</i>`}).join('')}</div>${TD[i].st&&TD[i].isl<NI?`<div class="tm num" data-tm="${i}">⏱ ${fmt(remOf(i))}</div>`:''}</div><span class="sc">${total(i)}</span></div>`).join('')}
+     ${order.map((i,ri)=>`<div class="tcard" style="--c:${TC[i]}"><span class="rk">#${ri+1}</span><span class="em">${TEAMS[i].e}</span><div><div class="nm">${esc(teamName(i))}</div><div class="st">${statusOf(i)}</div>${TD[i].st&&isSurp(TD[i].isl)?`<div class="apbox"><small>💪 ${esc(chalFor(i))}</small><button class="b sm ok" data-act="appr:${i}">✅ اعتماد التحدي</button></div>`:''}<div class="tdots">${ISL.map((x,k)=>{const r=TD[i].res[k];const cur=k===TD[i].isl&&TD[i].st;return `<i class="${r?(r.s==='timeout'?'x':'d'):cur?'n':''}">${r?(r.s==='timeout'?'⌛':'✓'):x.ic}</i>`}).join('')}</div>${TD[i].st&&TD[i].isl<NI?`<div class="tm num" data-tm="${i}">⏱ ${fmt(remOf(i))}</div>`:''}</div><span class="sc">${total(i)}</span></div>`).join('')}
      <div class="card" style="text-align:center">${G.raceOn?'<b style="color:#5fe39c">⛵ السباق جارٍ!</b>':(DISPLAY?'<b>⏳ بانتظار إشارة القبطان لبدء السباق…</b>':'<b>⏳ بانتظار بدء السباق</b><p class="note">افتح لوحة التحكم واضغط «ابدأ السباق» بعد ما تنضم الفرق.</p>')}</div>`;
     const q=$('#qr');if(q&&!window.QRCode)q.remove();if(q&&window.QRCode){q.innerHTML='';new QRCode(q,{text:teamLink(),width:200,height:200,correctLevel:QRCode.CorrectLevel.M})}}
   paintBanner();
@@ -738,7 +740,7 @@ function renderDrawer(){const d=$('#drawer');d.classList.toggle('on',drawer);if(
    <p class="note">تظهر للفريق بعد ما يفتح الصندوق، وتدلّهم على مكان الكنز الحقيقي. اكتبها بأسلوبك.</p>
    <textarea id="msgIn" rows="8" style="line-height:1.7">${esc(treasureMsg())}</textarea>
    <div class="row" style="margin-top:8px"><button class="b sm ok" data-act="msgsave">حفظ الرسالة</button><button class="b sm" data-act="msgdef">استرجاع النص المقترح</button></div></div>
-  <div class="sec"><h3>🎁 تحديات جزيرة المفاجأة</h3>
+  <div class="sec"><h3>💪 تحديات جزيرة التحدي</h3>
    <p class="note">تحدٍّ حركي في الواقع قبل جزيرة الكنز. اكتب كل تحدٍّ في سطر، وكل فريق يأخذ تحديًا مختلفًا. لما ينفّذ الفريق التحدي اضغط «✅ اعتماد التحدي» بجانب اسمه على الشاشة، أو أدخل رمز المقدم <b class="num" style="color:var(--gold)">${DEF_PIN}</b> في جواله.</p>
    <textarea id="chalIn" rows="6" style="line-height:1.7">${esc(chalList().join('\n'))}</textarea>
    <div style="height:8px"></div><button class="b sm ok" data-act="chalsave">حفظ التحديات</button></div>
@@ -984,7 +986,7 @@ function rngFor(k){const t=TD[MYT];return mulb(hsh(ROOM+'|'+MYT+'|'+k+'|'+t.sr))
 function initMission(k){const r=rngFor(k);const t=TD[MYT];const b={k,sr:t.sr,frz:0};
   switch(ISL[k].k){
    case 'quiz':{const qs=shufR(r,QUIZ.map((_,i)=>i));return {...b,qs,i:0,ord:qs.map(()=>shufR(r,[0,1,2,3]))}}
-   case 'memory':return {...b,cards:shufR(r,[...MEM_E,...MEM_E]),open:[],ok:[],moves:0};
+   case 'memory':return {...b,cards:shufR(r,[...MEM_E,...MEM_E]),open:[],ok:[],moves:0,peek:Date.now()+5000};
    case 'xo':return {...b,wins:0,bd:Array(9).fill(''),msg:''};
    case 'tap':return {...b,order:shufR(r,Array.from({length:40},(_,i)=>i+1)),next:1};
    case 'words':return {...b,...wsBuild(r),found:[],sel:null};
@@ -997,10 +999,11 @@ function missionHTML(){const k=MS.k,x=ISL[k];const head=sub=>`<div class="ititle
    case 'quiz':case 'riddle':{const bank=x.k==='quiz'?QUIZ:RIDDLES;const n=MS.qs.length;const q=bank[MS.qs[MS.i]];
      return `<div class="card">${head()}<div class="ctr"><span>${x.k==='quiz'?'سؤال':'لغز'} ${MS.i+1} من ${n}</span></div><div class="prog"><i style="width:${MS.i/n*100}%"></i></div>
       <p class="qtxt">${esc(q.q)}</p><div class="opts2">${MS.ord[MS.i].map(o=>`<button class="opt" data-act="ans:${o}">${esc(q.o[o])}</button>`).join('')}</div></div>`}
-   case 'memory':return `<div class="card">${head()}<div class="ctr"><span>الأزواج: ${MS.ok.length/2} من 16</span><span>محاولات: ${MS.moves}</span></div>
-      <div class="mem m32">${MS.cards.map((e,i)=>{const up=MS.open.includes(i)||MS.ok.includes(i);return `<button class="mc ${up?'up':''} ${MS.ok.includes(i)?'ok':''}" data-act="mem:${i}"><span>${e}</span></button>`}).join('')}</div></div>`;
+   case 'memory':{const pk=MS.peek&&Date.now()<MS.peek;return `<div class="card">${head()}<div class="ctr"><span>الأزواج: ${MS.ok.length/2} من 16</span><span>محاولات: ${MS.moves}</span></div>
+      ${pk?`<div class="peek">👀 احفظوا أماكن الصور! تختفي بعد <b id="peekn">${Math.ceil((MS.peek-Date.now())/1000)}</b></div>`:''}
+      <div class="mem m32 ${pk?'peeking':''}">${MS.cards.map((e,i)=>{const up=pk||MS.open.includes(i)||MS.ok.includes(i);return `<button class="mc ${up?'up':''} ${MS.ok.includes(i)?'ok':''}" data-act="mem:${i}"><span>${e}</span></button>`}).join('')}</div></div>`}
    case 'surprise':return `<div class="card surp">${head()}
-      <div class="giftbig">🎁</div>
+      <div class="giftbig">💪</div>
       <p class="note" style="text-align:center;margin:0">تحدّيكم في الواقع:</p>
       <div class="chal">${esc(chalFor(MYT))}</div>
       <div class="waitap"><span class="dots"><i></i><i></i><i></i></span> نفّذوا التحدي ثم نادوا المقدم ليعتمده من جهازه</div>
@@ -1140,7 +1143,7 @@ const A={
       if(MS.streak%5===0){const st=MS.streak;fireFx(st);commitT(MYT,n=>{n.sb=(n.sb||0)+20;n.mxs=Math.max(n.mxs||0,st);n.log=pushLog(n.log,{ty:'fire',n:st})})}
       saveMS();if(MS.i>=MS.qs.length)return finishIsland('done');dirty()}
     else{document.querySelector(`[data-act="ans:${o}"]`).classList.add('bad');freeze(ISL[MS.k].k==='quiz'?3:5)}},
-  mem:i=>{i=+i;if(MS.ok.includes(i)||MS.open.includes(i)||MS.lock)return;MS.open.push(i);sTick();
+  mem:i=>{i=+i;if(MS.peek&&Date.now()<MS.peek)return;if(MS.ok.includes(i)||MS.open.includes(i)||MS.lock)return;MS.open.push(i);sTick();
     if(MS.open.length===2){MS.moves++;const [a,b]=MS.open;
       if(MS.cards[a]===MS.cards[b]){MS.ok.push(a,b);MS.open=[];sOk();saveMS();if(MS.ok.length===MS.cards.length)return setTimeout(()=>finishIsland('done'),500)}
       else{MS.lock=1;setTimeout(()=>{MS.open=[];MS.lock=0;saveMS();dirty()},900)}}
@@ -1196,6 +1199,7 @@ setInterval(()=>{
   if(MYT==null||pState()!=='play')return;
   const rem=remOf(MYT);const c=$('#pclk');if(c){c.textContent=fmt(rem);c.classList.toggle('low',rem<30000)}
   const s=Math.ceil(rem/1000);if(s!==lastSec){lastSec=s;if(s<=10&&s>0)sTick()}
+  if(MS&&MS.peek){const pn=$('#peekn');if(Date.now()>=MS.peek){if($('.peeking')){sTick();dirty()}}else if(pn){const v=String(Math.ceil((MS.peek-Date.now())/1000));if(pn.textContent!==v){pn.textContent=v;sTick()}}}
   paintFreeze();
   if(!view&&isSurp(TD[MYT].isl)&&G.appr&&G.appr[MYT]&&G.appr[MYT]===TD[MYT].sr)return finishIsland('done');
   if(rem<=0&&!view)finishIsland('timeout');
